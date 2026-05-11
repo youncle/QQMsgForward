@@ -76,6 +76,9 @@ def kill_port_process(port: int) -> bool:
         time.sleep(1)
         return not check_port(port)
     return False
+
+
+def check_port(port: int, host: str = '127.0.0.1') -> bool:
     """检查端口是否开放"""
     try:
         with socket.create_connection((host, port), timeout=2):
@@ -337,11 +340,10 @@ def _set_taskbar_icon(hwnd: int, ico_path: str) -> None:
 
 
 if __name__ == '__main__':
-    import importlib
     import wizard as wizard_mod
-    fwd = importlib.import_module('qq-message-forward')
-    forward_app = fwd.app
-    set_forward_config = fwd.set_config_path
+    import forward as forward_mod
+    forward_app = forward_mod.app
+    set_forward_config = forward_mod.set_config_path
 
     base_dir = wizard_mod.get_base_dir()
 

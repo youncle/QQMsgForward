@@ -3,15 +3,13 @@ import sys
 import os
 import json
 import tempfile
-import importlib
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def test_module_imports_without_config():
     """After import, config should NOT be loaded yet (lazy loading)"""
-    import importlib
-    fwd = importlib.import_module('qq-message-forward')
+    import forward as fwd
     assert hasattr(fwd, 'app')
     assert hasattr(fwd, 'get_config')
     # Config should stay None until first get_config() call
@@ -20,8 +18,7 @@ def test_module_imports_without_config():
 
 def test_get_config_raises_after_set_path_to_nonexistent():
     """get_config raises FileNotFoundError when path points to nonexistent file"""
-    import importlib
-    fwd = importlib.import_module('qq-message-forward')
+    import forward as fwd
 
     # Reset cached config
     fwd._config = None
@@ -44,8 +41,7 @@ def test_get_config_raises_after_set_path_to_nonexistent():
 
 def test_get_config_loads_valid_config():
     """get_config should load and cache a valid config file"""
-    import importlib
-    fwd = importlib.import_module('qq-message-forward')
+    import forward as fwd
     fwd._config = None
 
     tmpdir = tempfile.mkdtemp()
