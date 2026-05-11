@@ -13,6 +13,9 @@ from PIL import Image, ImageDraw
 
 import settings as settings_mod
 
+import ctypes
+from ctypes import wintypes
+
 # 路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 FORWARD_SCRIPT = os.path.join(SCRIPT_DIR, 'qq-message-forward.py')
@@ -22,6 +25,18 @@ LOG_FILE = os.path.join(SCRIPT_DIR, 'forward.log')
 # 端口
 LLBOT_PORT = 3000
 FORWARD_PORT = 8080
+
+# Win32 constants for left-click hook
+GWLP_WNDPROC = -4
+WM_LBUTTONUP = 0x0202
+
+_original_wndproc = None
+_hook_root = None
+_hook_callback = None
+
+WNDPROC_TYPE = ctypes.WINFUNCTYPE(
+    ctypes.c_longlong, wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM
+)
 
 forward_process = None
 running = True
@@ -65,6 +80,64 @@ def get_status():
     llbot_ok = check_port(LLBOT_PORT)
     forward_ok = check_port(FORWARD_PORT)
     return llbot_ok, forward_ok
+
+
+def _find_tray_hwnd():
+    """枚举当前进程的所有隐藏窗口，找到 pystray 的消息窗口 HWND"""
+    user32 = ctypes.windll.user32
+    hwnd_found = []
+
+    WNDENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+
+    @WNDENUMPROC
+    def enum_proc(hwnd, lparam):
+        pid = wintypes.DWORD()
+        user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+        if pid.value != os.getpid():
+            return True
+        if user32.IsWindowVisible(hwnd):
+            return True
+        class_name = ctypes.create_unicode_buffer(64)
+        user32.GetClassNameW(hwnd, class_name, 64)
+        cn = class_name.value
+        if cn and ('ystray' in cn or 'TrayIcon' in cn):
+            hwnd_found.append(hwnd)
+            return False
+        return True
+
+    user32.EnumWindows(enum_proc, 0)
+    return hwnd_found[0] if hwnd_found else None
+
+
+def _hook_left_click(root, on_click):
+    """Hook pystray 隐藏窗口的 WM_LBUTTONUP，切回主线程执行 on_click"""
+    global _original_wndproc, _hook_root, _hook_callback
+
+    _hook_root = root
+    _hook_callback = on_click
+
+    # 等待 pystray 窗口创建
+    for _ in range(50):
+        hwnd = _find_tray_hwnd()
+        if hwnd:
+            break
+        time.sleep(0.1)
+    else:
+        return  # 没找到就不 hook，右键菜单仍可用
+
+    user32 = ctypes.windll.user32
+
+    @WNDPROC_TYPE
+    def new_wndproc(hwnd, msg, wparam, lparam):
+        if msg == WM_LBUTTONUP:
+            _hook_root.after(0, _hook_callback, _hook_root)
+        return user32.CallWindowProcW(_original_wndproc, hwnd, msg, wparam, lparam)
+
+    _original_wndproc = user32.SetWindowLongPtrW(hwnd, GWLP_WNDPROC, new_wndproc)
+
+    # 防止 new_wndproc 回调被 Python GC 回收
+    import gc
+    gc.disable()
 
 
 def create_icon_image(color: str = 'green'):
@@ -254,6 +327,9 @@ def setup_tray(root, on_open):
 
     tray_thread = threading.Thread(target=icon.run, daemon=True)
     tray_thread.start()
+
+    # 延迟 hook 左键点击（等 pystray 窗口创建）
+    root.after(500, lambda: _hook_left_click(root, on_open))
 
     return icon
 
