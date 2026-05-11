@@ -51,7 +51,6 @@ def save_window_geometry(geometry: str) -> None:
         pass
 
 
-forward_process = None
 running = True
 
 
@@ -62,33 +61,6 @@ def check_port(port: int, host: str = '127.0.0.1') -> bool:
             return True
     except (socket.timeout, ConnectionRefusedError, OSError):
         return False
-
-
-def start_forward():
-    """启动转发脚本子进程"""
-    global forward_process
-    env = os.environ.copy()
-    env['PYTHONUTF8'] = '1'
-    log_fh = open(LOG_FILE, 'a', encoding='utf-8')
-    forward_process = subprocess.Popen(
-        [sys.executable, FORWARD_SCRIPT],
-        stdout=log_fh,
-        stderr=subprocess.STDOUT,
-        env=env
-    )
-
-
-def stop_forward():
-    """停止转发脚本子进程"""
-    global forward_process
-    if forward_process and forward_process.poll() is None:
-        forward_process.terminate()
-        try:
-            forward_process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            forward_process.kill()
-    if forward_process and forward_process.stdout:
-        forward_process.stdout.close()
 
 
 def get_status():
@@ -203,9 +175,6 @@ def shutdown_service(icon):
     """执行服务关闭（终止子进程、清理残留进程）"""
     global running
     running = False
-
-    # 先终止转发脚本（graceful）
-    stop_forward()
 
     # 清理残留进程
     for proc in ['node.exe', 'llbot.exe']:
@@ -347,22 +316,148 @@ def _set_taskbar_icon(hwnd: int, ico_path: str) -> None:
 
 
 if __name__ == '__main__':
-    # 检查 LLBot 是否运行
-    if not check_port(LLBOT_PORT):
-        print(f'错误: LLBot 未运行（端口 {LLBOT_PORT} 不通），请先启动 LLBot')
+    import importlib
+    import wizard as wizard_mod
+    fwd = importlib.import_module('qq-message-forward')
+    forward_app = fwd.app
+    set_forward_config = fwd.set_config_path
+
+    base_dir = wizard_mod.get_base_dir()
+
+    # 设置 forward 模块的配置文件路径（PyInstaller 下与 exe 同目录）
+    fwd_config_path = os.path.join(base_dir, 'config.json')
+    set_forward_config(fwd_config_path)
+
+    # 检查 LLBot-CLI-Win-x64 目录是否存在
+    llbot_dir = os.path.join(base_dir, 'LLBot-CLI-Win-x64')
+    if not os.path.isdir(llbot_dir):
+        # 尝试在开发模式下查找
+        llbot_dir = os.path.join(SCRIPT_DIR, 'LLBot-CLI-Win-x64')
+
+    if not os.path.isdir(llbot_dir):
+        from tkinter import messagebox
+        root_tmp = tk.Tk()
+        root_tmp.withdraw()
+        messagebox.showerror(
+            '安装不完整',
+            '缺少 LLBot 组件目录，请检查安装包是否完整解压。\n\n'
+            f'期望路径: {llbot_dir}'
+        )
+        root_tmp.destroy()
         sys.exit(1)
 
-    # 启动转发脚本
-    start_forward()
+    # 检查 config.json，不存在则弹出向导
+    if not os.path.exists(fwd_config_path):
+        from tkinter import messagebox
+        root_tmp = tk.Tk()
+        root_tmp.withdraw()
+        answer = messagebox.askyesno(
+            '首次运行',
+            '未检测到配置文件，需要先完成配置。\n\n是否现在开始配置？'
+        )
+        root_tmp.destroy()
+        if not answer:
+            sys.exit(0)
+
+        wizard_config = wizard_mod.run_wizard()
+        if wizard_config is None:
+            sys.exit(0)
+        wizard_mod.save_config(wizard_config, fwd_config_path)
+
+    # 检查 config.json 是否有效
+    try:
+        with open(fwd_config_path, 'r', encoding='utf-8') as f:
+            json.load(f)
+    except (json.JSONDecodeError, FileNotFoundError):
+        from tkinter import messagebox
+        root_tmp = tk.Tk()
+        root_tmp.withdraw()
+        rebuild = messagebox.askyesno(
+            '配置文件损坏',
+            '配置文件读取失败，是否重新配置？'
+        )
+        root_tmp.destroy()
+        if rebuild:
+            wizard_config = wizard_mod.run_wizard()
+            if wizard_config is None:
+                sys.exit(0)
+            wizard_mod.save_config(wizard_config, fwd_config_path)
+        else:
+            sys.exit(1)
+
+    # 启动 LLBot（后台隐藏窗口）
+    llbot_exe = os.path.join(llbot_dir, 'llbot.exe')
+    if os.path.exists(llbot_exe):
+        subprocess.Popen(
+            [llbot_exe],
+            cwd=llbot_dir,
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
+        )
+
+    # 等待 LLBot 端口就绪
+    for _ in range(20):
+        if check_port(LLBOT_PORT):
+            break
+        time.sleep(1)
+
+    if not check_port(LLBOT_PORT):
+        from tkinter import messagebox
+        root_tmp = tk.Tk()
+        root_tmp.withdraw()
+        messagebox.showerror(
+            '启动失败',
+            'LLBot 启动超时（端口 3000 未响应）。\n\n'
+            '请确认 LLBot-CLI-Win-x64 目录是否存在且完整。'
+        )
+        root_tmp.destroy()
+        sys.exit(1)
+
+    # 检查端口 3000/8080 占用，如果被旧进程占用则 kill
+    if check_port(FORWARD_PORT):
+        for proc in ['python.exe', 'pythonw.exe']:
+            subprocess.run(['taskkill', '/f', '/im', proc], capture_output=True)
+        time.sleep(1)
+        if check_port(FORWARD_PORT):
+            from tkinter import messagebox
+            root_tmp = tk.Tk()
+            root_tmp.withdraw()
+            messagebox.showerror(
+                '端口占用',
+                f'端口 {FORWARD_PORT} 被占用，请关闭占用程序后重试。'
+            )
+            root_tmp.destroy()
+            sys.exit(1)
+
+    # 在 daemon 线程中启动 Flask 转发服务
+    def run_flask():
+        forward_app.run(
+            host='127.0.0.1',
+            port=FORWARD_PORT,
+            debug=False,
+            threaded=True,
+            use_reloader=False,
+        )
+
+    flask_thread = threading.Thread(target=run_flask, daemon=True)
+    flask_thread.start()
+
+    # 等待转发端口就绪
     for _ in range(10):
         if check_port(FORWARD_PORT):
             break
         time.sleep(1)
 
     if not check_port(FORWARD_PORT):
-        print('警告: 转发脚本可能未启动成功（端口 8080 不通）')
+        from tkinter import messagebox
+        root_tmp = tk.Tk()
+        root_tmp.withdraw()
+        messagebox.showwarning(
+            '启动警告',
+            '转发服务可能未启动成功，请稍后在托盘面板中查看状态。'
+        )
+        root_tmp.destroy()
 
-    # 声明应用身份（否则 Windows 任务栏显示 pythonw 图标）
+    # 声明应用身份
     try:
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
             'QQLL.OneBot.Forward'
@@ -372,33 +467,29 @@ if __name__ == '__main__':
 
     # 创建 tk 主窗口
     root = tk.Tk()
-    root.withdraw()  # 先隐藏，启动完成后再显示，避免窗口闪现
+    root.withdraw()
     root.title('QQ Forward')
     root.resizable(True, True)
 
-    # 设置窗口图标（标题栏 + 任务栏，与托盘图标一致）
+    # 设置窗口图标
     ico_path = os.path.join(SCRIPT_DIR, 'app.ico')
+    if not os.path.exists(ico_path):
+        ico_path = os.path.join(base_dir, 'app.ico')
     _save_icon_file(ico_path)
     try:
         root.iconbitmap(ico_path)
     except Exception:
         pass
 
-    # 窗口关闭 = 隐藏到托盘
     root.protocol('WM_DELETE_WINDOW', lambda: hide_main_window(root))
 
-    # Tab 标签页内边距
+    # Tab 标签页
     style = ttk.Style()
     style.configure('TNotebook.Tab', padding=(20, 5))
 
-    # Notebook 选项卡
     notebook = ttk.Notebook(root, padding=5)
     notebook.pack(fill='both', expand=True, padx=5, pady=5)
-
-    # 状态选项卡
     notebook.add(create_status_tab(notebook), text='状态')
-
-    # 设置选项卡
     notebook.add(settings_mod.create_settings_frame(notebook), text='设置')
 
     # 底部按钮栏
@@ -407,18 +498,20 @@ if __name__ == '__main__':
     ttk.Button(bottom, text='隐藏到托盘',
                command=lambda: hide_main_window(root)).pack(side='right', padx=5)
 
-    # 读取保存的窗口尺寸
+    # 恢复窗口尺寸
     saved_geo = load_window_geometry()
     root.geometry(saved_geo or '1100x750')
 
-    # 绑定窗口尺寸变更保存（debounce 500ms）
     def _on_configure(event):
         global _save_timer_id
         if root.wm_state() != 'normal' or event.widget is not root:
             return
         if _save_timer_id:
             root.after_cancel(_save_timer_id)
-        _save_timer_id = root.after(500, lambda: save_window_geometry(root.geometry()))
+        _save_timer_id = root.after(
+            500, lambda: save_window_geometry(root.geometry())
+        )
+
     root.bind('<Configure>', _on_configure)
 
     # 启动托盘
@@ -427,11 +520,8 @@ if __name__ == '__main__':
     # 桌面快捷方式（首次运行自动创建）
     create_desktop_shortcut()
 
-    # 启动完成，显示主窗口
+    # 显示主窗口
     show_main_window(root)
-
-    # 设置任务栏图标（窗口显示后调用，Win32 API 确保生效）
     _set_taskbar_icon(root.winfo_id(), ico_path)
 
-    # 主线程运行 tkinter
     root.mainloop()

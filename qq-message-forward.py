@@ -31,6 +31,13 @@ def get_config():
         _config = load_config()
     return _config
 
+
+def set_config_path(path: str) -> None:
+    """设置配置文件路径（由 tray.py 在启动时调用）"""
+    global CONFIG_PATH, _config
+    CONFIG_PATH = path
+    _config = None  # 重置缓存，强制重新加载
+
 # 确保 stderr 输出 UTF-8，与日志文件编码一致
 sys.stderr.reconfigure(encoding='utf-8')
 
