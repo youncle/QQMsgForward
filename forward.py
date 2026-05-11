@@ -38,8 +38,9 @@ def set_config_path(path: str) -> None:
     CONFIG_PATH = path
     _config = None  # 重置缓存，强制重新加载
 
-# 确保 stderr 输出 UTF-8，与日志文件编码一致
-sys.stderr.reconfigure(encoding='utf-8')
+# 确保 stderr 输出 UTF-8，与日志文件编码一致（windowed 模式下 stderr 为 None）
+if sys.stderr:
+    sys.stderr.reconfigure(encoding='utf-8')
 
 # 初始化日志
 logging.basicConfig(
