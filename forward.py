@@ -43,11 +43,12 @@ if sys.stderr:
     sys.stderr.reconfigure(encoding='utf-8')
 
 # 初始化日志
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
+if sys.stderr:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
 logger = logging.getLogger(__name__)
 
 # 初始化Requests会话（带连接池+自动重试）
