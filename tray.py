@@ -257,7 +257,7 @@ def shutdown_service(icon):
     stop_forward()
 
     # 清理残留进程
-    for proc in ['node.exe', 'llbot.exe', 'python.exe', 'pythonw.exe']:
+    for proc in ['node.exe', 'llbot.exe']:
         subprocess.run(['taskkill', '/f', '/im', proc], capture_output=True)
 
     # 关闭 QQ
@@ -322,7 +322,7 @@ def setup_tray(root, on_open):
         'QQ消息转发 - 运行中',
         menu=pystray.Menu(
             pystray.MenuItem('打开主面板', lambda: root.after(0, lambda: on_open(root))),
-            pystray.MenuItem('关闭服务', lambda: do_shutdown()),
+            pystray.MenuItem('关闭服务', lambda: root.after(0, do_shutdown)),
         )
     )
 
