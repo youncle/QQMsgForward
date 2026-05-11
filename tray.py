@@ -5,12 +5,15 @@ import os
 import time
 import threading
 import socket
-import tkinter.messagebox as tkmb
+import tkinter as tk
+from tkinter import ttk
+import ctypes
+from ctypes import wintypes
 
 import pystray
 from PIL import Image, ImageDraw
 
-import settings
+import settings as settings_mod
 
 # 路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -87,6 +90,86 @@ def create_icon_image(color: str = 'green'):
     draw.polygon([(28, 22), (36, 29), (28, 36)], fill=dark)
 
     return img
+
+
+def create_status_tab(parent):
+    """创建状态选项卡内容"""
+    frame = ttk.Frame(parent, padding=15)
+
+    ttk.Label(frame, text='服务状态', font=('微软雅黑', 11, 'bold')).pack(
+        anchor='w', pady=(0, 10))
+
+    status_frm = ttk.Frame(frame)
+    status_frm.pack(fill='x')
+
+    ttk.Label(status_frm, text='LLBot (端口 3000):', width=20, anchor='w').grid(
+        row=0, column=0, sticky='w', pady=3)
+    llbot_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
+    llbot_status.grid(row=0, column=1, sticky='w', pady=3)
+
+    ttk.Label(status_frm, text='转发脚本 (端口 8080):', width=20, anchor='w').grid(
+        row=1, column=0, sticky='w', pady=3)
+    forward_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
+    forward_status.grid(row=1, column=1, sticky='w', pady=3)
+
+    ttk.Button(frame, text='刷新', command=lambda: refresh()).pack(
+        anchor='w', pady=(5, 10))
+
+    def refresh():
+        llbot_ok, forward_ok = get_status()
+        llbot_status.config(
+            text='运行中' if llbot_ok else '已停止',
+            foreground='green' if llbot_ok else 'red')
+        forward_status.config(
+            text='运行中' if forward_ok else '已停止',
+            foreground='green' if forward_ok else 'red')
+
+    refresh()
+
+    ttk.Separator(frame, orient='horizontal').pack(fill='x', pady=10)
+
+    ttk.Label(frame, text='最近日志', font=('微软雅黑', 11, 'bold')).pack(
+        anchor='w', pady=(0, 5))
+
+    log_text = tk.Text(frame, height=10, wrap='word', state='disabled',
+                       font=('Consolas', 9))
+    log_text.pack(fill='both', expand=True)
+
+    def load_logs():
+        if os.path.exists(LOG_FILE):
+            try:
+                with open(LOG_FILE, 'r', encoding='utf-8', errors='replace') as f:
+                    lines = f.readlines()[-30:]
+                log_text.config(state='normal')
+                log_text.delete('1.0', 'end')
+                log_text.insert('1.0', ''.join(lines))
+                log_text.see('end')
+                log_text.config(state='disabled')
+            except Exception:
+                pass
+        frame.after(5000, load_logs)
+
+    load_logs()
+
+    def auto_refresh():
+        refresh()
+        frame.after(3000, auto_refresh)
+
+    auto_refresh()
+
+    return frame
+
+
+def show_main_window(root):
+    """显示主面板"""
+    root.deiconify()
+    root.lift()
+    root.focus_force()
+
+
+def hide_main_window(root):
+    """隐藏主面板（不退出）"""
+    root.withdraw()
 
 
 def show_status_window(icon):
