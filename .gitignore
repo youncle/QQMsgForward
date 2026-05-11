@@ -24,5 +24,4 @@ build/
 dist/
 output/
 *.spec
-7zS.sfx
 QQForward_Setup.exe

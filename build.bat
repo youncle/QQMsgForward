@@ -59,17 +59,18 @@ echo ;!@InstallEnd@!
 cd output
 7z a -mx=9 -mfb=273 -ms=on -mmt=on QQForward.7z QQForward\ >nul
 
-:: 下载 7-Zip SFX 模块（如果没有）
-if not exist "..\7zS.sfx" (
-    echo    正在下载 7-Zip SFX 模块...
-    powershell -Command "Invoke-WebRequest -Uri 'https://7-zip.org/a/7z2408-extra.7z' -OutFile '7z_extra.7z'"
-    7z e 7z_extra.7z 7zS.sfx -aoa >nul
-    copy 7zS.sfx ..\7zS.sfx >nul
-    del 7zS.sfx 7z_extra.7z
+:: 查找 7-Zip SFX 模块（7-Zip 26.x 自带 7z.sfx）
+set "SFX_MODULE="
+if exist "%ProgramFiles%\7-Zip\7z.sfx" set "SFX_MODULE=%ProgramFiles%\7-Zip\7z.sfx"
+if exist "%ProgramFiles(x86)%\7-Zip\7z.sfx" set "SFX_MODULE=%ProgramFiles(x86)%\7-Zip\7z.sfx"
+if "%SFX_MODULE%"=="" (
+    echo [错误] 未找到 7z.sfx，请确认 7-Zip 已安装
+    pause
+    exit /b 1
 )
 
 :: 拼接 SFX 模块 + 配置 + 压缩包
-copy /b "..\7zS.sfx" + sfx_config.txt + QQForward.7z "..\QQForward_Setup.exe" >nul
+copy /b "%SFX_MODULE%" + sfx_config.txt + QQForward.7z "..\QQForward_Setup.exe" >nul
 cd ..
 
 echo    打包完成: QQForward_Setup.exe
