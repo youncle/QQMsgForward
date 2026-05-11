@@ -31,6 +31,7 @@ GWLP_WNDPROC = -4
 WM_LBUTTONUP = 0x0202
 
 _original_wndproc = None
+_wndproc_ref = None
 _hook_root = None
 _hook_callback = None
 
@@ -111,7 +112,7 @@ def _find_tray_hwnd():
 
 def _hook_left_click(root, on_click):
     """Hook pystray 隐藏窗口的 WM_LBUTTONUP，切回主线程执行 on_click"""
-    global _original_wndproc, _hook_root, _hook_callback
+    global _original_wndproc, _hook_root, _hook_callback, _wndproc_ref
 
     _hook_root = root
     _hook_callback = on_click
@@ -127,17 +128,21 @@ def _hook_left_click(root, on_click):
 
     user32 = ctypes.windll.user32
 
+    # 修复 64 位指针截断问题
+    user32.SetWindowLongPtrW.restype = wintypes.LONG_PTR
+    user32.SetWindowLongPtrW.argtypes = (wintypes.HWND, ctypes.c_int, WNDPROC_TYPE)
+    user32.CallWindowProcW.restype = wintypes.LPARAM
+
     @WNDPROC_TYPE
     def new_wndproc(hwnd, msg, wparam, lparam):
         if msg == WM_LBUTTONUP:
             _hook_root.after(0, _hook_callback, _hook_root)
         return user32.CallWindowProcW(_original_wndproc, hwnd, msg, wparam, lparam)
 
-    _original_wndproc = user32.SetWindowLongPtrW(hwnd, GWLP_WNDPROC, new_wndproc)
+    # 保存引用到模块级变量，防止被 Python GC 回收
+    _wndproc_ref = new_wndproc
 
-    # 防止 new_wndproc 回调被 Python GC 回收
-    import gc
-    gc.disable()
+    _original_wndproc = user32.SetWindowLongPtrW(hwnd, GWLP_WNDPROC, new_wndproc)
 
 
 def create_icon_image(color: str = 'green'):
