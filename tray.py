@@ -249,26 +249,37 @@ def hide_main_window(root):
 
 
 def shutdown_service(icon):
-    """关闭所有服务"""
+    """执行服务关闭（终止子进程、清理残留进程）"""
     global running
     running = False
+
+    # 先终止转发脚本（graceful）
     stop_forward()
-    # 终止 LLBot（实际进程可能是 node.exe）
-    subprocess.run(['taskkill', '/f', '/im', 'node.exe'],
-                   capture_output=True)
-    subprocess.run(['taskkill', '/f', '/im', 'llbot.exe'],
-                   capture_output=True)
+
+    # 清理残留进程
+    for proc in ['node.exe', 'llbot.exe', 'python.exe', 'pythonw.exe']:
+        subprocess.run(['taskkill', '/f', '/im', proc], capture_output=True)
+
     # 关闭 QQ
     for qq_name in ['QQ.exe', 'QQNT.exe']:
-        subprocess.run(['taskkill', '/f', '/im', qq_name],
-                       capture_output=True)
+        subprocess.run(['taskkill', '/f', '/im', qq_name], capture_output=True)
+
     # 清理标志文件
     if os.path.exists(SHUTDOWN_FLAG):
         try:
             os.remove(SHUTDOWN_FLAG)
         except OSError:
             pass
+
     icon.stop()
+
+
+def handle_shutdown(icon, root):
+    """用户点击"关闭服务"：创建标志文件 → 立即关闭 → 销毁窗口"""
+    with open(SHUTDOWN_FLAG, 'w') as f:
+        f.write('shutdown')
+    shutdown_service(icon)
+    root.destroy()
 
 
 def monitor_loop(icon, root):
@@ -280,18 +291,19 @@ def monitor_loop(icon, root):
             break
 
         if os.path.exists(SHUTDOWN_FLAG):
-            root.after(0, lambda: (
-                shutdown_service(icon),
-                root.destroy()
-            ))
+            root.after(0, lambda: handle_shutdown(icon, root))
             break
 
         llbot_ok, forward_ok = get_status()
         all_ok = llbot_ok and forward_ok
+        any_ok = llbot_ok or forward_ok
 
-        if not all_ok and was_ok:
+        if not any_ok:
             icon.icon = create_icon_image('red')
             icon.title = 'QQ消息转发 - 服务异常'
+        elif not all_ok:
+            icon.icon = create_icon_image('yellow')
+            icon.title = 'QQ消息转发 - 部分异常'
         elif all_ok and not was_ok:
             icon.icon = create_icon_image('green')
             icon.title = 'QQ消息转发 - 运行中'
@@ -302,20 +314,7 @@ def monitor_loop(icon, root):
 def setup_tray(root, on_open):
     """创建托盘图标（在 daemon 线程中运行 pystray）"""
     def do_shutdown():
-        global running
-        running = False
-        stop_forward()
-        subprocess.run(['taskkill', '/f', '/im', 'node.exe'], capture_output=True)
-        subprocess.run(['taskkill', '/f', '/im', 'llbot.exe'], capture_output=True)
-        for qq_name in ['QQ.exe', 'QQNT.exe']:
-            subprocess.run(['taskkill', '/f', '/im', qq_name], capture_output=True)
-        if os.path.exists(SHUTDOWN_FLAG):
-            try:
-                os.remove(SHUTDOWN_FLAG)
-            except OSError:
-                pass
-        icon.stop()
-        root.destroy()
+        handle_shutdown(icon, root)
 
     icon = pystray.Icon(
         'qq_forward',
