@@ -1,0 +1,30 @@
+[info] | 2026-05-11 21:39:11 | LLBot 7.11.4
+
+[info] | 2026-05-11 21:39:11 | Webui 服务器已启动 127.0.0.1:3080
+
+[info] | 2026-05-11 21:39:15 | OneBot V11 HTTP server started 127.0.0.1:3000
+
+[info] | 2026-05-11 21:39:15 | OneBot V11 HTTP SSE started 127.0.0.1:3000/_events
+
+[info] | 2026-05-11 21:40:47 | 收到新人被邀请进群消息 { busiType: '1', busiId: '19373', c2cType: 0, serviceType: 0, ctrlFlag: 7, content: '<gtip align="center" max_line_limit="false"><qq uin="u_97tmW0mZmrPn2rIjZuWMIg" col="3" jp="2776992588"/><nor txt="邀请"/><qq uin="u_awZ8xYXQmBSkwMNKPW2qJw" col="3" jp="352140007"/><nor txt="加入了"/><nor txt="群聊"/><nor txt="。"/></gtip>', templId: '10485', seqId: '708168560', templParam: Map(3) { 'invitor' => '2776992588', 'invitees_dynamic' => '<qq uin="352140007" col="3" jp="352140007"/>', 'Msg_dynamic' => '' }, pbReserv: null, members: Map(2) { 'u_97tmW0mZmrPn2rIjZuWMIg' => '小小贝壳', 'u_awZ8xYXQmBSkwMNKPW2qJw' => '三四三七' } }
+
+[info] | 2026-05-11 21:40:47 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_increase 200
+
+[info] | 2026-05-11 21:41:03 | 收到新人被邀请进群消息 { busiType: '1', busiId: '19373', c2cType: 0, serviceType: 0, ctrlFlag: 7, content: '<gtip align="center" max_line_limit="false"><qq uin="u_97tmW0mZmrPn2rIjZuWMIg" col="3" jp="2776992588"/><nor txt="邀请"/><qq uin="u_awZ8xYXQmBSkwMNKPW2qJw" col="3" jp="352140007"/><nor txt="加入了"/><nor txt="群聊"/><nor txt="。"/></gtip>', templId: '10485', seqId: '676318543', templParam: Map(3) { 'invitor' => '2776992588', 'invitees_dynamic' => '<qq uin="352140007" col="3" jp="352140007"/>', 'Msg_dynamic' => '' }, pbReserv: null, members: Map(2) { 'u_97tmW0mZmrPn2rIjZuWMIg' => '小小贝壳', 'u_awZ8xYXQmBSkwMNKPW2qJw' => '三四三七' } }
+
+[info] | 2026-05-11 21:41:03 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_increase 200
+
+[info] | 2026-05-11 21:42:21 | [收-群] 00-信息源(1079264158) 三四三七(352140007)：
+你好
+
+[info] | 2026-05-11 21:42:21 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1080631149, message: [ { type: 'text', data: { text: '你好' } } ] }
+
+[info] | 2026-05-11 21:42:21 | [发-群] 11-目标群(1080631149) 小小贝壳(2776992588)：
+你好
+
+[info] | 2026-05-11 21:42:21 | 消息发送 { chatType: 2, peerUid: '1080631149', guildId: '' }
+
+[info] | 2026-05-11 21:42:21 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 21:42:21 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+

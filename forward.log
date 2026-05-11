@@ -89,3 +89,31 @@
 2026-05-11 20:18:12 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:8080
 2026-05-11 20:18:12 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 21:39:17 - INFO - ==================================================
+2026-05-11 21:39:17 - INFO - ✅ QQ群转发服务已启动
+2026-05-11 21:39:17 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-11 21:39:17 - INFO - 📋 转发规则: {'1079264158': ['1080631149']}
+2026-05-11 21:39:17 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-11 21:39:17 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 21:39:17 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 21:39:17 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 21:40:47 - INFO - 127.0.0.1 - - [11/May/2026 21:40:47] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 21:41:03 - INFO - 127.0.0.1 - - [11/May/2026 21:41:03] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 21:42:21 - INFO - [FILTER] 放行: 群1079264158 | 类型=list | 文本=你好
+2026-05-11 21:42:21 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | 你好...
+2026-05-11 21:42:21 - INFO - 127.0.0.1 - - [11/May/2026 21:42:21] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 21:42:21 - INFO - 127.0.0.1 - - [11/May/2026 21:42:21] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 21:47:54 - INFO - ==================================================
+2026-05-11 21:47:54 - INFO - ✅ QQ群转发服务已启动
+2026-05-11 21:47:54 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-11 21:47:54 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-11 21:47:54 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-11 21:47:54 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 21:47:54 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 21:47:54 - INFO - [33mPress CTRL+C to quit[0m

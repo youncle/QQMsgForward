@@ -34,7 +34,12 @@
       "Bash(git reflog *)",
       "Bash(git commit *)",
       "Bash(git ls-tree *)",
-      "Bash(grep -E '\\\\.\\(vbs|py|bat|cmd\\)$')"
+      "Bash(grep -E '\\\\.\\(vbs|py|bat|cmd\\)$')",
+      "Bash(pip show *)",
+      "Bash(pip3 show *)",
+      "Bash(git -C D:/DevVProgram/QQLLOneBotCLI add qq-message-forward.py)",
+      "Bash(git -C D:/DevVProgram/QQLLOneBotCLI commit -m 'fix\\(forward\\): reconfigure stderr to utf-8 for correct log encoding')",
+      "Bash(echo \"exit: $?\")"
     ]
   },
   "enabledPlugins": {
