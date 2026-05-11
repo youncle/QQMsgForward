@@ -32,7 +32,9 @@
       "Bash(openspec task *)",
       "Bash(git stash *)",
       "Bash(git reflog *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git ls-tree *)",
+      "Bash(grep -E '\\\\.\\(vbs|py|bat|cmd\\)$')"
     ]
   },
   "enabledPlugins": {

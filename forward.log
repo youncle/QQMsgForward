@@ -78,3 +78,14 @@
 2026-05-11 15:45:40 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:8080
 2026-05-11 15:45:40 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 20:18:12 - INFO - ==================================================
+2026-05-11 20:18:12 - INFO - \u2705 QQÈº×ª·¢·þÎñÒÑÆô¶¯
+2026-05-11 20:18:12 - INFO - \U0001f4cb WebHookµØÖ·: http://127.0.0.1:8080/webhook
+2026-05-11 20:18:12 - INFO - \U0001f4cb ×ª·¢¹æÔò: {'1079264158': ['1080631149']}
+2026-05-11 20:18:12 - INFO - \U0001f4cb ¹ýÂË×´Ì¬: QRÂë=ÆôÓÃ | ÁªÏµ·½Ê½=ÆôÓÃ | Ä£Ê½=½öÈÕÖ¾
+2026-05-11 20:18:12 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 20:18:12 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 20:18:12 - INFO - [33mPress CTRL+C to quit[0m
