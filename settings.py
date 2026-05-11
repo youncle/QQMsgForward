@@ -1,8 +1,8 @@
-"""QQ消息转发 — 设置窗口"""
+"""QQ消息转发 — 设置界面（可嵌入 Frame）"""
 import json
 import os
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(SCRIPT_DIR, 'config.json')
@@ -20,17 +20,15 @@ def save_config(data):
     os.replace(tmp, CONFIG_PATH)
 
 
-def open_settings():
-    """打开设置窗口（可在非主线程中调用）"""
+def create_settings_frame(parent):
+    """创建设置界面 Frame，可嵌入 Notebook 等容器"""
     cfg = load_config()
-    root = tk.Tk()
-    root.title('QQ消息转发 - 设置')
-    root.resizable(False, False)
+    frame = ttk.Frame(parent, padding=10)
 
     pad = {'padx': 10, 'pady': 5}
 
     # ===== 转发规则 =====
-    frm_rules = ttk.LabelFrame(root, text='转发规则', padding=10)
+    frm_rules = ttk.LabelFrame(frame, text='转发规则', padding=10)
     frm_rules.pack(fill='x', **pad)
 
     rules = cfg.get('forward_rules', {})
@@ -92,7 +90,7 @@ def open_settings():
 
     # ===== QR 码过滤 =====
     qr = cfg['filter']['qrcode']
-    frm_qr = ttk.LabelFrame(root, text='QR码过滤', padding=10)
+    frm_qr = ttk.LabelFrame(frame, text='QR码过滤', padding=10)
     frm_qr.pack(fill='x', **pad)
 
     qr_enabled = tk.BooleanVar(value=qr.get('enabled', True))
@@ -108,7 +106,7 @@ def open_settings():
 
     # ===== 联系方式过滤 =====
     ct = cfg['filter']['contact']
-    frm_ct = ttk.LabelFrame(root, text='联系方式过滤', padding=10)
+    frm_ct = ttk.LabelFrame(frame, text='联系方式过滤', padding=10)
     frm_ct.pack(fill='x', **pad)
 
     ct_enabled = tk.BooleanVar(value=ct.get('enabled', True))
@@ -122,8 +120,11 @@ def open_settings():
     log_only = tk.BooleanVar(value=cfg['filter'].get('log_only', False))
     ttk.Checkbutton(frm_ct, text='仅记录不拦截（log_only）', variable=log_only).pack(anchor='w')
 
+    # ===== 状态标签 =====
+    status_var = tk.StringVar(value='')
+
     # ===== 按钮 =====
-    btn_frame = ttk.Frame(root)
+    btn_frame = ttk.Frame(frame)
     btn_frame.pack(fill='x', **pad)
 
     def on_save():
@@ -140,15 +141,20 @@ def open_settings():
         cfg['filter']['log_only'] = log_only.get()
         try:
             save_config(cfg)
-            messagebox.showinfo('保存成功', '配置已保存，重启服务后生效。', parent=root)
+            status_var.set('配置已保存，重启服务后生效。')
         except Exception as e:
-            messagebox.showerror('保存失败', str(e), parent=root)
+            status_var.set(f'保存失败: {e}')
 
     ttk.Button(btn_frame, text='保存', command=on_save).pack(side='right', padx=5)
-    ttk.Button(btn_frame, text='取消', command=root.destroy).pack(side='right', padx=5)
+    ttk.Label(btn_frame, textvariable=status_var, foreground='gray').pack(side='right', padx=10)
 
-    root.mainloop()
+    return frame
 
 
+# 保持向后兼容：直接运行时弹出独立窗口
 if __name__ == '__main__':
-    open_settings()
+    root = tk.Tk()
+    root.title('QQ消息转发 - 设置')
+    root.resizable(False, False)
+    create_settings_frame(root).pack(fill='both', expand=True)
+    root.mainloop()
