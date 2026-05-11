@@ -1,0 +1,42 @@
+[info] | 2026-05-11 14:34:03 | LLBot 7.11.4
+
+[info] | 2026-05-11 14:34:03 | Webui 服务器已启动 127.0.0.1:3080
+
+[info] | 2026-05-11 14:34:07 | OneBot V11 HTTP server started 127.0.0.1:3000
+
+[info] | 2026-05-11 14:34:07 | OneBot V11 HTTP SSE started 127.0.0.1:3000/_events
+
+[info] | 2026-05-11 14:34:20 | 发包获取rkey成功, private:&rkey=CAQSMJBDL9lB1L62DdIWnr9_vKd8kAboLhN4K0nz79PF_WQif1N7Y_i7tN5fzovYwXZbyg, group:&rkey=CAISMKGBYXc-lLXgDRm44uhO5D8iF30uIehZLIz9Fs2sXpwcHmMQAv-eXPiKCl_6zIFwmw
+
+[info] | 2026-05-11 14:34:20 | 发包获取rkey成功, private:&rkey=CAISMKGBYXc-lLXgDRm44uhO5D8iF30uIehZLC17euOZc6vNjeuaXD8PfQWCJ_NLu4Vdog, group:&rkey=CAMSMEkRJblBssb-FCbemGIPgTEy1Dc8rlsBLcy_v04aJDOOhF8utlrNosDMeb7HOJF_Bg
+
+[info] | 2026-05-11 14:34:30 | [收-群] 00-信息源(1079264158) 😄(85039678)：
+你好
+
+[info] | 2026-05-11 14:34:30 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1080631149, message: [ { type: 'text', data: { text: '你好' } } ] }
+
+[info] | 2026-05-11 14:34:31 | [发-群] 11-目标群(1080631149) 小小贝壳(2776992588)：
+你好
+
+[info] | 2026-05-11 14:34:31 | 消息发送 { chatType: 2, peerUid: '1080631149', guildId: '' }
+
+[info] | 2026-05-11 14:34:31 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 14:34:31 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 14:34:39 | [收-群] 00-信息源(1079264158) 😄(85039678)：
+[图片]82CBBAC31EB07404F48B3C18893CF54C.png
+
+[info] | 2026-05-11 14:34:39 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1080631149, message: [ { type: 'image', data: { file: '82CBBAC31EB07404F48B3C18893CF54C.png', subType: 0, url: 'https://multimedia.nt.qq.com.cn/download?appid=1407&fileid=EhTvzozkPFlFvy0dPIHzqOVPZNTIAxi3rgkg_woozrzjh8-wlAMyBHByb2RQgL2jAVoQzx_dJz8NNcrgdZwV8FDZMnoCvoqCAQJneg&spec=0&rkey=CAMSMEkRJblBssb-FCbemGIPgTEy1Dc8rlsBLcy_v04aJDOOhF8utlrNosDMeb7HOJF_Bg', file_size: '153399' } } ] }
+
+[info] | 2026-05-11 14:34:39 | 图片信息 { md5HexStr: '82cbbac31eb07404f48b3c18893cf54c', fileSize: '153399', picWidth: 1717, picHeight: 2102, fileName: 'f946f2eb-a2b1-42c1-90b3-4e8c08dd8c48.jpg', sourcePath: 'D:\\HuaweiMoveData\\Users\\Smile Uncle\\Documents\\Tencent Files\\2776992588\\nt_qq\\nt_data\\Pic\\2026-05\\Ori\\82cbbac31eb07404f48b3c18893cf54c.jpg', original: true, picType: 1000, picSubType: 0, fileUuid: '', fileSubId: '', thumbFileSize: 0, summary: '', isFlashPic: false }
+
+[info] | 2026-05-11 14:34:40 | [发-群] 11-目标群(1080631149) 小小贝壳(2776992588)：
+[图片]82CBBAC31EB07404F48B3C18893CF54C.jpg
+
+[info] | 2026-05-11 14:34:40 | 消息发送 { chatType: 2, peerUid: '1080631149', guildId: '' }
+
+[info] | 2026-05-11 14:34:40 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 14:34:40 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+

@@ -1,0 +1,369 @@
+[info] | 2026-05-11 11:22:11 | LLBot 7.11.4
+
+[info] | 2026-05-11 11:22:11 | Webui 服务器已启动 127.0.0.1:3080
+
+[info] | 2026-05-11 11:22:17 | OneBot V11 HTTP server started 127.0.0.1:3000
+
+[info] | 2026-05-11 11:22:17 | OneBot V11 HTTP SSE started 127.0.0.1:3000/_events
+
+[info] | 2026-05-11 11:22:32 | [收-群] 00-源群(1079264158) 😄(85039678)：
+1
+
+[info] | 2026-05-11 11:22:32 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1087980588, message: [ { type: 'text', data: { text: '1' } } ] }
+
+[error] | 2026-05-11 11:22:32 | 发生错误 DetailedError: invoke failed, wrapperSession.getMsgService().sendMsg, [ '0', { chatType: 2, peerUid: '1087980588', guildId: '' }, [ { elementType: 1, elementId: '', textElement: { content: '1', atType: 0, atUid: '', atTinyId: '', atNtUid: '' } } ], Map(1) { 0 => { attrType: 0, attrId: '7712686467110522529', vasMsgInfo: { msgNamePlateInfo: {}, bubbleInfo: {}, avatarPendantInfo: {}, vasFont: {}, iceBreakInfo: {} } } } ], { result: 120, errMsg: '' } at <anonymous> (D:\DevVProgram\QQLLOneBotCLI\LLBot-CLI-Win-x64\bin\src\ntqqapi\ntcall.ts:195:18) at runNextTicks (node:internal/process/task_queues:64:5) at process.processImmediate (node:internal/timers:472:9)
+
+[info] | 2026-05-11 11:22:32 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1080631149, message: [ { type: 'text', data: { text: '1' } } ] }
+
+[info] | 2026-05-11 11:22:33 | [发-群] 11-目标群(1080631149) 小小贝壳(2776992588)：
+1
+
+[info] | 2026-05-11 11:22:33 | 消息发送 { chatType: 2, peerUid: '1080631149', guildId: '' }
+
+[info] | 2026-05-11 11:22:33 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:22:33 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 11:22:43 | [收-群] 00-源群(1079264158) 😄(85039678)：
+2
+
+[info] | 2026-05-11 11:22:43 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1087980588, message: [ { type: 'text', data: { text: '2' } } ] }
+
+[error] | 2026-05-11 11:22:43 | 发生错误 DetailedError: invoke failed, wrapperSession.getMsgService().sendMsg, [ '0', { chatType: 2, peerUid: '1087980588', guildId: '' }, [ { elementType: 1, elementId: '', textElement: { content: '2', atType: 0, atUid: '', atTinyId: '', atNtUid: '' } } ], Map(1) { 0 => { attrType: 0, attrId: '7712686512711295013', vasMsgInfo: { msgNamePlateInfo: {}, bubbleInfo: {}, avatarPendantInfo: {}, vasFont: {}, iceBreakInfo: {} } } } ], { result: 120, errMsg: '' } at <anonymous> (D:\DevVProgram\QQLLOneBotCLI\LLBot-CLI-Win-x64\bin\src\ntqqapi\ntcall.ts:195:18) at runNextTicks (node:internal/process/task_queues:64:5) at process.processImmediate (node:internal/timers:472:9)
+
+[info] | 2026-05-11 11:22:43 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1080631149, message: [ { type: 'text', data: { text: '2' } } ] }
+
+[info] | 2026-05-11 11:22:44 | [发-群] 11-目标群(1080631149) 小小贝壳(2776992588)：
+2
+
+[info] | 2026-05-11 11:22:44 | 消息发送 { chatType: 2, peerUid: '1080631149', guildId: '' }
+
+[info] | 2026-05-11 11:22:44 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:22:44 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 11:26:37 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[文件]screenshot_20260506_180035_com.yxg.zms.prod.jpg
+
+[info] | 2026-05-11 11:26:37 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_upload 200
+
+[info] | 2026-05-11 11:26:37 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:37 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[文件]screenshot_20260506_180048_com.yxg.zms.prod.jpg
+
+[info] | 2026-05-11 11:26:37 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_upload 200
+
+[info] | 2026-05-11 11:26:37 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:37 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+有会员专属私域直播，记得提前预约：
+https://5vqzo.xet.tech/s/2zEEXE
+（密码到时候投研圈查收）
+
+[info] | 2026-05-11 11:26:37 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:37 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+⏰时间：明晚 20:00
+链接：https://5vqzo.xet.tech/s/UfJyU
+
+[info] | 2026-05-11 11:26:37 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:38 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[文件]screenshot_20260506_180044_com.yxg.zms.prod.jpg
+
+[info] | 2026-05-11 11:26:38 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_upload 200
+
+[info] | 2026-05-11 11:26:38 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:38 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[文件]screenshot_20260506_180039_com.yxg.zms.prod.jpg
+
+[info] | 2026-05-11 11:26:38 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_upload 200
+
+[info] | 2026-05-11 11:26:38 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:38 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]FDC3A6037041DFB655315348D4A2039C.jpg
+
+[info] | 2026-05-11 11:26:38 | 发包获取rkey成功, private:&rkey=CAQSMF9daqnePDyAbI9mEAi6dSsQ32DKXrS4uk_2YCL7ZJrDVZlEPeNodY96JA3yL7Yu7A, group:&rkey=CAQSMF9daqnePDyAbI9mEAi6dSsQ32DKXrS4ulqlUv1QoTZJtl-7y8ENx5wT9HggfIc7mQ
+
+[info] | 2026-05-11 11:26:38 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:39 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]4676ECDD19D83A7BD2C5958E12D2FF49.jpg
+
+[info] | 2026-05-11 11:26:39 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:40 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]9F95FB1F33708F2E5D1FEA16F8F536DD.png
+
+[info] | 2026-05-11 11:26:40 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:41 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]3D5C05F9B9E617A420DEA011C0481632.jpg
+
+[info] | 2026-05-11 11:26:41 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:41 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]D8988AE38C350D15039F8596F3E3403D.jpg
+
+[info] | 2026-05-11 11:26:41 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:42 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]8624D5262DEEF728AE250A1FBC59D7B8.jpg
+
+[info] | 2026-05-11 11:26:42 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:43 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]3CE839ED5D3982235538FDF622F1FCFB.jpg
+
+[info] | 2026-05-11 11:26:43 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:44 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]7DCBEC1789009BC42F7290391D12209E.jpg
+
+[info] | 2026-05-11 11:26:44 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:44 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]A71CEDE562B42480305BCE67E04E6163.jpg
+
+[info] | 2026-05-11 11:26:44 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:45 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]F2214DF10DC0DF996EF59515CB8EF0ED.jpg
+
+[info] | 2026-05-11 11:26:45 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:46 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]FD65076FF0FE5F6112FDA66200B42A74.jpg
+
+[info] | 2026-05-11 11:26:46 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:47 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]BC19FFE433C977A472D43134DD051789.jpg
+
+[info] | 2026-05-11 11:26:47 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:47 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]1D7D437F0857CBC73CBE343AE3996477.jpg
+
+[info] | 2026-05-11 11:26:47 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:49 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]8B95EAE6160154CC493766A016EBDC71.jpg
+
+[info] | 2026-05-11 11:26:49 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:50 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]7A5183F4D59BF5B2851F0814579AB5C5.jpg
+
+[info] | 2026-05-11 11:26:50 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:51 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]9409A894F339A01769A2FA26BCF02999.jpg
+
+[info] | 2026-05-11 11:26:51 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:51 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]9A9CBDACA0EBCABBC366A56895EA666B.jpg
+
+[info] | 2026-05-11 11:26:51 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:53 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]1BA343E2BAD1671047275DDB7F30E979.jpg
+
+[info] | 2026-05-11 11:26:53 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:54 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]39E5BBBDC370CECB6F845294563F73B7.jpg
+
+[info] | 2026-05-11 11:26:54 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:55 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]987575998907617BB022517BB174FE46.jpg
+
+[info] | 2026-05-11 11:26:55 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:55 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]323ECD055FB059C54A6B91EC4C0C41EF.jpg
+
+[info] | 2026-05-11 11:26:55 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:56 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]0A89BBEF51721C95231D686CBBCAE048.jpg
+
+[info] | 2026-05-11 11:26:56 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:56 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]8188473CCC01F8B8F4FDE5DFA6154666.jpg
+
+[info] | 2026-05-11 11:26:56 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:57 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]CAA0448F47E79E8EBF8F7178660232ED.jpg
+
+[info] | 2026-05-11 11:26:57 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:58 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]485737E1DD7A54A712B88F7DA351E2D3.jpg
+
+[info] | 2026-05-11 11:26:58 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:26:59 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]D8BC74CF9F2E658005A8A6DD197C78A9.jpg
+
+[info] | 2026-05-11 11:26:59 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:00 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]32E22622539D4910B3154825CB52621E.jpg
+
+[info] | 2026-05-11 11:27:00 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:01 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]3418AD5F3E8FDB9E108DE511C9E46AC7.jpg
+
+[info] | 2026-05-11 11:27:01 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:01 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]1B9ACF440516E633828A2977B82AEE1E.jpg
+
+[info] | 2026-05-11 11:27:02 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:02 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]0137709523F4947BF55CF5AE0D057210.jpg
+
+[info] | 2026-05-11 11:27:02 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:03 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]CDBF32121B276C502E6D5E9070109E37.jpg
+
+[info] | 2026-05-11 11:27:03 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:04 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]2CEAB08AC6E7DA10876E0C1F353B0C8F.jpg
+
+[info] | 2026-05-11 11:27:04 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:04 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]2B7C9FB9531BA51E2785E94BE80E5AC2.jpg
+
+[info] | 2026-05-11 11:27:04 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:05 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]32ACEDD42CB723616E6FD6815489E943.jpg
+
+[info] | 2026-05-11 11:27:05 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:06 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]1E07E2690517592A30CAE6D4857C91E0.jpg
+
+[info] | 2026-05-11 11:27:06 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:07 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]A2BAF975DDF94AA49110B976F89D9060.jpg
+
+[info] | 2026-05-11 11:27:07 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:07 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]2E9132B4C7FFF033C3F5930197C4D170.jpg
+
+[info] | 2026-05-11 11:27:07 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:08 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]79C2AF63BF8CF95C12B777786D9879A2.jpg
+
+[info] | 2026-05-11 11:27:08 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:09 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]3AE673E4759E939CE9DFF5828F77E91D.jpg
+
+[info] | 2026-05-11 11:27:09 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:10 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]E294BF1ED461B8858A3060F6A0EEAAAB.jpg
+
+[info] | 2026-05-11 11:27:10 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:10 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]0ED1EA73126CCC718E482183667C5D07.jpg
+
+[info] | 2026-05-11 11:27:10 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:11 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]C3CA008CEC75EA256E4C244FF12F40D1.jpg
+
+[info] | 2026-05-11 11:27:11 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:12 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]EAA0D7C5EEEC0CE345390B399F0D4078.jpg
+
+[info] | 2026-05-11 11:27:12 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:13 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]8C1A513E3724A29A59ABC60B26B5027C.png
+
+[info] | 2026-05-11 11:27:13 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:14 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]7DB0D682539529B5A3894CC3757DF346.jpg
+
+[info] | 2026-05-11 11:27:14 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:14 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]23FC8159FF5D389023F13FE3A30CC52A.jpg
+
+[info] | 2026-05-11 11:27:14 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:15 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]692BE3E4F357F0213A0F5437AE0CA8ED.png
+
+[info] | 2026-05-11 11:27:15 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:16 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]4759BBF9AEA01207975DBF474959E3F5.jpg
+
+[info] | 2026-05-11 11:27:16 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:17 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]6D790FE362855C984CECB2688E2A3A98.jpg
+
+[info] | 2026-05-11 11:27:17 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:17 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]E0C7865029010F17F66264C3757ECC9B.jpg
+
+[info] | 2026-05-11 11:27:17 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:18 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]CF95D4118D9FBF19DE078C48205116EF.jpg
+
+[info] | 2026-05-11 11:27:18 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:27:19 | [收-群] 朝暮说-拼夕夕(682955188) 😄(85039678)：
+[图片]A66B2EE01FC282A0D38CD5E1A2605F1F.jpg
+
+[info] | 2026-05-11 11:27:19 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 11:39:57 | 收到新人被邀请进群消息 { busiType: '1', busiId: '19373', c2cType: 0, serviceType: 0, ctrlFlag: 7, content: '<gtip align="center" max_line_limit="false"><qq uin="u_97tmW0mZmrPn2rIjZuWMIg" col="3" jp="2776992588"/><nor txt="邀请"/><qq uin="u_AjwwZmKZy2ZYzG6OwD79EA" col="3" jp="765396455"/><nor txt="、"/><qq uin="u_awZ8xYXQmBSkwMNKPW2qJw" col="3" jp="352140007"/><nor txt="、"/><qq uin="u_6wpTgSCEvkPE6MLrc6uxzA" col="3" jp="3787141658"/><nor txt="、"/><qq uin="u_u7f_BplaPd1K6nnpPQAqGQ" col="3" jp="85039678"/><nor txt="加入了"/><nor txt="群聊"/><nor txt="。"/></gtip>', templId: '10485', seqId: '260307952', templParam: Map(3) { 'invitor' => '2776992588', 'invitees_dynamic' => '<qq uin="765396455" col="3" jp="765396455"/><nor txt="、"/><qq uin="352140007" col="3" jp="352140007"/><nor txt="、"/><qq uin="3787141658" col="3" jp="3787141658"/><nor txt="、"/><qq uin="85039678" col="3" jp="85039678"/>', 'Msg_dynamic' => '' }, pbReserv: null, members: Map(5) { 'u_97tmW0mZmrPn2rIjZuWMIg' => '小小贝壳', 'u_AjwwZmKZy2ZYzG6OwD79EA' => '海阔天空', 'u_awZ8xYXQmBSkwMNKPW2qJw' => '三四三七', 'u_6wpTgSCEvkPE6MLrc6uxzA' => '无线网络', 'u_u7f_BplaPd1K6nnpPQAqGQ' => '😄' } }
+
+[info] | 2026-05-11 11:39:57 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_increase 200
+
+[info] | 2026-05-11 11:39:57 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_increase 200
+
+[info] | 2026-05-11 11:39:57 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_increase 200
+
+[info] | 2026-05-11 11:39:57 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_increase 200
+
+[info] | 2026-05-11 11:42:44 | 收到群成员禁言提示 { type: 8, role: 0, groupName: '', memberUid: '', memberNick: '', memberRemark: '', adminUid: '', adminNick: '', adminRemark: '', createGroup: null, memberAdd: null, shutUp: { curTime: '1778470966', duration: '2147483647', admin: { uid: 'u_u7f_BplaPd1K6nnpPQAqGQ', card: '', name: '😄', role: 4 }, member: { uid: '', card: '', name: '', role: 0 } } }
+
+[info] | 2026-05-11 11:42:44 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_ban 200
+
+[info] | 2026-05-11 11:42:54 | 收到管理员变动通知 { groupCode: 1079264158, flag: 1, isPromote: true, body: { extraDisable: undefined, extraEnable: undefined } }
+
+[info] | 2026-05-11 11:45:31 | 收到群成员禁言提示 { type: 8, role: 0, groupName: '', memberUid: '', memberNick: '', memberRemark: '', adminUid: '', adminNick: '', adminRemark: '', createGroup: null, memberAdd: null, shutUp: { curTime: '1778471133', duration: '2147483647', admin: { uid: 'u_97tmW0mZmrPn2rIjZuWMIg', card: '', name: '', role: 4 }, member: { uid: '', card: '', name: '', role: 0 } } }
+
+[info] | 2026-05-11 11:45:31 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_ban 200
+
+[info] | 2026-05-11 11:55:13 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_decrease 200
+

@@ -1,0 +1,80 @@
+
+2026-05-11 14:34:09 - INFO - ==================================================
+2026-05-11 14:34:09 - INFO - \u2705 QQÈº×ª·¢·þÎñÒÑÆô¶¯
+2026-05-11 14:34:09 - INFO - \U0001f4cb WebHookµØÖ·: http://127.0.0.1:8080/webhook
+2026-05-11 14:34:09 - INFO - \U0001f4cb ×ª·¢¹æÔò: {'1079264158': ['1080631149']}
+2026-05-11 14:34:09 - INFO - \U0001f4cb ¹ýÂË×´Ì¬: QRÂë=ÆôÓÃ | ÁªÏµ·½Ê½=ÆôÓÃ | Ä£Ê½=À¹½Ø
+2026-05-11 14:34:09 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 14:34:09 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 14:34:09 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 14:34:30 - INFO - [FILTER] ·ÅÐÐ: Èº1079264158 | ÀàÐÍ=list | ÎÄ±¾=ÄãºÃ
+2026-05-11 14:34:31 - INFO - \u2705 ×ª·¢³É¹¦: 1079264158 ¡ú 1080631149 | ÄãºÃ...
+2026-05-11 14:34:31 - INFO - 127.0.0.1 - - [11/May/2026 14:34:31] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:34:31 - INFO - 127.0.0.1 - - [11/May/2026 14:34:31] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:34:39 - INFO - [FILTER] ·ÅÐÐ: Èº1079264158 | ÀàÐÍ=list | ÎÄ±¾=[CQ:image,file=82CBBAC31EB07404F48B3C18893CF54C.pn
+2026-05-11 14:34:40 - INFO - \u2705 ×ª·¢³É¹¦: 1079264158 ¡ú 1080631149 | [CQ:image,file=82CBBAC31EB07404F48B3C18893CF54C.pn...
+2026-05-11 14:34:40 - INFO - 127.0.0.1 - - [11/May/2026 14:34:40] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:34:40 - INFO - 127.0.0.1 - - [11/May/2026 14:34:40] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:44:23 - INFO - ==================================================
+2026-05-11 14:44:23 - INFO - \u2705 QQÈº×ª·¢·þÎñÒÑÆô¶¯
+2026-05-11 14:44:23 - INFO - \U0001f4cb WebHookµØÖ·: http://127.0.0.1:8080/webhook
+2026-05-11 14:44:23 - INFO - \U0001f4cb ×ª·¢¹æÔò: {'1079264158': ['1080631149']}
+2026-05-11 14:44:23 - INFO - \U0001f4cb ¹ýÂË×´Ì¬: QRÂë=ÆôÓÃ | ÁªÏµ·½Ê½=ÆôÓÃ | Ä£Ê½=À¹½Ø
+2026-05-11 14:44:23 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 14:44:23 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 14:44:23 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 14:45:12 - INFO - [FILTER] ·ÅÐÐ: Èº1079264158 | ÀàÐÍ=list | ÎÄ±¾=¹þ¹þ¹þ¹þ
+2026-05-11 14:45:13 - INFO - \u2705 ×ª·¢³É¹¦: 1079264158 ¡ú 1080631149 | ¹þ¹þ¹þ¹þ...
+2026-05-11 14:45:13 - INFO - 127.0.0.1 - - [11/May/2026 14:45:13] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:45:13 - INFO - 127.0.0.1 - - [11/May/2026 14:45:13] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:45:26 - INFO - [FILTER] ÒÑÀ¹½Ø: Èº1079264158 - [QRÂë] [Í¼Æ¬ÏûÏ¢]
+2026-05-11 14:45:26 - INFO - 127.0.0.1 - - [11/May/2026 14:45:26] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:47:39 - INFO - ==================================================
+2026-05-11 14:47:39 - INFO - \u2705 QQÈº×ª·¢·þÎñÒÑÆô¶¯
+2026-05-11 14:47:39 - INFO - \U0001f4cb WebHookµØÖ·: http://127.0.0.1:8080/webhook
+2026-05-11 14:47:39 - INFO - \U0001f4cb ×ª·¢¹æÔò: {'1079264158': ['1080631149']}
+2026-05-11 14:47:39 - INFO - \U0001f4cb ¹ýÂË×´Ì¬: QRÂë=ÆôÓÃ | ÁªÏµ·½Ê½=ÆôÓÃ | Ä£Ê½=À¹½Ø
+2026-05-11 14:47:39 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 14:47:39 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 14:47:39 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 14:47:57 - INFO - [FILTER] ÒÑÀ¹½Ø: Èº1079264158 - [ÁªÏµ·½Ê½:qq] 123244201
+2026-05-11 14:47:57 - INFO - 127.0.0.1 - - [11/May/2026 14:47:57] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:49:26 - INFO - 127.0.0.1 - - [11/May/2026 14:49:26] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:49:26 - INFO - 127.0.0.1 - - [11/May/2026 14:49:26] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:49:26 - INFO - 127.0.0.1 - - [11/May/2026 14:49:26] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:49:44 - INFO - 127.0.0.1 - - [11/May/2026 14:49:44] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:49:58 - INFO - 127.0.0.1 - - [11/May/2026 14:49:58] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:50:05 - INFO - 127.0.0.1 - - [11/May/2026 14:50:05] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 14:52:25 - INFO - 127.0.0.1 - - [11/May/2026 14:52:25] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 15:24:53 - INFO - ==================================================
+2026-05-11 15:24:53 - INFO - \u2705 QQÈº×ª·¢·þÎñÒÑÆô¶¯
+2026-05-11 15:24:53 - INFO - \U0001f4cb WebHookµØÖ·: http://127.0.0.1:8080/webhook
+2026-05-11 15:24:53 - INFO - \U0001f4cb ×ª·¢¹æÔò: {'1079264158': ['1080631149']}
+2026-05-11 15:24:53 - INFO - \U0001f4cb ¹ýÂË×´Ì¬: QRÂë=ÆôÓÃ | ÁªÏµ·½Ê½=ÆôÓÃ | Ä£Ê½=À¹½Ø
+2026-05-11 15:24:53 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 15:24:53 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 15:24:53 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 15:43:36 - INFO - 127.0.0.1 - - [11/May/2026 15:43:36] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 15:45:40 - INFO - ==================================================
+2026-05-11 15:45:40 - INFO - \u2705 QQÈº×ª·¢·þÎñÒÑÆô¶¯
+2026-05-11 15:45:40 - INFO - \U0001f4cb WebHookµØÖ·: http://127.0.0.1:8080/webhook
+2026-05-11 15:45:40 - INFO - \U0001f4cb ×ª·¢¹æÔò: {'1079264158': ['1080631149']}
+2026-05-11 15:45:40 - INFO - \U0001f4cb ¹ýÂË×´Ì¬: QRÂë=ÆôÓÃ | ÁªÏµ·½Ê½=ÆôÓÃ | Ä£Ê½=À¹½Ø
+2026-05-11 15:45:40 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 15:45:40 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 15:45:40 - INFO - [33mPress CTRL+C to quit[0m

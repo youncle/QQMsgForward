@@ -1,0 +1,26 @@
+=== QQ消息转发 — 使用教程 ===
+
+官网: https://luckylillia.com
+GitHub: https://github.com/LLOneBot/LuckyLilliaBot
+WebUI: http://127.0.0.1:3080/#onebot
+密码: llbot@forward123
+
+【一键启动】
+  双击 start.vbs → UAC 确认 → 服务后台启动 → 托盘图标出现(右下角绿色圆点)
+
+【一键关闭】
+  双击 stop.vbs  或  右键托盘图标 → 关闭服务
+
+【配置修改】
+  编辑 config.json，修改后重启服务生效（双击 stop.vbs 再 start.vbs）
+
+  转发规则: 修改 forward_rules（源群ID → [目标群ID列表]）
+  过滤规则: 修改 filter 段（关键词 / 正则 / 启用开关）
+
+【过滤说明】
+  QR码过滤: 检测消息中的图片 + 关键词组合（如 "加我""扫码""微信"等）
+  联系方式过滤: 正则匹配手机号 / QQ号 / 微信号 / 邮箱 + 关键词（如 "我的Q""私聊我"等）
+  试运行模式: 设置 filter.log_only = true，仅记录日志不拦截（先观察再启用）
+
+【依赖安装】
+  pip install -r requirements.txt

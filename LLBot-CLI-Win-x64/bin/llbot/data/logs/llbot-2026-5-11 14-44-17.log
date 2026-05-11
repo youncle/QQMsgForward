@@ -1,0 +1,29 @@
+[info] | 2026-05-11 14:44:17 | LLBot 7.11.4
+
+[info] | 2026-05-11 14:44:17 | Webui 服务器已启动 127.0.0.1:3080
+
+[info] | 2026-05-11 14:44:21 | OneBot V11 HTTP server started 127.0.0.1:3000
+
+[info] | 2026-05-11 14:44:21 | OneBot V11 HTTP SSE started 127.0.0.1:3000/_events
+
+[info] | 2026-05-11 14:45:12 | [收-群] 00-信息源(1079264158) 😄(85039678)：
+哈哈哈哈
+
+[info] | 2026-05-11 14:45:12 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1080631149, message: [ { type: 'text', data: { text: '哈哈哈哈' } } ] }
+
+[info] | 2026-05-11 14:45:13 | [发-群] 11-目标群(1080631149) 小小贝壳(2776992588)：
+哈哈哈哈
+
+[info] | 2026-05-11 14:45:13 | 消息发送 { chatType: 2, peerUid: '1080631149', guildId: '' }
+
+[info] | 2026-05-11 14:45:13 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 14:45:13 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 14:45:26 | [收-群] 00-信息源(1079264158) 😄(85039678)：
+[图片]82CBBAC31EB07404F48B3C18893CF54C.png
+
+[info] | 2026-05-11 14:45:26 | 发包获取rkey成功, private:&rkey=CAISMCqrV_XWsLmXqydIoPhgFKHAHlf97k7RcZuTA4QqA_SP5fpvh1GozrT81iXGvG8UaQ, group:&rkey=CAESMKyOlfQE-I2G9ihb6b2YVxCzT8iynll5QcyMzvFzy0aMmP7wmb261FEtoNc4T9KQ_g
+
+[info] | 2026-05-11 14:45:26 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+

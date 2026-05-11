@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(openspec list *)",
+      "Bash(openspec new *)",
+      "Bash(openspec status *)",
+      "Bash(openspec instructions *)",
+      "Bash(python -c \"import pytest; print\\('pytest available'\\)\")",
+      "Bash(pip install *)",
+      "Bash(python *)",
+      "Bash(pytest *)",
+      "Bash(cscript //nologo start.vbs)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(echo \"start.vbs exit: $?\")",
+      "Bash(cscript //nologo stop.vbs)",
+      "Bash(echo \"stop.vbs exit: $?\")",
+      "Bash(cscript //nologo //job:test -)",
+      "Bash(cscript //nologo *)",
+      "Bash(echo \"cscript msgbox test exit: $?\")",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /f /im llbot.exe)",
+      "Bash(powershell -Command \"Stop-Process -Id 15564 -Force\")",
+      "Bash(echo \"Exit: $? \\(expected 1 = MsgBox 'Already Running'\\)\")",
+      "Bash(powershell -Command \"Stop-Process -Id \\(Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique\\) -Force -ErrorAction SilentlyContinue; echo 'done'\")",
+      "Bash(cmd //c \"taskkill /f /pid 15180\")",
+      "Bash(cmd //c start \"\" /B \"D:\\\\DevVProgram\\\\QQLLOneBotCLI\\\\LLBot-CLI-Win-x64\\\\llbot.exe\")",
+      "Bash(awk '{print $5}')",
+      "Bash(tasklist)",
+      "Bash(findstr \"4592\")",
+      "Bash(echo \"start.vbs: $?\")",
+      "Bash(echo \"stop.vbs: $?\")",
+      "Bash(openspec task *)",
+      "Bash(git stash *)",
+      "Bash(git reflog *)",
+      "Bash(git commit *)"
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true
+  }
+}

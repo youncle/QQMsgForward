@@ -1,0 +1,26 @@
+[info] | 2026-04-17 04:11:28 | LLBot 7.11.4
+
+[info] | 2026-04-17 04:11:28 | Webui 服务器已启动 127.0.0.1:3080
+
+[info] | 2026-04-17 04:11:31 | OneBot V11 HTTP server started 127.0.0.1:3000
+
+[info] | 2026-04-17 04:11:31 | OneBot V11 HTTP SSE started 127.0.0.1:3000/_events
+
+[info] | 2026-04-17 04:12:19 | [收-群] 消息源(1084623154) 三四三七(765396455)：
+[图片]8B032D6E532AE860F9FF9010053FF274.png
+
+[info] | 2026-04-17 04:12:19 | 发包获取rkey成功, private:&rkey=CAISMODfqf1AnYBkeCTMhige0gRq21Y2aHNKWIhlSo39f6VVl4H3FcEIKeK5jl9cORWqsg, group:&rkey=CAMSMBFJ5CsaQbxcUbKWcNfXDphMcehK2-gHtaz6sBzd-VKbzl_AVLKx_ciWXPRYjCFNRw
+
+[info] | 2026-04-17 04:12:19 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1095965737, message: [ { type: 'image', data: { file: '8B032D6E532AE860F9FF9010053FF274.png', subType: 7, url: 'https://multimedia.nt.qq.com.cn/download?appid=1407&fileid=EhTpMbeVhFxXrU77NXtw2iiEKfqLFRi0gAkg_woo_Pb6mpfzkwMyBHByb2RQgL2jAVoQXAcW57NeyLbcloLyqaP7LnoCMGWCAQJneg&spec=0&rkey=CAMSMBFJ5CsaQbxcUbKWcNfXDphMcehK2-gHtaz6sBzd-VKbzl_AVLKx_ciWXPRYjCFNRw', file_size: '147508' } } ] }
+
+[info] | 2026-04-17 04:12:19 | 图片信息 { md5HexStr: '8b032d6e532ae860f9ff9010053ff274', fileSize: '147508', picWidth: 155, picHeight: 155, fileName: '4c333dbc-0252-42c0-8826-b6da38e5e6a1.gif', sourcePath: 'D:\\HuaweiMoveData\\Users\\Smile Uncle\\Documents\\Tencent Files\\2776992588\\nt_qq\\nt_data\\Pic\\2026-04\\Ori\\8b032d6e532ae860f9ff9010053ff274.gif', original: true, picType: 2000, picSubType: 7, fileUuid: '', fileSubId: '', thumbFileSize: 0, summary: '', isFlashPic: false }
+
+[info] | 2026-04-17 04:12:20 | [发-群] 朝暮财经(1095965737) 小小贝壳(2776992588)：
+[图片]8B032D6E532AE860F9FF9010053FF274.gif
+
+[info] | 2026-04-17 04:12:20 | 消息发送 { chatType: 2, peerUid: '1095965737', guildId: '' }
+
+[info] | 2026-04-17 04:12:20 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-04-17 04:12:20 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+

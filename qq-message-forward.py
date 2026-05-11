@@ -1,0 +1,176 @@
+from flask import Flask, request
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import time
+import logging
+import json
+import os
+from typing import Dict, List
+
+from filter import should_filter
+
+# 加载配置文件
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+    config = json.load(f)
+
+ROBOT_QQ = config['robot_qq']
+FORWARD_RULES: Dict[str, List[str]] = config['forward_rules']
+LLBOT_API = config['llbot_api']
+LLBOT_TOKEN = config.get('llbot_token', '')
+DUPLICATE_WINDOW = config['forward']['duplicate_window']
+SEND_INTERVAL = config['forward']['send_interval']
+FILTER_CONFIG = config.get('filter', {})
+
+# 初始化日志
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+logger = logging.getLogger(__name__)
+
+# 初始化Requests会话（带连接池+自动重试）
+session = requests.Session()
+retry_strategy = Retry(
+    total=3,
+    backoff_factor=0.5,
+    status_forcelist=[500, 502, 503, 504],
+    allowed_methods=["POST"]
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+session.mount("http://", adapter)
+session.mount("https://", adapter)
+
+# 配置请求头（带Token）
+headers = {"Content-Type": "application/json"}
+if LLBOT_TOKEN:
+    headers["Authorization"] = f"Bearer {LLBOT_TOKEN}"
+
+# 缓存：去重+限流
+msg_cache: Dict[str, float] = {}
+last_send_time: Dict[str, float] = {}
+
+app = Flask(__name__)
+
+
+def is_duplicate(msg_id: str) -> bool:
+    """检查消息是否重复，同时清理过期缓存"""
+    now = time.time()
+    expired = [k for k, v in msg_cache.items() if now - v > DUPLICATE_WINDOW * 10]
+    for k in expired:
+        del msg_cache[k]
+    if msg_id in msg_cache:
+        if now - msg_cache[msg_id] < DUPLICATE_WINDOW:
+            return True
+    msg_cache[msg_id] = now
+    return False
+
+
+def rate_limit(target_group: str) -> None:
+    """限流：保证单群发送间隔不小于配置值"""
+    now = time.time()
+    if target_group in last_send_time:
+        wait = SEND_INTERVAL - (now - last_send_time[target_group])
+        if wait > 0:
+            time.sleep(wait)
+    last_send_time[target_group] = time.time()
+
+
+@app.post("/webhook")
+def webhook():
+    try:
+        data = request.json
+        if not data:
+            logger.warning("收到空的WebHook请求")
+            return "ok"
+
+        # 1. 过滤非群聊消息
+        post_type = data.get("post_type")
+        message_type = data.get("message_type")
+        if post_type != "message" or message_type != "group":
+            return "ok"
+
+        # 2. 解析消息信息
+        group_id = str(data.get("group_id", ""))
+        sender = data.get("sender", {})
+        sender_qq = sender.get("user_id", 0)
+        msg_id = str(data.get("message_id", ""))
+        raw_text = data.get("raw_message", "")
+        message_content = data.get("message", [])
+
+        if not group_id or not msg_id:
+            return "ok"
+
+        # 3. 跳过自己发的消息（防止循环转发）
+        if sender_qq == ROBOT_QQ:
+            logger.debug(f"跳过自身消息: {raw_text[:30]}")
+            return "ok"
+
+        # 4. 不在转发规则的群，跳过
+        if group_id not in FORWARD_RULES:
+            return "ok"
+
+        # 5. 去重
+        if is_duplicate(msg_id):
+            logger.info(f"重复消息，跳过: {raw_text[:30]}")
+            return "ok"
+
+        # 6. 消息过滤（QR码 + 联系方式）
+        if FILTER_CONFIG:
+            blocked, reason = should_filter(message_content, FILTER_CONFIG)
+            if blocked:
+                logger.info(f"[FILTER] 已拦截: 群{group_id} - {reason}")
+                return "ok"
+            elif reason:
+                # log_only 模式：仅记录，不拦截
+                logger.info(f"[FILTER] 仅记录: 群{group_id} - {reason}")
+            else:
+                logger.info(f"[FILTER] 放行: 群{group_id} | 类型={type(message_content).__name__} "
+                            f"| 文本={raw_text[:50]}")
+
+        # 7. 执行转发
+        target_groups = FORWARD_RULES[group_id]
+        for to_group in target_groups:
+            try:
+                rate_limit(to_group)
+                resp = session.post(
+                    f"{LLBOT_API}/send_group_msg",
+                    json={
+                        "group_id": int(to_group),
+                        "message": message_content
+                    },
+                    headers=headers,
+                    timeout=5
+                )
+                resp.raise_for_status()
+                result = resp.json()
+                if result.get("status") == "ok":
+                    logger.info(f"✅ 转发成功: {group_id} → {to_group} | {raw_text[:50]}...")
+                else:
+                    err_msg = result.get("msg", result.get("wording", "未知错误"))
+                    logger.error(f"❌ API处理失败: {group_id} → {to_group} | 错误: {err_msg}")
+
+            except requests.exceptions.ConnectionError:
+                logger.error(f"❌ 连接失败！请检查LLOneBot的HTTP服务是否开启，端口3000是否正常")
+            except requests.exceptions.Timeout:
+                logger.error(f"❌ 转发超时: {group_id} → {to_group}")
+            except Exception as e:
+                logger.error(f"❌ 转发异常: {group_id} → {to_group} | 错误: {str(e)}")
+
+        return "ok"
+
+    except Exception as e:
+        logger.error(f"处理WebHook请求异常: {str(e)}", exc_info=True)
+        return "ok"
+
+
+if __name__ == '__main__':
+    logger.info("=" * 50)
+    logger.info("✅ QQ群转发服务已启动")
+    logger.info(f"📋 WebHook地址: http://127.0.0.1:8080/webhook")
+    logger.info(f"📋 转发规则: {FORWARD_RULES}")
+    logger.info(f"📋 过滤状态: QR码={'启用' if FILTER_CONFIG.get('qrcode',{}).get('enabled') else '关闭'} | 联系方式={'启用' if FILTER_CONFIG.get('contact',{}).get('enabled') else '关闭'} | 模式={'仅日志' if FILTER_CONFIG.get('log_only') else '拦截'}")
+    logger.info("=" * 50)
+    app.run(host="127.0.0.1", port=8080, debug=False, threaded=True)
