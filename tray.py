@@ -1,4 +1,4 @@
-"""QQ消息转发 — 系统托盘管理程序"""
+"""QQ Forward — 系统托盘管理程序"""
 import subprocess
 import sys
 import os
@@ -107,8 +107,10 @@ def create_icon_image(color: str = 'green'):
     }
     c = colors.get(color, colors['green'])
 
-    # 外圈（状态色，3px 宽）
-    draw.ellipse([2, 2, 61, 61], outline=c, width=3)
+    # 外边框（细灰线）
+    draw.ellipse([1, 1, 62, 62], outline=(180, 180, 180, 200), width=1)
+    # 外圈（状态色，8px 宽）
+    draw.ellipse([2, 2, 61, 61], outline=c, width=8)
     # 内圆点（深灰色 #37474F）
     draw.ellipse([13, 13, 50, 50], fill=(55, 71, 79, 255))
     # 高光（左上角半透明白色小圆）
@@ -249,13 +251,13 @@ def monitor_loop(icon, root):
 
         if not any_ok:
             icon.icon = create_icon_image('red')
-            icon.title = 'QQ消息转发 - 服务异常'
+            icon.title = 'QQ Forward - 服务异常'
         elif not all_ok:
             icon.icon = create_icon_image('yellow')
-            icon.title = 'QQ消息转发 - 部分异常'
+            icon.title = 'QQ Forward - 部分异常'
         elif all_ok and not was_ok:
             icon.icon = create_icon_image('green')
-            icon.title = 'QQ消息转发 - 运行中'
+            icon.title = 'QQ Forward - 运行中'
 
         was_ok = all_ok
 
@@ -268,7 +270,7 @@ def setup_tray(root, on_open):
     icon = pystray.Icon(
         'qq_forward',
         create_icon_image('green'),
-        'QQ消息转发 - 运行中',
+        'QQ Forward - 运行中',
         menu=pystray.Menu(
             pystray.MenuItem('打开主面板', lambda: root.after(0, lambda: on_open(root)), default=True),
             pystray.MenuItem('关闭服务', lambda: root.after(0, do_shutdown)),
@@ -288,7 +290,7 @@ def create_desktop_shortcut():
     """在桌面创建指向 start.vbs 的快捷方式，使用圆点图标"""
     try:
         desktop = os.path.join(os.environ['USERPROFILE'], 'Desktop')
-        lnk_path = os.path.join(desktop, 'QQ转发.lnk')
+        lnk_path = os.path.join(desktop, 'QQ Forward.lnk')
 
         # 生成 .ico 图标文件
         ico_path = os.path.join(SCRIPT_DIR, 'app.ico')
@@ -302,7 +304,7 @@ def create_desktop_shortcut():
             f'Set sc = ws.CreateShortcut("{lnk_path}")\r\n'
             f'sc.TargetPath = "{start_vbs}"\r\n'
             f'sc.WorkingDirectory = "{SCRIPT_DIR}"\r\n'
-            f'sc.Description = "QQ消息转发 - 一键启动"\r\n'
+            f'sc.Description = "QQ Forward - 一键启动"\r\n'
             f'sc.IconLocation = "{ico_path}"\r\n'
             f'sc.Save()\r\n'
         )
@@ -345,7 +347,7 @@ if __name__ == '__main__':
 
     # 创建 tk 主窗口
     root = tk.Tk()
-    root.title('QQ消息转发')
+    root.title('QQ Forward')
     root.resizable(True, True)
 
     # 窗口关闭 = 隐藏到托盘

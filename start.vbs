@@ -1,4 +1,4 @@
-' QQ Message Forwarding - One-Click Start
+' QQ Forward - One-Click Start
 ' Double-click to run, auto-elevates to admin
 
 Option Explicit
@@ -95,7 +95,7 @@ WshShell.Run "pythonw " & Chr(34) & trayScript & Chr(34), 0, False
 WScript.Sleep 2000
 MsgBox "Service started!" & vbCrLf & vbCrLf & _
     "Tray icon is now in the notification area." & vbCrLf & _
-    "Right-click the icon to manage the service.", vbInformation, "QQ Message Forwarding"
+    "Right-click the icon to manage the service.", vbInformation, "QQ Forward"
 
 
 ' ===== Helper Functions =====
