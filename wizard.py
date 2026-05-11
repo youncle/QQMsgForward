@@ -1,4 +1,5 @@
 """QQ Forward — 首次运行配置向导"""
+import copy
 import json
 import os
 import sys
@@ -58,7 +59,8 @@ def validate_qq_number(value: str) -> bool:
 
 def generate_config(robot_qq: str, forward_rules: dict, filter_enabled: bool) -> dict:
     """根据向导输入生成完整配置 dict"""
-    import copy
+    if not validate_qq_number(robot_qq):
+        raise ValueError(f'无效的 QQ 号: {robot_qq}')
     cfg = copy.deepcopy(DEFAULT_CONFIG)
     cfg['robot_qq'] = int(robot_qq)
     cfg['forward_rules'] = forward_rules
