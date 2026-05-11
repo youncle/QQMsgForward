@@ -67,7 +67,7 @@ def get_status():
 
 
 def create_icon_image(color: str = 'green'):
-    """创建托盘图标（纯色圆点 64x64）"""
+    """创建托盘图标（聊天气泡+转发箭头，64x64）"""
     img = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     colors = {
@@ -75,7 +75,17 @@ def create_icon_image(color: str = 'green'):
         'red': (244, 67, 54, 255),
         'yellow': (255, 193, 7, 255),
     }
-    draw.ellipse([8, 8, 56, 56], fill=colors.get(color, colors['green']))
+    c = colors.get(color, colors['green'])
+    dark = tuple(max(0, x - 60) for x in c[:3]) + (255,)
+
+    # 聊天气泡主体（圆角矩形）
+    draw.rounded_rectangle([4, 10, 56, 48], radius=10, fill=c)
+    # 气泡尾巴（右下小三角）
+    draw.polygon([(44, 46), (54, 46), (44, 58)], fill=c)
+    # 双箭头图标
+    draw.polygon([(18, 22), (26, 29), (18, 36)], fill=dark)
+    draw.polygon([(28, 22), (36, 29), (28, 36)], fill=dark)
+
     return img
 
 
