@@ -293,3 +293,63 @@
 2026-05-12 01:04:02 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:8080
 2026-05-12 01:04:02 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 01:16:13 - INFO - ==================================================
+2026-05-12 01:16:13 - INFO - ✅ QQ群转发服务已启动
+2026-05-12 01:16:13 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-12 01:16:13 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-12 01:16:13 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-12 01:16:13 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-12 01:16:13 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 01:16:13 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 01:20:58 - INFO - ==================================================
+2026-05-12 01:20:58 - INFO - ✅ QQ群转发服务已启动
+2026-05-12 01:20:58 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-12 01:20:58 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-12 01:20:58 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-12 01:20:58 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-12 01:20:58 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 01:20:58 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 01:23:16 - INFO - 127.0.0.1 - - [12/May/2026 01:23:16] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 01:23:51 - INFO - [FILTER] 放行: 群1079264158 | 类型=list | 文本=几点能到那不行
+2026-05-12 01:23:52 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | 几点能到那不行...
+2026-05-12 01:23:52 - INFO - 127.0.0.1 - - [12/May/2026 01:23:52] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 01:23:52 - INFO - 127.0.0.1 - - [12/May/2026 01:23:52] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 01:25:48 - INFO - ==================================================
+2026-05-12 01:25:48 - INFO - ✅ QQ群转发服务已启动
+2026-05-12 01:25:48 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-12 01:25:48 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-12 01:25:48 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-12 01:25:48 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-12 01:25:48 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 01:25:48 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 01:29:42 - INFO - ==================================================
+2026-05-12 01:29:42 - INFO - ✅ QQ群转发服务已启动
+2026-05-12 01:29:42 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-12 01:29:42 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-12 01:29:42 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-12 01:29:42 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-12 01:29:42 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 01:29:42 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 01:34:21 - INFO - ==================================================
+2026-05-12 01:34:21 - INFO - ✅ QQ群转发服务已启动
+2026-05-12 01:34:21 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-12 01:34:21 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-12 01:34:21 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-12 01:34:21 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-12 01:34:21 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 01:34:21 - INFO - [33mPress CTRL+C to quit[0m

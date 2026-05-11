@@ -9,6 +9,8 @@ import socket
 import tkinter as tk
 from tkinter import ttk
 
+import ctypes
+
 import pystray
 from PIL import Image, ImageDraw
 
@@ -97,7 +99,7 @@ def get_status():
 
 
 def create_icon_image(color: str = 'green'):
-    """创建托盘图标（中性灰圆点+彩色状态外圈，64x64）"""
+    """创建托盘图标（深灰圆点+彩色状态外圈，64x64）"""
     img = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     colors = {
@@ -107,10 +109,8 @@ def create_icon_image(color: str = 'green'):
     }
     c = colors.get(color, colors['green'])
 
-    # 外边框（细灰线）
-    draw.ellipse([1, 1, 62, 62], outline=(180, 180, 180, 200), width=1)
-    # 外圈（状态色，8px 宽）
-    draw.ellipse([2, 2, 61, 61], outline=c, width=8)
+    # 外圈（状态色，3px 宽）
+    draw.ellipse([2, 2, 61, 61], outline=c, width=3)
     # 内圆点（深灰色 #37474F）
     draw.ellipse([13, 13, 50, 50], fill=(55, 71, 79, 255))
     # 高光（左上角半透明白色小圆）
@@ -324,9 +324,26 @@ def create_desktop_shortcut():
 
 
 def _save_icon_file(path: str) -> None:
-    """将托盘图标另存为 .ico 文件"""
+    """将托盘图标另存为 .ico 文件（含 16/32/48 多尺寸）"""
     img = create_icon_image('green')
-    img.save(path, format='ICO')
+    sizes = [(16, 16), (32, 32), (48, 48)]
+    icons = [img.resize(s, Image.LANCZOS) for s in sizes]
+    icons[0].save(path, format='ICO', sizes=sizes, append_images=icons[1:])
+
+
+def _set_taskbar_icon(hwnd: int, ico_path: str) -> None:
+    """通过 Win32 API 设置窗口任务栏/标题栏图标"""
+    try:
+        handle = ctypes.windll.user32.LoadImageW(
+            0, ico_path, 1, 0, 0, 0x00000010
+        )
+        if handle:
+            WM_SETICON = 0x0080
+            ctypes.windll.user32.SendMessageW(hwnd, WM_SETICON, 0, handle)
+            ctypes.windll.user32.SendMessageW(hwnd, WM_SETICON, 1, handle)
+            ctypes.windll.user32.DestroyIcon(handle)
+    except Exception:
+        pass
 
 
 if __name__ == '__main__':
@@ -345,11 +362,27 @@ if __name__ == '__main__':
     if not check_port(FORWARD_PORT):
         print('警告: 转发脚本可能未启动成功（端口 8080 不通）')
 
+    # 声明应用身份（否则 Windows 任务栏显示 pythonw 图标）
+    try:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            'QQLL.OneBot.Forward'
+        )
+    except Exception:
+        pass
+
     # 创建 tk 主窗口
     root = tk.Tk()
     root.withdraw()  # 先隐藏，启动完成后再显示，避免窗口闪现
     root.title('QQ Forward')
     root.resizable(True, True)
+
+    # 设置窗口图标（标题栏 + 任务栏，与托盘图标一致）
+    ico_path = os.path.join(SCRIPT_DIR, 'app.ico')
+    _save_icon_file(ico_path)
+    try:
+        root.iconbitmap(ico_path)
+    except Exception:
+        pass
 
     # 窗口关闭 = 隐藏到托盘
     root.protocol('WM_DELETE_WINDOW', lambda: hide_main_window(root))
@@ -396,6 +429,9 @@ if __name__ == '__main__':
 
     # 启动完成，显示主窗口
     show_main_window(root)
+
+    # 设置任务栏图标（窗口显示后调用，Win32 API 确保生效）
+    _set_taskbar_icon(root.winfo_id(), ico_path)
 
     # 主线程运行 tkinter
     root.mainloop()
