@@ -117,3 +117,124 @@
 2026-05-11 21:47:54 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:8080
 2026-05-11 21:47:54 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 21:55:46 - INFO - ==================================================
+2026-05-11 21:55:46 - INFO - ✅ QQ群转发服务已启动
+2026-05-11 21:55:46 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-11 21:55:46 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-11 21:55:46 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-11 21:55:46 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 21:55:46 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 21:55:46 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 21:55:56 - INFO - [FILTER] 仅记录: 群1079264158 - [联系方式:qq] 271496362
+2026-05-11 21:55:56 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | 271496362...
+2026-05-11 21:55:56 - INFO - 127.0.0.1 - - [11/May/2026 21:55:56] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 21:55:56 - INFO - 127.0.0.1 - - [11/May/2026 21:55:56] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:15:27 - INFO - 127.0.0.1 - - [11/May/2026 22:15:27] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:15:27 - INFO - 127.0.0.1 - - [11/May/2026 22:15:27] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:15:27 - INFO - 127.0.0.1 - - [11/May/2026 22:15:27] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:15:55 - INFO - 127.0.0.1 - - [11/May/2026 22:15:55] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:16:13 - INFO - 127.0.0.1 - - [11/May/2026 22:16:13] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:16:20 - INFO - 127.0.0.1 - - [11/May/2026 22:16:20] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:16:31 - INFO - 127.0.0.1 - - [11/May/2026 22:16:31] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:17:07 - INFO - 127.0.0.1 - - [11/May/2026 22:17:07] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:17:25 - INFO - 127.0.0.1 - - [11/May/2026 22:17:25] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:17:38 - INFO - 127.0.0.1 - - [11/May/2026 22:17:38] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:18:02 - INFO - 127.0.0.1 - - [11/May/2026 22:18:02] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:18:10 - INFO - 127.0.0.1 - - [11/May/2026 22:18:10] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:18:53 - INFO - 127.0.0.1 - - [11/May/2026 22:18:53] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:19:04 - INFO - 127.0.0.1 - - [11/May/2026 22:19:04] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:19:16 - INFO - 127.0.0.1 - - [11/May/2026 22:19:16] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:20:53 - INFO - 127.0.0.1 - - [11/May/2026 22:20:53] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:21:30 - INFO - 127.0.0.1 - - [11/May/2026 22:21:30] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:22:35 - INFO - 127.0.0.1 - - [11/May/2026 22:22:35] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:22:54 - INFO - 127.0.0.1 - - [11/May/2026 22:22:54] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:23:00 - INFO - 127.0.0.1 - - [11/May/2026 22:23:00] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:23:52 - INFO - 127.0.0.1 - - [11/May/2026 22:23:52] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:24:22 - INFO - 127.0.0.1 - - [11/May/2026 22:24:22] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:25:00 - INFO - 127.0.0.1 - - [11/May/2026 22:25:00] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:26:43 - INFO - 127.0.0.1 - - [11/May/2026 22:26:43] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:28:04 - INFO - 127.0.0.1 - - [11/May/2026 22:28:04] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:28:07 - INFO - 127.0.0.1 - - [11/May/2026 22:28:07] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:29:58 - INFO - 127.0.0.1 - - [11/May/2026 22:29:58] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:30:49 - INFO - 127.0.0.1 - - [11/May/2026 22:30:49] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:31:03 - INFO - 127.0.0.1 - - [11/May/2026 22:31:03] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:31:17 - INFO - 127.0.0.1 - - [11/May/2026 22:31:17] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:33:42 - INFO - 127.0.0.1 - - [11/May/2026 22:33:42] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:37:09 - INFO - ==================================================
+2026-05-11 22:37:09 - INFO - ✅ QQ群转发服务已启动
+2026-05-11 22:37:09 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-11 22:37:09 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-11 22:37:09 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-11 22:37:09 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 22:37:09 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 22:37:09 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 22:37:26 - INFO - [FILTER] 放行: 群1079264158 | 类型=list | 文本=你晚上好
+2026-05-11 22:37:26 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | 你晚上好...
+2026-05-11 22:37:26 - INFO - 127.0.0.1 - - [11/May/2026 22:37:26] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:37:26 - INFO - 127.0.0.1 - - [11/May/2026 22:37:26] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:51:50 - INFO - 127.0.0.1 - - [11/May/2026 22:51:50] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:52:56 - INFO - ==================================================
+2026-05-11 22:52:56 - INFO - ✅ QQ群转发服务已启动
+2026-05-11 22:52:56 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-11 22:52:56 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-11 22:52:56 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-11 22:52:56 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 22:52:56 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 22:52:56 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 22:53:16 - INFO - [FILTER] 放行: 群1079264158 | 类型=list | 文本=今日两市总成交3.54 万亿元，较昨日的 3.05 万亿元大幅放量，显著高于 60 日平均成交额 2
+2026-05-11 22:53:16 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | 今日两市总成交3.54 万亿元，较昨日的 3.05 万亿元大幅放量，显著高于 60 日平均成交额 2...
+2026-05-11 22:53:16 - INFO - 127.0.0.1 - - [11/May/2026 22:53:16] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 22:53:16 - INFO - 127.0.0.1 - - [11/May/2026 22:53:16] "POST /webhook HTTP/1.1" 200 -
+2026-05-11 23:19:34 - INFO - ==================================================
+2026-05-11 23:19:34 - INFO - ✅ QQ群转发服务已启动
+2026-05-11 23:19:34 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-11 23:19:34 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-11 23:19:34 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-11 23:19:34 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 23:19:34 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 23:19:34 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 23:21:28 - INFO - ==================================================
+2026-05-11 23:21:28 - INFO - ✅ QQ群转发服务已启动
+2026-05-11 23:21:28 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-11 23:21:28 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-11 23:21:28 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-11 23:21:28 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-11 23:21:28 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-11 23:21:28 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 00:21:01 - INFO - ==================================================
+2026-05-12 00:21:01 - INFO - ✅ QQ群转发服务已启动
+2026-05-12 00:21:01 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-12 00:21:01 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-12 00:21:01 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-12 00:21:01 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-12 00:21:01 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 00:21:01 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 00:29:45 - INFO - ==================================================
+2026-05-12 00:29:45 - INFO - ✅ QQ群转发服务已启动
+2026-05-12 00:29:45 - INFO - 📋 WebHook地址: http://127.0.0.1:8080/webhook
+2026-05-12 00:29:45 - INFO - 📋 转发规则: {'1079264158': ['1080631149'], '107054156': ['702961941']}
+2026-05-12 00:29:45 - INFO - 📋 过滤状态: QR码=启用 | 联系方式=启用 | 模式=仅日志
+2026-05-12 00:29:45 - INFO - ==================================================
+ * Serving Flask app 'qq-message-forward'
+ * Debug mode: off
+2026-05-12 00:29:45 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 00:29:45 - INFO - [33mPress CTRL+C to quit[0m

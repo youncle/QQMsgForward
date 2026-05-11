@@ -1,0 +1,78 @@
+# OpenSpec 绑定 Superpowers 固化工作流配置
+# 作用：强制每一步规格生成必须依赖Superpowers标准技能，固化工作流，杜绝随意开发
+name: spec-tdd-driven
+version: 1
+description: 官方Specs规格基线 + Superpowers全流程强制管控 + TDD驱动开发 + 子代理并行 + 代码审查闭环
+artifacts:
+  # 阶段1：需求提案 - 绑定头脑风暴技能
+  - id: proposal
+    generates: proposal.md
+    description: 需求澄清与方案提案文档，包含需求分析、多方案对比、最终落地方案
+    template: proposal.md
+    instruction: |
+      必须优先读取并严格遵循 superpowers/skills/brainstorming/SKILL.md 全部规则
+      本次产出为正式需求提案，必须满足以下硬性要求：
+      1. 彻底澄清所有需求歧义，逐一确认用户核心诉求、边界场景、兼容要求
+      2. 至少输出3套实现方案，完成优劣势、成本、风险对比，明确最终落地方案
+      3. 明确功能适用场景、禁用场景、异常场景、兼容范围
+      4. 输出完整需求基线，无模糊描述、无待定问题、无遗漏场景
+      5. 所有内容以可落地、可验收、可追溯为唯一标准
+    requires: []
+
+  # 阶段2：方案设计 - 绑定方案规划技能
+  - id: design
+    generates: design.md
+    description: 技术方案设计文档，包含架构、接口、数据结构、风险与执行阶段规划
+    template: design.md
+    instruction: |
+      必须优先读取并严格遵循 superpowers/skills/writing-plans/SKILL.md 全部规则
+      本次产出为技术设计方案，必须满足以下硬性要求：
+      1. 零上下文友好，所有设计细节、逻辑、依赖、规则完整记录
+      2. 明确整体架构、模块拆分、接口定义、数据结构、依赖关系
+      3. 梳理潜在风险、兼容问题、性能隐患、异常处理方案
+      4. 划分执行阶段，区分串行任务、可并行任务，明确执行顺序
+      5. 预留检查节点、测试节点、回滚方案
+    requires:
+      - proposal
+
+  # 阶段3：任务拆解 - 绑定TDD开发技能
+  - id: tasks
+    generates: tasks.md
+    description: TDD开发任务清单，包含原子任务、执行步骤、验收契约
+    template: tasks.md
+    instruction: |
+      必须优先读取并严格遵循 superpowers/skills/test-driven-development/SKILL.md 全部规则
+      本次产出为可执行开发任务清单，必须满足以下硬性要求：
+      1. 严格遵循 TDD 开发理念，所有任务优先定义测试标准
+      2. 每条任务必须包含：唯一任务描述、精准文件路径、详细执行步骤、完整验收契约
+      3. 验收契约统一使用 MUST/SHALL 规范，明确强制要求与预期效果
+      4. 任务粒度适中，单一任务只做一件事，避免超大任务、模糊任务
+      5. 所有任务闭环，无遗漏、无重复、无无效任务
+    requires:
+      - design
+
+# 开发执行阶段（Superpowers 全强制管控）
+apply:
+  requires:
+    - proposal
+    - design
+    - tasks
+  tracks: tasks.md
+  instruction: |
+    必须优先读取 superpowers/skills/subagent-driven-development/SKILL.md 与 superpowers/skills/code-reviewer/SKILL.md
+    全流程执行强制规则：
+    1. 多任务场景必须先产出 plan.md 阶段规划，再启动子代理并行开发
+    2. 独立可拆分任务，启用子代理并行开发，提升效率
+    3. 主代理统一管控任务状态、文档更新、代码整合
+    4. 所有开发完成后，必须执行独立代码审查，校验代码质量、规范、安全性
+    5. 所有改动必须对齐 proposal.md、design.md、tasks.md、plan.md 规格文档
+    6. 开发完成后执行全维度验证，输出验证结果，无问题方可进入归档环节
+
+# 归档校验规则
+archive:
+  instruction: |
+    归档前强制校验：
+    1. /opsx:verify 规格校验完全通过
+    2. tasks.md 所有任务100%完成勾选
+    3. 代码、测试、文档、设计、执行计划完全对齐无偏差
+    4. 无遗留风险问题、无未完成迭代、无临时硬编码

@@ -39,7 +39,9 @@
       "Bash(pip3 show *)",
       "Bash(git -C D:/DevVProgram/QQLLOneBotCLI add qq-message-forward.py)",
       "Bash(git -C D:/DevVProgram/QQLLOneBotCLI commit -m 'fix\\(forward\\): reconfigure stderr to utf-8 for correct log encoding')",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Read(//c/Users/Smile Uncle/.claude/plugins/cache/superpowers-marketplace/superpowers/5.1.0/skills/openspec/**)",
+      "Bash(bash \"C:\\\\Users\\\\Smile Uncle\\\\.claude\\\\plugins\\\\cache\\\\superpowers-marketplace\\\\superpowers\\\\5.1.0\\\\skills\\\\brainstorming\\\\scripts\\\\start-server.sh\" --project-dir \"D:\\\\DevVProgram\\\\QQLLOneBotCLI\")"
     ]
   },
   "enabledPlugins": {

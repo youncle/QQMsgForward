@@ -4,6 +4,7 @@ import sys
 import os
 import time
 import threading
+import json
 import socket
 import tkinter as tk
 from tkinter import ttk
@@ -23,6 +24,29 @@ LOG_FILE = os.path.join(SCRIPT_DIR, 'forward.log')
 # 端口
 LLBOT_PORT = 3000
 FORWARD_PORT = 8080
+
+# 窗口状态文件
+WINDOW_STATE_FILE = os.path.join(SCRIPT_DIR, '.window_state.json')
+_save_timer_id = None
+
+
+def load_window_geometry() -> str | None:
+    """读取保存的窗口几何信息"""
+    try:
+        with open(WINDOW_STATE_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return data.get('geometry')
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+
+
+def save_window_geometry(geometry: str) -> None:
+    """保存窗口几何信息"""
+    try:
+        with open(WINDOW_STATE_FILE, 'w', encoding='utf-8') as f:
+            json.dump({'geometry': geometry}, f)
+    except OSError:
+        pass
 
 
 forward_process = None
@@ -73,7 +97,7 @@ def get_status():
 
 
 def create_icon_image(color: str = 'green'):
-    """创建托盘图标（聊天气泡+转发箭头，64x64）"""
+    """创建托盘图标（中性灰圆点+彩色状态外圈，64x64）"""
     img = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     colors = {
@@ -82,15 +106,13 @@ def create_icon_image(color: str = 'green'):
         'yellow': (255, 193, 7, 255),
     }
     c = colors.get(color, colors['green'])
-    dark = tuple(max(0, x - 60) for x in c[:3]) + (255,)
 
-    # 聊天气泡主体（圆角矩形）
-    draw.rounded_rectangle([4, 10, 56, 48], radius=10, fill=c)
-    # 气泡尾巴（右下小三角）
-    draw.polygon([(44, 46), (54, 46), (44, 58)], fill=c)
-    # 双箭头图标
-    draw.polygon([(18, 22), (26, 29), (18, 36)], fill=dark)
-    draw.polygon([(28, 22), (36, 29), (28, 36)], fill=dark)
+    # 外圈（状态色，3px 宽）
+    draw.ellipse([2, 2, 61, 61], outline=c, width=3)
+    # 内圆点（深灰色 #37474F）
+    draw.ellipse([13, 13, 50, 50], fill=(55, 71, 79, 255))
+    # 高光（左上角半透明白色小圆）
+    draw.ellipse([18, 18, 28, 28], fill=(255, 255, 255, 50))
 
     return img
 
@@ -263,13 +285,14 @@ def setup_tray(root, on_open):
 
 
 def create_desktop_shortcut():
-    """首次运行时在桌面创建指向 start.vbs 的快捷方式"""
+    """在桌面创建指向 start.vbs 的快捷方式，使用圆点图标"""
     try:
         desktop = os.path.join(os.environ['USERPROFILE'], 'Desktop')
         lnk_path = os.path.join(desktop, 'QQ转发.lnk')
 
-        if os.path.exists(lnk_path):
-            return
+        # 生成 .ico 图标文件
+        ico_path = os.path.join(SCRIPT_DIR, 'app.ico')
+        _save_icon_file(ico_path)
 
         start_vbs = os.path.join(SCRIPT_DIR, 'start.vbs')
         tmp_vbs = os.path.join(SCRIPT_DIR, '.create_shortcut.vbs')
@@ -280,6 +303,7 @@ def create_desktop_shortcut():
             f'sc.TargetPath = "{start_vbs}"\r\n'
             f'sc.WorkingDirectory = "{SCRIPT_DIR}"\r\n'
             f'sc.Description = "QQ消息转发 - 一键启动"\r\n'
+            f'sc.IconLocation = "{ico_path}"\r\n'
             f'sc.Save()\r\n'
         )
 
@@ -295,6 +319,12 @@ def create_desktop_shortcut():
             pass
     except Exception:
         pass
+
+
+def _save_icon_file(path: str) -> None:
+    """将托盘图标另存为 .ico 文件"""
+    img = create_icon_image('green')
+    img.save(path, format='ICO')
 
 
 if __name__ == '__main__':
@@ -316,7 +346,6 @@ if __name__ == '__main__':
     # 创建 tk 主窗口
     root = tk.Tk()
     root.title('QQ消息转发')
-    root.geometry('520x500')
     root.resizable(True, True)
 
     # 窗口关闭 = 隐藏到托盘
@@ -344,6 +373,20 @@ if __name__ == '__main__':
 
     # 启动时隐藏
     root.withdraw()
+
+    # 读取保存的窗口尺寸
+    saved_geo = load_window_geometry()
+    root.geometry(saved_geo or '1100x750')
+
+    # 绑定窗口尺寸变更保存（debounce 500ms）
+    def _on_configure(event):
+        global _save_timer_id
+        if root.wm_state() != 'normal' or event.widget is not root:
+            return
+        if _save_timer_id:
+            root.after_cancel(_save_timer_id)
+        _save_timer_id = root.after(500, lambda: save_window_geometry(root.geometry()))
+    root.bind('<Configure>', _on_configure)
 
     # 启动托盘
     icon = setup_tray(root, show_main_window)

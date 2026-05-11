@@ -1,0 +1,175 @@
+[info] | 2026-05-11 21:55:40 | LLBot 7.11.4
+
+[info] | 2026-05-11 21:55:40 | Webui 服务器已启动 127.0.0.1:3080
+
+[info] | 2026-05-11 21:55:44 | OneBot V11 HTTP server started 127.0.0.1:3000
+
+[info] | 2026-05-11 21:55:44 | OneBot V11 HTTP SSE started 127.0.0.1:3000/_events
+
+[info] | 2026-05-11 21:55:56 | [收-群] 00-信息源(1079264158) 😄(85039678)：
+271496362
+
+[info] | 2026-05-11 21:55:56 | 收到 HTTP 请求 http://127.0.0.1:3000/send_group_msg { group_id: 1080631149, message: [ { type: 'text', data: { text: '271496362' } } ] }
+
+[info] | 2026-05-11 21:55:56 | [发-群] 11-目标群(1080631149) 小小贝壳(2776992588)：
+271496362
+
+[info] | 2026-05-11 21:55:56 | 消息发送 { chatType: 2, peerUid: '1080631149', guildId: '' }
+
+[info] | 2026-05-11 21:55:56 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.group 200
+
+[info] | 2026-05-11 21:55:56 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:15:27 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:15:27 | [发-私] 逸风(271496362)：
+朝暮
+
+[info] | 2026-05-11 22:15:27 | 收到好友添加消息 u_ko-iIWgVn2vKY74MxpmPzw
+
+[info] | 2026-05-11 22:15:27 | [收-私] 逸风(271496362)：
+我们已成功添加为好友，现在可以开始聊天啦～
+
+[info] | 2026-05-11 22:15:27 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.friend_add 200
+
+[info] | 2026-05-11 22:15:27 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:15:55 | [收-私] 逸风(271496362)：
+你好
+
+[info] | 2026-05-11 22:15:55 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:16:13 | [发-私] 逸风(271496362)：
+你好 我这个是看不到直播的哦
+
+[info] | 2026-05-11 22:16:13 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:16:20 | [发-私] 逸风(271496362)：
+你介意嘛
+
+[info] | 2026-05-11 22:16:20 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:16:31 | [发-私] 逸风(271496362)：
+只有信息那些
+
+[info] | 2026-05-11 22:16:31 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:17:07 | [收-私] 逸风(271496362)：
+录播也不行么
+
+[info] | 2026-05-11 22:17:07 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:17:25 | [发-私] 逸风(271496362)：
+是的 目前没有的
+
+[info] | 2026-05-11 22:17:25 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:17:38 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:17:38 | [收-私] 逸风(271496362)：
+他的录播不是就一个链接和一个密码么
+
+[info] | 2026-05-11 22:18:02 | [发-私] 逸风(271496362)：
+私享会的 是个人手机登录
+
+[info] | 2026-05-11 22:18:02 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:18:10 | [收-私] 逸风(271496362)：
+哦
+
+[info] | 2026-05-11 22:18:10 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:18:53 | [收-私] 逸风(271496362)：
+一个月多少钱
+
+[info] | 2026-05-11 22:18:53 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:19:04 | [发-私] 逸风(271496362)：
+55的
+
+[info] | 2026-05-11 22:19:04 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:19:16 | [收-私] 逸风(271496362)：
+怎么付
+
+[info] | 2026-05-11 22:19:16 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:20:53 | [发-私] 逸风(271496362)：
+[图片]DB6EAFAB9A5019530062E31AF2F196F1.jpg
+
+[info] | 2026-05-11 22:20:53 | 发包获取rkey成功, private:&rkey=CAMSMBY4mFEFZuWr4WjWauhXTNS31321i_mn1kM0WTpeMNGgIVb_FGMqvuuzEy214nJshg, group:&rkey=CAESMO-KwgrWXZBC5fxesI5D_GNCekgxKEJOAvn82fG5hZJOJZyGjEAbjs1yHIn3gakAeQ
+
+[info] | 2026-05-11 22:20:53 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:21:30 | [发-私] 逸风(271496362)：
+不行的话你加wv红包也行
+
+[info] | 2026-05-11 22:21:30 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:22:35 | [收-私] 逸风(271496362)：
+付了
+
+[info] | 2026-05-11 22:22:35 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:22:54 | [发-私] 逸风(271496362)：
+[卡片]
+
+[info] | 2026-05-11 22:22:54 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:23:00 | 收到新人被邀请进群消息 { busiType: '1', busiId: '10145', c2cType: 0, serviceType: 0, ctrlFlag: 7, content: '<gtip align="center"><qq uin="u_97tmW0mZmrPn2rIjZuWMIg" col="3" jp="2776992588" /><nor txt="邀请"/><qq uin="u_ko-iIWgVn2vKY74MxpmPzw" col="3" jp="271496362" /> <nor txt="加入了群聊。"/> </gtip>', templId: '10179', seqId: '485586032', templParam: Map(2) { 'invitor' => '2776992588', 'invitee' => '271496362' }, pbReserv: { '0': 56, '1': 1, '2': 80, '3': 1 }, members: Map(2) { 'u_97tmW0mZmrPn2rIjZuWMIg' => '小小贝壳', 'u_ko-iIWgVn2vKY74MxpmPzw' => '逸风' } }
+
+[info] | 2026-05-11 22:23:00 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_increase 200
+
+[info] | 2026-05-11 22:23:52 | [收-私] 逸风(271496362)：
+票池还有近期的操作消息麻烦发一下
+
+[info] | 2026-05-11 22:23:52 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:24:22 | [收-私] 逸风(271496362)：
+你搞美股么
+
+[info] | 2026-05-11 22:24:22 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:25:00 | [发-私] 逸风(271496362)：
+里面有记录可以看下
+
+[info] | 2026-05-11 22:25:00 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:26:43 | [收-私] 5月11(271496362)：
+在哪看，群里的看不到哦
+
+[info] | 2026-05-11 22:26:43 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:28:04 | [发-私] 5月11(271496362)：
+[图片]5E21BE8548A91660A84363485773DD00.jpg
+
+[info] | 2026-05-11 22:28:04 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:28:07 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:28:07 | [发-私] 5月11(271496362)：
+这个呢
+
+[info] | 2026-05-11 22:29:58 | [收-私] 5月11(271496362)：
+群里一条信息都没有，进群前的记录都看不到
+
+[info] | 2026-05-11 22:29:58 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+
+[info] | 2026-05-11 22:30:49 | 有群成员被踢 { groupCode: 702961941, memberUid: 'u_ko-iIWgVn2vKY74MxpmPzw', type: 131, adminUid: '\n&\n\x18u_97tmW0mZmrPn2rIjZuWMIg\x10\x06\x1A\x06������ \x00' }
+
+[info] | 2026-05-11 22:30:49 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_decrease 200
+
+[info] | 2026-05-11 22:31:03 | [发-私] 5月11(271496362)：
+[卡片]
+
+[info] | 2026-05-11 22:31:03 | HTTP 事件上报: http://127.0.0.1:8080/webhook message_sent.undefined 200
+
+[info] | 2026-05-11 22:31:17 | 收到新人被邀请进群消息 { busiType: '1', busiId: '10146', c2cType: 0, serviceType: 0, ctrlFlag: 7, content: '<gtip align="center"><qq uin="u_97tmW0mZmrPn2rIjZuWMIg" col="3" jp="2776992588" /><nor txt="邀请"/><qq uin="u_ko-iIWgVn2vKY74MxpmPzw" col="3" jp="271496362" /> <nor txt="加入了群聊，并附带了10条聊天记录。"/> </gtip>', templId: '10180', seqId: '106544760', templParam: Map(3) { 'invitor' => '2776992588', 'invitee' => '271496362', 'msg_num' => '10' }, pbReserv: { '0': 56, '1': 1, '2': 80, '3': 1 }, members: Map(2) { 'u_97tmW0mZmrPn2rIjZuWMIg' => '小小贝壳', 'u_ko-iIWgVn2vKY74MxpmPzw' => '5月11' } }
+
+[info] | 2026-05-11 22:31:17 | HTTP 事件上报: http://127.0.0.1:8080/webhook notice.group_increase 200
+
+[info] | 2026-05-11 22:33:42 | [收-私] 5月11(271496362)：
+可以了
+
+[info] | 2026-05-11 22:33:42 | HTTP 事件上报: http://127.0.0.1:8080/webhook message.private 200
+

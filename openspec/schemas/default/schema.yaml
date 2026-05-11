@@ -1,0 +1,166 @@
+name: default
+version: 1
+description: 官方Specs规格基线 + Superpowers全流程强制管控 + TDD驱动开发 + 子代理并行 + 代码审查闭环
+artifacts:
+  # 阶段1：需求提案（Superpowers brainstorm 强制驱动）
+  - id: proposal
+    generates: proposal.md
+    description: 需求澄清与方案提案文档，明确变更动因、改动范围、待创建/修改的业务能力清单
+    template: proposal.md
+    instruction: |
+      必须优先读取并严格遵循 superpowers/skills/brainstorming/SKILL.md 全部规则
+      本次产出为正式需求提案，必须满足 Superpowers  brainstorm 强制规范 + 官方提案标准：
+
+      【Superpowers硬性门禁】
+      1. 彻底澄清所有需求歧义，逐一确认用户核心诉求、边界场景、兼容要求，无模糊待定项
+      2. 至少输出3套实现方案，完成优劣势、成本、风险对比，明确最终落地方案
+      3. 明确功能适用场景、禁用场景、异常场景、兼容范围，锁定完整需求基线
+
+      【OpenSpec官方提案规范】
+      Create the proposal document that establishes WHY this change is needed.
+      Sections:
+      - **Why**: 1-2 sentences on the problem or opportunity. What problem does this solve? Why now?
+      - **What Changes**: Bullet list of changes. Be specific about new capabilities, modifications, or removals. Mark breaking changes with **BREAKING**.
+      - **Capabilities**: Identify which specs will be created or modified:
+        - **New Capabilities**: List capabilities being introduced. Each becomes a new `specs/<name>/spec.md`. Use kebab-case names (e.g., `user-auth`, `data-export`).
+        - **Modified Capabilities**: List existing capabilities whose REQUIREMENTS are changing. Only include if spec-level behavior changes (not just implementation details). Each needs a delta spec file. Check `openspec/specs/` for existing spec names. Leave empty if no requirement changes.
+      - **Impact**: Affected code, APIs, dependencies, or systems.
+
+      IMPORTANT: The Capabilities section is critical. It creates the contract between proposal and specs phases. Research existing specs before filling this in.
+      Each capability listed here will need a corresponding spec file.
+      Keep it concise (1-2 pages). Focus on the "why" not the "how" - implementation details belong in design.md.
+      This is the foundation - specs, design, and tasks all build on this.
+    requires: []
+
+  # 阶段2：官方永久规格库（完整原生Specs能力，增量变更、多能力拆分）
+  - id: specs
+    generates: specs/**/*.md
+    description: 系统永久业务规格基线，定义系统WHAT行为、标准化需求、可测试场景、验收契约
+    template: spec.md
+    instruction: |
+      Create specification files that define WHAT the system should do.
+      Must strictly follow OpenSpec official spec standard, support incremental delta update.
+
+      Create one spec file per capability listed in the proposal's Capabilities section.
+      - New capabilities: use the exact kebab-case name from the proposal (specs/<capability>/spec.md).
+      - Modified capabilities: use the existing spec folder name from openspec/specs/<capability>/ when creating the delta spec at specs/<capability>/spec.md.
+
+      Delta operations (use ## headers):
+      - **ADDED Requirements**: New capabilities
+      - **MODIFIED Requirements**: Changed behavior - MUST include full updated content
+      - **REMOVED Requirements**: Deprecated features - MUST include **Reason** and **Migration**
+      - **RENAMED Requirements**: Name changes only - use FROM:/TO: format
+
+      Format requirements:
+      - Each requirement: `### Requirement: <name>` followed by description
+      - Use SHALL/MUST for normative requirements (avoid should/may)
+      - Each scenario: `#### Scenario: <name>` with WHEN/THEN format
+      - **CRITICAL**: Scenarios MUST use exactly 4 hashtags (`####`). Using 3 hashtags or bullets will fail silently.
+      - Every requirement MUST have at least one scenario.
+
+      MODIFIED requirements workflow:
+      1. Locate the existing requirement in openspec/specs/<capability>/spec.md
+      2. Copy the ENTIRE requirement block (from `### Requirement:` through all scenarios)
+      3. Paste under `## MODIFIED Requirements` and edit to reflect new behavior
+      4. Ensure header text matches exactly (whitespace-insensitive)
+
+      Common pitfall: Using MODIFIED with partial content loses detail at archive time.
+      If adding new concerns without changing existing behavior, use ADDED instead.
+      Specs should be testable - each scenario is a potential test case.
+    requires:
+      - proposal
+
+  # 阶段3：技术方案设计（Superpowers writing-plans 强制驱动）
+  - id: design
+    generates: design.md
+    description: 技术实现方案文档，包含架构决策、阶段规划、串行/并行策略、风险与迁移方案
+    template: design.md
+    instruction: |
+      必须优先读取并严格遵循 superpowers/skills/writing-plans/SKILL.md 全部规则
+      本次产出为技术设计方案，必须满足 Superpowers 规划规范 + 官方设计标准：
+
+      【Superpowers硬性门禁】
+      1. 零上下文友好，所有设计细节、逻辑、依赖、规则完整记录
+      2. 明确整体架构、模块拆分、接口定义、数据结构、依赖关系
+      3. 梳理潜在风险、兼容问题、性能隐患、异常处理方案
+      4. 强制划分执行阶段，严格区分串行任务、可并行任务，明确执行依赖顺序
+      5. 预留阶段检查节点、测试节点、线上回滚方案，支撑子代理并行开发
+
+      【OpenSpec官方设计规范】
+      Create the design document that explains HOW to implement the change.
+      When to include design.md (create only if any apply):
+      - Cross-cutting change (multiple services/modules) or new architectural pattern
+      - New external dependency or significant data model changes
+      - Security, performance, or migration complexity
+      - Ambiguity that benefits from technical decisions before coding
+
+      Sections:
+      - **Context**: Background, current state, constraints, stakeholders
+      - **Goals / Non-Goals**: What this design achieves and explicitly excludes
+      - **Decisions**: Key technical choices with rationale (why X over Y?). Include alternatives considered for each decision.
+      - **Risks / Trade-offs**: Known limitations, things that could go wrong. Format: [Risk] → Mitigation
+      - **Migration Plan**: Steps to deploy, rollback strategy (if applicable)
+      - **Open Questions**: Outstanding decisions or unknowns to resolve
+
+      Focus on architecture and approach, not line-by-line implementation.
+      Reference the proposal for motivation and specs for requirements.
+      Good design docs explain the "why" behind technical decisions.
+    requires:
+      - specs
+
+  # 阶段4：TDD任务拆解（Superpowers TDD 强制驱动）
+  - id: tasks
+    generates: tasks.md
+    description: TDD原子开发任务清单，带标准化验收契约、可追踪、可验收、可闭环
+    template: tasks.md
+    instruction: |
+      必须优先读取并严格遵循 superpowers/skills/test-driven-development/SKILL.md 全部规则
+      本次产出必须满足 TDD 强制规范 + 官方任务标准：
+
+      【Superpowers硬性门禁】
+      1. 严格遵循 TDD 核心准则：无失败测试、不写业务代码，强制 RED-GREEN-REFACTOR 循环
+      2. 每条任务必须标注精准文件路径、完整执行步骤、MUST/SHALL 验收契约
+      3. 任务粒度原子化，单一任务只做一件事，无模糊、无超大任务
+      4. 所有任务必须可自测、可验收、可闭环，杜绝无效任务
+
+      【OpenSpec官方任务规范】
+      Create the task list that breaks down the implementation work.
+      **IMPORTANT: Follow the template below exactly.** The apply phase parses checkbox format to track progress. Tasks not using `- [ ]` won't be tracked.
+      Guidelines:
+      - Group related tasks under ## numbered headings
+      - Each task MUST be a checkbox: `- [ ] X.Y Task description`
+      - Tasks should be small enough to complete in one session
+      - Order tasks by dependency (what must be done first?)
+
+      Reference specs for what needs to be built, design for how to build it.
+      Each task should be verifiable - you know when it's done.
+    requires:
+      - specs
+      - design
+
+# 开发执行阶段（Superpowers 全强制管控）
+apply:
+  requires:
+    - proposal
+    - design
+    - tasks
+  tracks: tasks.md
+  instruction: |
+    必须优先读取 superpowers/skills/subagent-driven-development/SKILL.md 与 superpowers/skills/code-reviewer/SKILL.md
+    严格执行全流程强制规则：
+    1. 多任务、多模块迭代必须先产出 plan.md 阶段规划，明确串行/并行节奏，再启动子代理并行开发
+    2. 独立无依赖任务启用多子代理并行执行，主代理统一管控任务状态、文档更新、代码整合、冲突修复
+    3. 严格遵循 TDD 开发流程，先测试后实现，禁止裸写业务代码
+    4. 所有开发完成后，必须执行独立代码审查，校验代码规范、性能、安全性、业务对齐性
+    5. 所有代码改动必须严格对齐 proposal.md、specs规格、design.md、tasks.md、plan.md 所有文档
+    6. 开发收尾必须执行全维度验证（单元测试/构建校验/业务场景/异常覆盖），无问题方可进入归档
+
+# 归档校验阶段（最终门禁）
+archive:
+  instruction: |
+    归档前强制全量校验，任意不满足禁止归档：
+    1. /opsx:verify 规格校验完全通过，无规格冲突、无缺失、无偏差
+    2. tasks.md 所有任务 100% 完成勾选，无遗留未完成项
+    3. 业务规格、技术设计、落地代码、测试用例、执行计划完全对齐
+    4. 无临时硬编码、无注释遗留逻辑、无未修复风险问题
+    5. 新增/修改规格已完整沉淀至全局 openspec/specs 基线库，完成版本溯源
