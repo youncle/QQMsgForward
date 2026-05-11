@@ -8,13 +8,10 @@ import socket
 import tkinter as tk
 from tkinter import ttk
 import tkinter.messagebox as tkmb
-import ctypes
-from ctypes import wintypes
-
 import pystray
 from PIL import Image, ImageDraw
 
-import settings as settings_mod
+import settings
 
 # 路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
