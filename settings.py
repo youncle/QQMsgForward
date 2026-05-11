@@ -4,7 +4,9 @@ import os
 import tkinter as tk
 from tkinter import ttk
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+from wizard import get_base_dir
+
+SCRIPT_DIR = get_base_dir()
 CONFIG_PATH = os.path.join(SCRIPT_DIR, 'config.json')
 
 
