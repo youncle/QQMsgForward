@@ -72,8 +72,6 @@ def get_status():
     return llbot_ok, forward_ok
 
 
-
-
 def create_icon_image(color: str = 'green'):
     """创建托盘图标（聊天气泡+转发箭头，64x64）"""
     img = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
