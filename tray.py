@@ -321,6 +321,10 @@ if __name__ == '__main__':
     # 窗口关闭 = 隐藏到托盘
     root.protocol('WM_DELETE_WINDOW', lambda: hide_main_window(root))
 
+    # Tab 标签页内边距
+    style = ttk.Style()
+    style.configure('TNotebook.Tab', padding=(20, 5))
+
     # Notebook 选项卡
     notebook = ttk.Notebook(root, padding=5)
     notebook.pack(fill='both', expand=True, padx=5, pady=5)
