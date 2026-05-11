@@ -321,7 +321,7 @@ def setup_tray(root, on_open):
         create_icon_image('green'),
         'QQ消息转发 - 运行中',
         menu=pystray.Menu(
-            pystray.MenuItem('打开主面板', lambda: root.after(0, lambda: on_open(root))),
+            pystray.MenuItem('打开主面板', lambda: root.after(0, lambda: on_open(root)), default=True),
             pystray.MenuItem('关闭服务', lambda: root.after(0, do_shutdown)),
         )
     )
