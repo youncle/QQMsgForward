@@ -2,6 +2,7 @@ from flask import Flask, request
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import sys
 import time
 import logging
 import json
@@ -22,6 +23,9 @@ LLBOT_TOKEN = config.get('llbot_token', '')
 DUPLICATE_WINDOW = config['forward']['duplicate_window']
 SEND_INTERVAL = config['forward']['send_interval']
 FILTER_CONFIG = config.get('filter', {})
+
+# 确保 stderr 输出 UTF-8，与日志文件编码一致
+sys.stderr.reconfigure(encoding='utf-8')
 
 # 初始化日志
 logging.basicConfig(
