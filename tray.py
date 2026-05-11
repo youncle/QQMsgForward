@@ -338,6 +338,41 @@ def setup_tray(root, on_open):
     return icon
 
 
+def create_desktop_shortcut():
+    """首次运行时在桌面创建指向 start.vbs 的快捷方式"""
+    try:
+        desktop = os.path.join(os.environ['USERPROFILE'], 'Desktop')
+        lnk_path = os.path.join(desktop, 'QQ转发.lnk')
+
+        if os.path.exists(lnk_path):
+            return
+
+        start_vbs = os.path.join(SCRIPT_DIR, 'start.vbs')
+        tmp_vbs = os.path.join(SCRIPT_DIR, '.create_shortcut.vbs')
+
+        vbs_code = (
+            f'Set ws = CreateObject("WScript.Shell")\r\n'
+            f'Set sc = ws.CreateShortcut("{lnk_path}")\r\n'
+            f'sc.TargetPath = "{start_vbs}"\r\n'
+            f'sc.WorkingDirectory = "{SCRIPT_DIR}"\r\n'
+            f'sc.Description = "QQ消息转发 - 一键启动"\r\n'
+            f'sc.Save()\r\n'
+        )
+
+        with open(tmp_vbs, 'w') as f:
+            f.write(vbs_code)
+
+        subprocess.run(['cscript', '//Nologo', '//B', tmp_vbs],
+                       capture_output=True, timeout=5)
+
+        try:
+            os.remove(tmp_vbs)
+        except OSError:
+            pass
+    except Exception:
+        pass
+
+
 if __name__ == '__main__':
     # 检查 LLBot 是否运行
     if not check_port(LLBOT_PORT):
@@ -384,6 +419,9 @@ if __name__ == '__main__':
 
     # 启动托盘
     icon = setup_tray(root, show_main_window)
+
+    # 桌面快捷方式（首次运行自动创建）
+    create_desktop_shortcut()
 
     # 主线程运行 tkinter
     root.mainloop()
