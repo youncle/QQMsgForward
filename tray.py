@@ -19,7 +19,6 @@ import settings as settings_mod
 
 # 路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-FORWARD_SCRIPT = os.path.join(SCRIPT_DIR, 'qq-message-forward.py')
 SHUTDOWN_FLAG = os.path.join(SCRIPT_DIR, '.shutdown.flag')
 LOG_FILE = os.path.join(SCRIPT_DIR, 'forward.log')
 
@@ -54,7 +53,29 @@ def save_window_geometry(geometry: str) -> None:
 running = True
 
 
-def check_port(port: int, host: str = '127.0.0.1') -> bool:
+def find_port_pid(port: int) -> str | None:
+    """查找占用指定端口的进程 PID"""
+    try:
+        output = subprocess.run(
+            ['netstat', '-ano'], capture_output=True, text=True
+        ).stdout
+        for line in output.split('\n'):
+            if f':{port}' in line and 'LISTENING' in line:
+                parts = line.strip().split()
+                return parts[-1]
+    except Exception:
+        pass
+    return None
+
+
+def kill_port_process(port: int) -> bool:
+    """终止占用指定端口的进程，返回是否成功"""
+    pid = find_port_pid(port)
+    if pid and pid != str(os.getpid()):
+        subprocess.run(['taskkill', '/f', '/pid', pid], capture_output=True)
+        time.sleep(1)
+        return not check_port(port)
+    return False
     """检查端口是否开放"""
     try:
         with socket.create_connection((host, port), timeout=2):
@@ -393,6 +414,17 @@ if __name__ == '__main__':
             cwd=llbot_dir,
             creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
         )
+    else:
+        from tkinter import messagebox
+        root_tmp = tk.Tk()
+        root_tmp.withdraw()
+        messagebox.showerror(
+            '组件缺失',
+            f'未找到 LLBot 程序:\n{llbot_exe}\n\n'
+            '请确认安装包已完整解压。'
+        )
+        root_tmp.destroy()
+        sys.exit(1)
 
     # 等待 LLBot 端口就绪
     for _ in range(20):
@@ -412,11 +444,9 @@ if __name__ == '__main__':
         root_tmp.destroy()
         sys.exit(1)
 
-    # 检查端口 3000/8080 占用，如果被旧进程占用则 kill
+    # 检查端口 8080，如果被旧进程占用则 kill
     if check_port(FORWARD_PORT):
-        for proc in ['python.exe', 'pythonw.exe']:
-            subprocess.run(['taskkill', '/f', '/im', proc], capture_output=True)
-        time.sleep(1)
+        kill_port_process(FORWARD_PORT)
         if check_port(FORWARD_PORT):
             from tkinter import messagebox
             root_tmp = tk.Tk()
@@ -430,13 +460,18 @@ if __name__ == '__main__':
 
     # 在 daemon 线程中启动 Flask 转发服务
     def run_flask():
-        forward_app.run(
-            host='127.0.0.1',
-            port=FORWARD_PORT,
-            debug=False,
-            threaded=True,
-            use_reloader=False,
-        )
+        try:
+            forward_app.run(
+                host='127.0.0.1',
+                port=FORWARD_PORT,
+                debug=False,
+                threaded=True,
+                use_reloader=False,
+            )
+        except Exception as e:
+            import traceback
+            with open(LOG_FILE, 'a', encoding='utf-8') as lf:
+                lf.write(f'[FATAL] Flask forward service crashed:\n{traceback.format_exc()}\n')
 
     flask_thread = threading.Thread(target=run_flask, daemon=True)
     flask_thread.start()
