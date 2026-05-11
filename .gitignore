@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Runtime
+forward.log
+.window_state.json
+.shutdown.flag
+
+# Auto-generated
+app.ico
+
+# LLBot logs (bundled)
+LLBot-CLI-Win-x64/bin/llbot/data/logs/
+
+# OS
+Thumbs.db
+.DS_Store

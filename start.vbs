@@ -92,11 +92,6 @@ End If
 ' Start tray app (pythonw = no console window)
 WshShell.Run "pythonw " & Chr(34) & trayScript & Chr(34), 0, False
 
-WScript.Sleep 2000
-MsgBox "Service started!" & vbCrLf & vbCrLf & _
-    "Tray icon is now in the notification area." & vbCrLf & _
-    "Right-click the icon to manage the service.", vbInformation, "QQ Forward"
-
 
 ' ===== Helper Functions =====
 

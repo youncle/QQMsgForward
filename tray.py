@@ -347,6 +347,7 @@ if __name__ == '__main__':
 
     # 创建 tk 主窗口
     root = tk.Tk()
+    root.withdraw()  # 先隐藏，启动完成后再显示，避免窗口闪现
     root.title('QQ Forward')
     root.resizable(True, True)
 
@@ -373,9 +374,6 @@ if __name__ == '__main__':
     ttk.Button(bottom, text='隐藏到托盘',
                command=lambda: hide_main_window(root)).pack(side='right', padx=5)
 
-    # 启动时隐藏
-    root.withdraw()
-
     # 读取保存的窗口尺寸
     saved_geo = load_window_geometry()
     root.geometry(saved_geo or '1100x750')
@@ -395,6 +393,9 @@ if __name__ == '__main__':
 
     # 桌面快捷方式（首次运行自动创建）
     create_desktop_shortcut()
+
+    # 启动完成，显示主窗口
+    show_main_window(root)
 
     # 主线程运行 tkinter
     root.mainloop()
