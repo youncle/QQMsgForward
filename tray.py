@@ -7,11 +7,11 @@ import threading
 import socket
 import tkinter as tk
 from tkinter import ttk
-import tkinter.messagebox as tkmb
+
 import pystray
 from PIL import Image, ImageDraw
 
-import settings
+import settings as settings_mod
 
 # 路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -170,16 +170,6 @@ def hide_main_window(root):
     root.withdraw()
 
 
-def show_status_window(icon):
-    """显示状态弹窗"""
-    llbot_ok, forward_ok = get_status()
-    msg = (
-        f"LLBot (端口 3000): {'运行中' if llbot_ok else '已停止'}\n"
-        f"转发脚本 (端口 8080): {'运行中' if forward_ok else '已停止'}"
-    )
-    tkmb.showinfo('QQ消息转发 - 状态', msg)
-
-
 def shutdown_service(icon):
     """关闭所有服务"""
     global running
@@ -203,7 +193,7 @@ def shutdown_service(icon):
     icon.stop()
 
 
-def monitor_loop(icon):
+def monitor_loop(icon, root):
     """监控线程：每5秒检查服务状态 + 关闭标志文件"""
     was_ok = True
     while running:
@@ -211,9 +201,11 @@ def monitor_loop(icon):
         if not running:
             break
 
-        # 检测关闭标志文件（由 stop.vbs 创建）
         if os.path.exists(SHUTDOWN_FLAG):
-            shutdown_service(icon)
+            root.after(0, lambda: (
+                shutdown_service(icon),
+                root.destroy()
+            ))
             break
 
         llbot_ok, forward_ok = get_status()
@@ -229,43 +221,89 @@ def monitor_loop(icon):
         was_ok = all_ok
 
 
-def setup_tray():
-    """创建并运行托盘图标"""
+def setup_tray(root, on_open):
+    """创建托盘图标（在 daemon 线程中运行 pystray）"""
+    def do_shutdown():
+        global running
+        running = False
+        stop_forward()
+        subprocess.run(['taskkill', '/f', '/im', 'node.exe'], capture_output=True)
+        subprocess.run(['taskkill', '/f', '/im', 'llbot.exe'], capture_output=True)
+        for qq_name in ['QQ.exe', 'QQNT.exe']:
+            subprocess.run(['taskkill', '/f', '/im', qq_name], capture_output=True)
+        if os.path.exists(SHUTDOWN_FLAG):
+            try:
+                os.remove(SHUTDOWN_FLAG)
+            except OSError:
+                pass
+        icon.stop()
+        root.destroy()
+
     icon = pystray.Icon(
         'qq_forward',
         create_icon_image('green'),
         'QQ消息转发 - 运行中',
         menu=pystray.Menu(
-            pystray.MenuItem('打开设置', lambda icon: settings.open_settings()),
-            pystray.MenuItem('查看状态', show_status_window),
-            pystray.Menu.SEPARATOR,
-            pystray.MenuItem('关闭服务', shutdown_service),
+            pystray.MenuItem('打开主面板', lambda: root.after(0, lambda: on_open(root))),
+            pystray.MenuItem('关闭服务', lambda: do_shutdown()),
         )
     )
 
-    # 启动监控线程
-    monitor = threading.Thread(target=monitor_loop, args=(icon,), daemon=True)
+    monitor = threading.Thread(target=monitor_loop, args=(icon, root), daemon=True)
     monitor.start()
 
-    icon.run()
+    tray_thread = threading.Thread(target=icon.run, daemon=True)
+    tray_thread.start()
+
+    return icon
 
 
 if __name__ == '__main__':
-    # 先确认 LLBot 已运行
+    # 检查 LLBot 是否运行
     if not check_port(LLBOT_PORT):
-        print(f"错误: LLBot 未运行（端口 {LLBOT_PORT} 不通），请先启动 LLBot")
+        print(f'错误: LLBot 未运行（端口 {LLBOT_PORT} 不通），请先启动 LLBot')
         sys.exit(1)
 
     # 启动转发脚本
     start_forward()
-    # 等待转发脚本启动
     for _ in range(10):
         if check_port(FORWARD_PORT):
             break
         time.sleep(1)
 
     if not check_port(FORWARD_PORT):
-        print("警告: 转发脚本可能未启动成功（端口 8080 不通）")
+        print('警告: 转发脚本可能未启动成功（端口 8080 不通）')
+
+    # 创建 tk 主窗口
+    root = tk.Tk()
+    root.title('QQ消息转发')
+    root.geometry('520x500')
+    root.resizable(True, True)
+
+    # 窗口关闭 = 隐藏到托盘
+    root.protocol('WM_DELETE_WINDOW', lambda: hide_main_window(root))
+
+    # Notebook 选项卡
+    notebook = ttk.Notebook(root, padding=5)
+    notebook.pack(fill='both', expand=True, padx=5, pady=5)
+
+    # 状态选项卡
+    notebook.add(create_status_tab(notebook), text='状态')
+
+    # 设置选项卡
+    notebook.add(settings_mod.create_settings_frame(notebook), text='设置')
+
+    # 底部按钮栏
+    bottom = ttk.Frame(root, padding=5)
+    bottom.pack(fill='x', side='bottom')
+    ttk.Button(bottom, text='隐藏到托盘',
+               command=lambda: hide_main_window(root)).pack(side='right', padx=5)
+
+    # 启动时隐藏
+    root.withdraw()
 
     # 启动托盘
-    setup_tray()
+    icon = setup_tray(root, show_main_window)
+
+    # 主线程运行 tkinter
+    root.mainloop()
