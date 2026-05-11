@@ -18,3 +18,11 @@ LLBot-CLI-Win-x64/bin/llbot/data/logs/
 # OS
 Thumbs.db
 .DS_Store
+
+# Build artifacts
+build/
+dist/
+output/
+*.spec
+7zS.sfx
+QQForward_Setup.exe
