@@ -41,11 +41,14 @@ def check_port(port: int, host: str = '127.0.0.1') -> bool:
 def start_forward():
     """启动转发脚本子进程"""
     global forward_process
+    env = os.environ.copy()
+    env['PYTHONUTF8'] = '1'
     log_fh = open(LOG_FILE, 'a', encoding='utf-8')
     forward_process = subprocess.Popen(
         [sys.executable, FORWARD_SCRIPT],
         stdout=log_fh,
-        stderr=subprocess.STDOUT
+        stderr=subprocess.STDOUT,
+        env=env
     )
 
 
