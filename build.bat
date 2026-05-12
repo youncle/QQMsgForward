@@ -17,11 +17,22 @@ where 7z >nul 2>&1 || (echo [错误] 未找到 7-Zip，请先安装并加入 PAT
 echo [1/5] 清理旧构建产物 ...
 if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
-if exist output rmdir /s /q output
+if exist QQForward rmdir /s /q QQForward
+if exist QQForward.spec del QQForward.spec
+if exist QQForward.7z del QQForward.7z
+if exist sfx_config.txt del sfx_config.txt
 echo    清理完成
 
-:: ===== [2/5] PyInstaller 打包 =====
-echo [2/5] PyInstaller 打包 QQForward.exe ...
+:: ===== [2/5] 生成图标（如缺失） =====
+if not exist app.ico (
+    echo [2/5] 生成 app.ico ...
+    python -c "from tray import _save_icon_file; _save_icon_file('app.ico')"
+) else (
+    echo [2/5] app.ico 已存在，跳过
+)
+
+:: ===== [3/5] PyInstaller 打包 =====
+echo [3/5] PyInstaller 打包 QQForward.exe ...
 pyinstaller --onefile --windowed --icon=app.ico --name QQForward --clean ^
     --hidden-import pystray ^
     --hidden-import PIL ^
@@ -36,27 +47,30 @@ if %errorlevel% neq 0 (
 )
 echo    打包完成: dist\QQForward.exe
 
-:: ===== [3/5] 准备打包目录 =====
-echo [3/5] 准备打包目录 ...
-mkdir output\QQForward
-copy dist\QQForward.exe output\QQForward\ >nul
-xcopy /E /I /Q LLBot-CLI-Win-x64 output\QQForward\LLBot-CLI-Win-x64 >nul
+:: ===== [4/5] 准备打包目录 =====
+echo [4/5] 准备打包目录 ...
+mkdir QQForward
+copy dist\QQForward.exe QQForward\ >nul
+xcopy /E /I /Q LLBot-CLI-Win-x64 QQForward\LLBot-CLI-Win-x64 >nul
+copy libiconv.dll QQForward\ >nul
+copy libzbar-64.dll QQForward\ >nul
+copy msvcr120.dll QQForward\ >nul
+if exist config.json copy config.json QQForward\ >nul
 echo    打包目录已就绪
 
-:: ===== [4/5] 7-Zip SFX 打包 =====
-echo [4/5] 7-Zip SFX 打包 ...
+:: ===== [5/5] 7-Zip SFX 打包 =====
+echo [5/5] 7-Zip SFX 打包 ...
 
 :: 生成 SFX 配置文件
 (
 echo ;!@Install@!UTF-8!
 echo Title="QQ消息转发"
 echo BeginPrompt="即将安装 QQ消息转发 到当前目录。继续？"
-echo ExecuteFile="QQForward.exe"
+echo ExecuteFile="QQForward\\QQForward.exe"
 echo ;!@InstallEnd@!
-) > output\sfx_config.txt
+) > sfx_config.txt
 
 :: 先用 7z 压缩为 .7z
-cd output
 7z a -mx=9 -mfb=273 -ms=on -mmt=on QQForward.7z QQForward\ >nul
 
 :: 查找 7-Zip SFX 模块（7-Zip 26.x 自带 7z.sfx）
@@ -70,13 +84,20 @@ if "%SFX_MODULE%"=="" (
 )
 
 :: 拼接 SFX 模块 + 配置 + 压缩包
-copy /b "%SFX_MODULE%" + sfx_config.txt + QQForward.7z "..\QQForward_Setup.exe" >nul
-cd ..
+copy /b "%SFX_MODULE%" + sfx_config.txt + QQForward.7z QQForward_Setup.exe >nul
 
 echo    打包完成: QQForward_Setup.exe
 
-:: ===== [5/5] 完成 =====
-echo [5/5] 完成！
+:: ===== [6/6] 清理 =====
+echo [6/6] 清理中间产物 ...
+if exist build rmdir /s /q build
+if exist dist rmdir /s /q dist
+if exist QQForward rmdir /s /q QQForward
+if exist QQForward.spec del QQForward.spec
+if exist QQForward.7z del QQForward.7z
+if exist sfx_config.txt del sfx_config.txt
+echo    清理完成
+
 echo.
 echo ====================================
 echo   ✅ 构建完成
