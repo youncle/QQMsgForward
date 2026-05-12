@@ -37,6 +37,14 @@ def create_settings_frame(parent):
     cfg.setdefault('filter', {}).setdefault('qrcode', {})
     cfg.setdefault('filter', {}).setdefault('contact', {})
 
+    # 迁移旧格式 → 新格式
+    for src, val in list(rules.items()):
+        if isinstance(val, list):
+            rules[src] = {'targets': val, 'note': ''}
+
+    # 规则源键顺序跟踪（listbox index → src key）
+    _src_keys = []
+
     ttk.Label(frm_rules, text='源群').grid(row=0, column=0, sticky='w')
     src_entry = ttk.Entry(frm_rules, width=20)
     src_entry.grid(row=0, column=1, **pad)
@@ -45,28 +53,40 @@ def create_settings_frame(parent):
     dst_entry = ttk.Entry(frm_rules, width=50)
     dst_entry.grid(row=1, column=1, **pad)
 
-    rules_list = tk.Listbox(frm_rules, height=4, width=60)
-    rules_list.grid(row=2, column=0, columnspan=2, **pad)
+    ttk.Label(frm_rules, text='备注').grid(row=2, column=0, sticky='w')
+    note_entry = ttk.Entry(frm_rules, width=50)
+    note_entry.grid(row=2, column=1, **pad)
+
+    rules_list = tk.Listbox(frm_rules, height=5, width=60)
+    rules_list.grid(row=3, column=0, columnspan=2, **pad)
 
     def refresh_rules_list():
+        nonlocal _src_keys
+        _src_keys = []
         rules_list.delete(0, 'end')
-        for src, dsts in rules.items():
-            rules_list.insert('end', f'{src} → {", ".join(dsts)}')
+        for src, rule in rules.items():
+            _src_keys.append(src)
+            note = rule.get('note', '')
+            if note:
+                rules_list.insert('end', note)
+            else:
+                rules_list.insert('end', f'{src} → {", ".join(rule["targets"])}')
 
     def on_add_rule():
         src = src_entry.get().strip()
         dsts = [d.strip() for d in dst_entry.get().split(',') if d.strip()]
+        note = note_entry.get().strip()
         if src and dsts:
-            rules[src] = dsts
+            rules[src] = {'targets': dsts, 'note': note}
             refresh_rules_list()
             src_entry.delete(0, 'end')
             dst_entry.delete(0, 'end')
+            note_entry.delete(0, 'end')
 
     def on_del_rule():
         sel = rules_list.curselection()
         if sel:
-            text = rules_list.get(sel[0])
-            src = text.split(' → ')[0]
+            src = _src_keys[sel[0]]
             if src in rules:
                 del rules[src]
             refresh_rules_list()
@@ -74,17 +94,21 @@ def create_settings_frame(parent):
     def on_list_select(event):
         sel = rules_list.curselection()
         if sel:
-            text = rules_list.get(sel[0])
-            src, dsts_str = text.split(' → ', 1)
+            src = _src_keys[sel[0]]
+            rule = rules.get(src, {})
+            targets = rule.get('targets', [])
+            note = rule.get('note', '')
             src_entry.delete(0, 'end')
             src_entry.insert(0, src)
             dst_entry.delete(0, 'end')
-            dst_entry.insert(0, ', '.join(rules.get(src, [])))
+            dst_entry.insert(0, ', '.join(targets))
+            note_entry.delete(0, 'end')
+            note_entry.insert(0, note)
 
     rules_list.bind('<<ListboxSelect>>', on_list_select)
 
     btn_frm = ttk.Frame(frm_rules)
-    btn_frm.grid(row=3, column=0, columnspan=2, pady=5)
+    btn_frm.grid(row=4, column=0, columnspan=2, pady=5)
     ttk.Button(btn_frm, text='＋ 添加/更新', command=on_add_rule).pack(side='left', padx=2)
     ttk.Button(btn_frm, text='－ 删除', command=on_del_rule).pack(side='left', padx=2)
 
