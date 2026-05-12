@@ -161,7 +161,7 @@ def webhook():
                 # log_only 模式：仅记录，不拦截
                 logger.info(f"[FILTER] 仅记录: 群{group_id} - {reason}")
             else:
-                logger.info(f"[FILTER] 放行: 群{group_id} | 类型={type(message_content).__name__} "
+                logger.debug(f"[FILTER] 放行: 群{group_id} | 类型={type(message_content).__name__} "
                             f"| 文本={raw_text[:50]}")
 
         # 7. 执行转发
