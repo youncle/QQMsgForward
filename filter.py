@@ -148,6 +148,8 @@ def should_filter(
 ) -> Tuple[bool, str]:
     """综合过滤检查 — 返回 (是否拦截, 原因字符串)
     支持 OneBot array 格式和 CQ 码 string 格式
+
+    优先级: QR 解码 → QR 关键词 → 联系方式
     """
     # 类型守卫：跳过未知类型的消息
     if not isinstance(message, (list, str)):
@@ -156,7 +158,26 @@ def should_filter(
     contact_cfg = config.get('contact', {})
     log_only = config.get('log_only', False)
 
-    # QR 码检测
+    # QR 解码（优先级最高）
+    if qrcode_cfg.get('enabled') and qrcode_cfg.get('decode_enabled'):
+        # 延迟导入，避免 pyzbar 缺失时影响整个模块
+        try:
+            from qr_decoder import process_message_images
+            # 构建 decode 子配置
+            decode_config = {
+                'decode_enabled': True,
+                'decode_timeout': qrcode_cfg.get('decode_timeout', 3),
+                'decode_cache_seconds': qrcode_cfg.get('decode_cache_seconds', 86400),
+                'decode_block_patterns': qrcode_cfg.get('decode_block_patterns', []),
+                'decode_suspicious_domains': qrcode_cfg.get('decode_suspicious_domains', []),
+            }
+            decode_reason = process_message_images(message, decode_config)
+            if decode_reason:
+                return (False if log_only else True, decode_reason)
+        except ImportError:
+            pass  # pyzbar 不可用，跳过解码
+
+    # QR 关键词检测
     if qrcode_cfg.get('enabled'):
         mode = qrcode_cfg.get('mode', 'image_with_keyword')
         # 向后兼容：block_pure_image=True 且 mode 为默认值时升级为 block_pure_image 模式

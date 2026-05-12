@@ -392,3 +392,42 @@ def test_cq_parse_video_ignored():
     msg = '[CQ:video,file=video.mp4][CQ:text,text=看看这个视频]'
     has_image, text = _parse_cq_string(msg)
     assert has_image is False
+
+
+# ============================================================
+# B方案 — QR 解码集成测试
+# ============================================================
+
+DUMMY_QR_CONFIG = {
+    **FILTER_CONFIG,
+    'qrcode': {
+        **FILTER_CONFIG['qrcode'],
+        'decode_enabled': True,
+        'decode_timeout': 3,
+        'decode_cache_seconds': 86400,
+        'decode_block_patterns': ['加群', '进群', '兼职'],
+        'decode_suspicious_domains': ['bad-domain.com']
+    }
+}
+
+
+def test_should_filter_qr_decode_disabled():
+    """decode_enabled=false 时不触发 QR 解码"""
+    cfg = {**DUMMY_QR_CONFIG, 'qrcode': {**DUMMY_QR_CONFIG['qrcode'], 'decode_enabled': False}}
+    msg = [{'type': 'image', 'data': {'file': 'dummy', 'url': 'http://x.com/qr.png'}}]
+    filtered, reason = should_filter(msg, cfg)
+    # 纯图片无关键词，mode=image_with_keyword 应放行
+    assert filtered is False
+
+
+def test_should_filter_qr_decode_fallback_to_keyword():
+    """QR 解码未命中时回退关键词规则"""
+    cfg = DUMMY_QR_CONFIG
+    msg = [
+        {'type': 'image', 'data': {'file': 'dummy', 'url': 'http://x.com/normal.png'}},
+        {'type': 'text', 'data': {'text': '扫码进群'}}
+    ]
+    # 即使 qr_decoder 找不到 QR 码，关键词规则依然会命中
+    filtered, reason = should_filter(msg, cfg)
+    assert filtered is True
+    assert '[QR码]' in reason
