@@ -166,6 +166,7 @@ def create_filter_frame(parent, cfg=None):
     frm_qr.pack(fill='x', **pad)
 
     qr_enabled = tk.BooleanVar(value=qr.get('enabled', True))
+    qr_enabled.trace_add('write', lambda *_: print(f'[TRACE] qr_enabled -> {qr_enabled.get()}'))
     ttk.Checkbutton(frm_qr, text='启用', variable=qr_enabled).pack(anchor='w')
 
     # 拦截模式下拉框
@@ -220,6 +221,7 @@ def create_filter_frame(parent, cfg=None):
     frm_decode_row.pack(fill='x', pady=(2, 0))
     ttk.Label(frm_decode_row, text='下载超时(秒)').pack(side='left')
     decode_timeout = tk.IntVar(value=qr.get('decode_timeout', 3))
+    decode_timeout.trace_add('write', lambda *_: print(f'[TRACE] decode_timeout -> {decode_timeout.get()}'))
     ttk.Spinbox(frm_decode_row, from_=1, to=10, textvariable=decode_timeout, width=5).pack(side='left', padx=(5, 15))
 
     ttk.Label(frm_decode, text='解码内容拦截关键词（逗号分隔）').pack(anchor='w')
