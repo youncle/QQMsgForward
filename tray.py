@@ -546,10 +546,31 @@ if __name__ == '__main__':
     notebook.add(settings_mod.create_forward_frame(notebook, shared_cfg), text='转发')
     notebook.add(settings_mod.create_filter_frame(notebook, shared_cfg), text='过滤')
 
-# 恢复窗口尺寸
+    def _geometry_on_screen(geo: str) -> bool:
+        """检查窗口位置是否在任意显示器范围内"""
+        try:
+            parts = geo.split('+')
+            if len(parts) < 3:
+                return True
+            x, y = int(parts[1]), int(parts[2])
+            w_h = parts[0].split('x')
+            w, h = int(w_h[0]), int(w_h[1])
+            scr_w = root.winfo_screenwidth()
+            scr_h = root.winfo_screenheight()
+            # 窗口至少部分可见：不完全在屏幕左边/右边/上边/下边之外
+            if x + w < 0 or x > scr_w + w or y + h < 0 or y > scr_h + h:
+                return False
+            return True
+        except Exception:
+            return True
+
+    # 恢复窗口尺寸
     saved_geo = load_window_geometry()
     if saved_geo:
-        root.geometry(saved_geo)
+        if _geometry_on_screen(saved_geo):
+            root.geometry(saved_geo)
+        else:
+            root.geometry(saved_geo.split('+')[0])
 
     def _on_configure(event):
         global _save_timer_id
