@@ -527,8 +527,9 @@ if __name__ == '__main__':
     notebook = ttk.Notebook(root, padding=5)
     notebook.pack(fill='both', expand=True, padx=5, pady=5)
     notebook.add(create_status_tab(notebook), text='状态')
-    notebook.add(settings_mod.create_forward_frame(notebook), text='转发')
-    notebook.add(settings_mod.create_filter_frame(notebook), text='过滤')
+    shared_cfg = settings_mod.load_config()
+    notebook.add(settings_mod.create_forward_frame(notebook, shared_cfg), text='转发')
+    notebook.add(settings_mod.create_filter_frame(notebook, shared_cfg), text='过滤')
 
 # 恢复窗口尺寸
     saved_geo = load_window_geometry()

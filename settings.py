@@ -22,9 +22,10 @@ def save_config(data):
     os.replace(tmp, CONFIG_PATH)
 
 
-def create_forward_frame(parent):
+def create_forward_frame(parent, cfg=None):
     """创建转发规则设置界面 Frame，可嵌入 Notebook 等容器"""
-    cfg = load_config()
+    if cfg is None:
+        cfg = load_config()
     frame = ttk.Frame(parent, padding=10)
 
     pad = {'padx': 10, 'pady': 5}
@@ -133,9 +134,10 @@ def create_forward_frame(parent):
     return frame
 
 
-def create_filter_frame(parent):
+def create_filter_frame(parent, cfg=None):
     """创建过滤设置界面 Frame，可嵌入 Notebook 等容器"""
-    cfg = load_config()
+    if cfg is None:
+        cfg = load_config()
     frame = ttk.Frame(parent, padding=10)
 
     pad = {'padx': 10, 'pady': 5}
