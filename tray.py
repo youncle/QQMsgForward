@@ -118,7 +118,7 @@ def create_icon_image(color: str = 'green'):
 
 def create_status_tab(parent):
     """创建状态选项卡内容"""
-    frame = ttk.Frame(parent, padding=(5, 15))
+    frame = ttk.Frame(parent, padding=(10, 15))
 
     ttk.Label(frame, text='服务状态', font=('微软雅黑', 11, 'bold')).pack(
         anchor='w', pady=(0, 10))
