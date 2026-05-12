@@ -178,13 +178,20 @@ def create_filter_frame(parent, cfg=None):
                               state='readonly')
     mode_combo.pack(side='left', padx=(5, 0))
 
+    # 确保 Combobox 当前选中项与配置一致
+    try:
+        mode_combo.current(MODE_DISPLAY.index(display_mode))
+    except ValueError:
+        pass
+
     # 拦截模式说明标签
     desc_label = ttk.Label(frm_mode, text=MODE_DESCRIPTIONS.get(display_mode, ''), foreground='gray')
 
     def on_mode_change(*args):
-        selected = mode_var.get()
+        selected = mode_combo.get()
         desc_label.config(text=MODE_DESCRIPTIONS.get(selected, ''))
 
+    mode_combo.bind('<<ComboboxSelected>>', on_mode_change)
     mode_var.trace_add('write', on_mode_change)
     desc_label.pack(side='left', padx=(5, 0))
 
