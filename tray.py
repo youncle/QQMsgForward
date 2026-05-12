@@ -410,13 +410,13 @@ if __name__ == '__main__':
 
     # 启动 LLBot（后台隐藏窗口）
     llbot_exe = os.path.join(llbot_dir, 'llbot.exe')
-    if os.path.exists(llbot_exe):
+    if os.path.exists(llbot_exe) and not check_port(LLBOT_PORT):
         subprocess.Popen(
             [llbot_exe],
             cwd=llbot_dir,
             creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
         )
-    else:
+    elif not os.path.exists(llbot_exe):
         from tkinter import messagebox
         root_tmp = tk.Tk()
         root_tmp.withdraw()
