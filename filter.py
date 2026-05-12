@@ -6,6 +6,9 @@ from typing import List, Dict, Union, Tuple
 # OneBot v11 消息段类型
 MessageSegment = Dict[str, Union[str, Dict[str, str]]]
 
+# QQ 号上下文白名单：含这些词且数字 >= 6 位时豁免 QQ 正则
+QQ_CONTEXT_WHITELIST = ['群', '加群', '群号', '频道', 'channel', 'guild', '进群']
+
 
 def _extract_text(message: List[MessageSegment]) -> str:
     """从消息段数组（array 格式）中提取所有纯文本"""
@@ -25,14 +28,20 @@ def _has_image_array(message: List[MessageSegment]) -> bool:
 
 
 def _parse_cq_string(message: str) -> tuple:
-    """解析 CQ 码字符串，返回 (has_image, text)"""
-    has_image = '[CQ:image' in message or '[CQ:pic' in message
-    # 提取所有 [CQ:text,text=xxx] 中的文本
-    text_parts = re.findall(r'\[CQ:text,text=([^\]]*)\]', message)
+    """解析 CQ 码字符串，返回 (has_image, text)
+    只将 [CQ:image 视为图片，排除 record/video/file 等
+    """
+    has_image = '[CQ:image' in message
+    # 提取所有 [CQ:text,text=...] 中的文本
+    # 使用非贪婪匹配到最后一个 ] 前的内容（处理 text 内含 ] 的情况）
+    text_parts = re.findall(r'\[CQ:text,text=(.+?)\]', message)
     text = ''.join(text_parts)
-    # 也提取纯文字（不在 CQ 码内的）
-    clean = re.sub(r'\[CQ:[^\]]*\]', '', message)
-    text = text or clean
+    # 也提取纯文字（不在任何 CQ 码内的）
+    clean = re.sub(r'\[CQ:[a-z]+,[^\]]*\]', '', message)
+    if not text:
+        text = clean
+    else:
+        text = text + clean
     return has_image, text
 
 
@@ -111,6 +120,13 @@ def _check_contact_detail(
         return '关键词'
     for name, pattern in config.get('patterns', {}).items():
         if re.search(pattern, text):
+            # QQ 正则：检查群号上下文
+            if name == 'qq':
+                match = re.search(pattern, text)
+                if match:
+                    digits = match.group()
+                    if len(digits) >= 6 and any(ctx in text for ctx in QQ_CONTEXT_WHITELIST):
+                        continue  # 群号上下文，不触发 QQ 拦截
             return name
     return ''
 
