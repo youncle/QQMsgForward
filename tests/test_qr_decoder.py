@@ -28,7 +28,9 @@ def plain_image_bytes():
 
 def test_decode_qr_finds_qrcode(qr_image_bytes):
     """含 QR 码的图片应解码出内容"""
-    from qr_decoder import decode_qr
+    from qr_decoder import decode_qr, PYZBAR_AVAILABLE
+    if not PYZBAR_AVAILABLE:
+        pytest.skip('pyzbar not available (missing libzbar DLL)')
     results = decode_qr(qr_image_bytes)
     assert len(results) >= 1
     assert 'join-group' in results[0]

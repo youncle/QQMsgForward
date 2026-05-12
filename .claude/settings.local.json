@@ -46,7 +46,16 @@
       "Bash(rm -rf build dist)",
       "Bash(pyinstaller --onefile --windowed --icon=app.ico --name QQForward --clean --hidden-import pystray --hidden-import PIL --hidden-import flask --hidden-import requests tray.py)",
       "Bash(pip --version)",
-      "Bash(echo \"Exit code: $?\")"
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(where vcruntime140.dll)",
+      "Bash(where msvcp140.dll)",
+      "Bash(dir \"C:\\\\Windows\\\\System32\\\\vcruntime*\")",
+      "Bash(dir \"C:\\\\Windows\\\\System32\\\\msvcp140*\")",
+      "Bash(where msvcr120.dll)",
+      "Bash(dir \"C:\\\\Windows\\\\System32\\\\msvcr120*\")",
+      "Bash(dir \"C:\\\\Windows\\\\SysWOW64\\\\msvcr120*\")",
+      "Bash(C:/Users/Smile Uncle/.claude/plugins/cache/superpowers-marketplace/superpowers/5.1.0/skills/brainstorming/scripts/start-server.sh *)",
+      "Bash(taskkill /PID 28392 /F)"
     ]
   },
   "enabledPlugins": {

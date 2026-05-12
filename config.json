@@ -1,32 +1,28 @@
 {
   "robot_qq": 2776992588,
   "forward_rules": {
-    "1079264158": [
-      "1080631149"
-    ],
-    "107054156": [
-      "702961941"
-    ]
+    "1079264158": {
+      "targets": [
+        "1080631149"
+      ],
+      "note": "测试：00信息源（1079264158） -> 11-目标群（1080631149）"
+    },
+    "107054156": {
+      "targets": [
+        "702961941"
+      ],
+      "note": "生产：朝暮说-私享会-商家（107054156）=》朝暮说-私享会-客户（702961941）"
+    }
   },
   "llbot_api": "http://127.0.0.1:3000",
   "llbot_token": "",
   "filter": {
     "qrcode": {
-      "enabled": true,
-      "keywords": [
-        "添加",
-        "扫码",
-        "扫一扫",
-        "扫描",
-        "联系人",
-        "VX",
-        "v:",
-        "微信",
-        "私聊"
-      ],
+      "enabled": false,
+      "keywords": [],
       "mode": "image_with_keyword",
-      "block_pure_image": true,
-      "decode_enabled": false,
+      "block_pure_image": false,
+      "decode_enabled": true,
       "decode_timeout": 3,
       "decode_cache_seconds": 86400,
       "decode_block_patterns": [
@@ -34,7 +30,12 @@
         "进群",
         "兼职",
         "刷单",
-        "返利"
+        "返利",
+        "feishu",
+        "qq",
+        "weixin",
+        "wechat",
+        "dingding"
       ],
       "decode_suspicious_domains": []
     },

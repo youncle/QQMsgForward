@@ -30,11 +30,14 @@ def decode_qr(image_data: bytes) -> List[str]:
     """解码图片中的 QR 码，返回内容列表"""
     if not PYZBAR_AVAILABLE:
         return []
-    image = Image.open(BytesIO(image_data))
-    if image.mode != 'L':
-        image = image.convert('L')
-    decoded = zbar_decode(image)
-    return [d.data.decode('utf-8', errors='replace') for d in decoded]
+    try:
+        image = Image.open(BytesIO(image_data))
+        if image.mode != 'L':
+            image = image.convert('L')
+        decoded = zbar_decode(image)
+        return [d.data.decode('utf-8', errors='replace') for d in decoded]
+    except Exception:
+        return []
 
 
 def download_image(url: str, timeout: int = 3) -> Optional[bytes]:
