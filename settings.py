@@ -165,9 +165,12 @@ def create_filter_frame(parent, cfg=None):
     frm_qr = ttk.LabelFrame(frame, text='QR码过滤', padding=10)
     frm_qr.pack(fill='x', **pad)
 
-    qr_enabled = tk.BooleanVar(value=qr.get('enabled', True))
-    qr_enabled.trace_add('write', lambda *_: print(f'[TRACE] qr_enabled -> {qr_enabled.get()}'))
-    ttk.Checkbutton(frm_qr, text='启用', variable=qr_enabled).pack(anchor='w')
+    qr_enabled_cb = ttk.Checkbutton(frm_qr, text='启用')
+    qr_enabled_cb.pack(anchor='w')
+    if qr.get('enabled', True):
+        qr_enabled_cb.state(['selected'])
+    else:
+        qr_enabled_cb.state(['!selected'])
 
     # 拦截模式下拉框
     MODE_OPTIONS = {
