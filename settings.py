@@ -185,7 +185,7 @@ def create_filter_frame(parent, cfg=None):
         pass
 
     # 拦截模式说明标签
-    desc_label = ttk.Label(frm_mode, text=MODE_DESCRIPTIONS.get(display_mode, ''), foreground='gray')
+    desc_label = ttk.Label(frm_mode, text=MODE_DESCRIPTIONS.get(display_mode, ''), foreground='gray', width=45)
 
     def on_mode_change(*args):
         selected = mode_combo.get()
