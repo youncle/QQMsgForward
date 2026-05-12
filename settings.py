@@ -22,11 +22,13 @@ def load_config():
 
 
 def save_config(data):
+    import pprint
     tmp = CONFIG_PATH + '.tmp'
     with open(tmp, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     os.replace(tmp, CONFIG_PATH)
-    print(f'[save_config] 配置已写入: {CONFIG_PATH}')
+    print(f'[save_config] 已写入 {CONFIG_PATH}')
+    pprint.pprint(data.get('filter', {}) if 'forward_rules' in data else data)
 
 
 def create_forward_frame(parent, cfg=None):
@@ -132,6 +134,7 @@ def create_forward_frame(parent, cfg=None):
     def on_save():
         print('[Forward保存] 开始保存转发规则...')
         cfg['forward_rules'] = rules
+        print(f'[Forward保存] rules keys: {list(rules.keys())}')
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
@@ -271,7 +274,10 @@ def create_filter_frame(parent, cfg=None):
             k.strip() for k in ct_kw_entry.get().split(',') if k.strip()
         ]
         cfg['filter']['log_only'] = log_only.get()
-        print(f'[Filter保存] qrcode.enabled={qr_enabled.get()} decode_enabled={decode_enabled.get()} ct.enabled={ct_enabled.get()}')
+        print(f'[Filter保存] qrcode={{enabled={qr_enabled.get()}, mode={MODE_REVERSE.get(mode_var.get())}, keywords={[k.strip() for k in qr_kw_entry.get().split(",") if k.strip()]}}}')
+        print(f'[Filter保存] decode={{enabled={decode_enabled.get()}, timeout={decode_timeout.get()}, patterns={[k.strip() for k in decode_patterns_entry.get().split(",") if k.strip()]}, domains={[k.strip() for k in decode_domains_entry.get().split(",") if k.strip()]}}}')
+        print(f'[Filter保存] contact={{enabled={ct_enabled.get()}, keywords={[k.strip() for k in ct_kw_entry.get().split(",") if k.strip()]}}}')
+        print(f'[Filter保存] log_only={log_only.get()}')
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
