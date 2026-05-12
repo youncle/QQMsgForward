@@ -154,12 +154,21 @@ def create_filter_frame(parent, cfg=None):
     ttk.Checkbutton(frm_qr, text='启用', variable=qr_enabled).pack(anchor='w')
 
     # 拦截模式下拉框
+    MODE_OPTIONS = {
+        'image_with_keyword': '仅关键词图片',
+        'block_pure_image': '拦截纯图片',
+        'block_all_images': '拦截所有图片',
+    }
+    MODE_DISPLAY = list(MODE_OPTIONS.values())
+    MODE_REVERSE = {v: k for k, v in MODE_OPTIONS.items()}
     frm_mode = ttk.Frame(frm_qr)
     frm_mode.pack(fill='x', **pad)
     ttk.Label(frm_mode, text='拦截模式').pack(side='left')
-    mode_var = tk.StringVar(value=qr.get('mode', 'image_with_keyword'))
+    stored_mode = qr.get('mode', 'image_with_keyword')
+    display_mode = MODE_OPTIONS.get(stored_mode, MODE_OPTIONS['image_with_keyword'])
+    mode_var = tk.StringVar(value=display_mode)
     mode_combo = ttk.Combobox(frm_mode, textvariable=mode_var, width=24,
-                              values=['image_with_keyword', 'block_pure_image', 'block_all_images'],
+                              values=MODE_DISPLAY,
                               state='readonly')
     mode_combo.pack(side='left', padx=(5, 0))
 
@@ -216,7 +225,7 @@ def create_filter_frame(parent, cfg=None):
 
     def on_save():
         cfg['filter']['qrcode']['enabled'] = qr_enabled.get()
-        cfg['filter']['qrcode']['mode'] = mode_var.get()
+        cfg['filter']['qrcode']['mode'] = MODE_REVERSE.get(mode_var.get(), 'image_with_keyword')
         cfg['filter']['qrcode']['keywords'] = [
             k.strip() for k in qr_kw_entry.get().split(',') if k.strip()
         ]
