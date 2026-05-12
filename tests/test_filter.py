@@ -290,3 +290,105 @@ def test_should_filter_block_pure_image_integration():
     filtered, reason = should_filter(msg, cfg)
     assert filtered is True
     assert '[QR码]' in reason
+
+
+# ============================================================
+# A方案增强 — 大小写不敏感测试
+# ============================================================
+
+def test_qrcode_case_insensitive_keyword():
+    """文本 'V: 扫码加好友' 应命中小写关键词 'v:' 和 '加好友'"""
+    msg = [
+        {'type': 'image', 'data': {'file': 'img1'}},
+        {'type': 'text', 'data': {'text': 'V: 扫码加好友'}}
+    ]
+    result = check_qrcode_ad(msg, QR_KEYWORDS)
+    assert result is True
+
+
+def test_contact_case_insensitive_keyword():
+    """文本 '我的v是 xxx 联系我' 应命中小写关键词"""
+    msg = [{'type': 'text', 'data': {'text': '我的v是 xxx123 联系我'}}]
+    result = check_contact_info(msg, CONTACT_PATTERNS, CONTACT_KEYWORDS)
+    assert result is True
+
+
+# ============================================================
+# A方案增强 — 三级拦截策略测试
+# ============================================================
+
+def test_qrcode_mode_image_with_keyword():
+    """mode=image_with_keyword 时纯图片放行，图片+关键词拦截"""
+    pure_image = [{'type': 'image', 'data': {'file': 'cat.png'}}]
+    image_with_kw = [
+        {'type': 'image', 'data': {'file': 'qr.png'}},
+        {'type': 'text', 'data': {'text': '扫码进群'}}
+    ]
+    assert check_qrcode_ad(pure_image, QR_KEYWORDS, mode='image_with_keyword') is False
+    assert check_qrcode_ad(image_with_kw, QR_KEYWORDS, mode='image_with_keyword') is True
+
+
+def test_qrcode_mode_block_pure_image():
+    """mode=block_pure_image 时纯图片也被拦截"""
+    pure_image = [{'type': 'image', 'data': {'file': 'qr.png'}}]
+    assert check_qrcode_ad(pure_image, QR_KEYWORDS, mode='block_pure_image') is True
+
+
+def test_qrcode_mode_block_all_images():
+    """mode=block_all_images 时所有带图片消息都被拦截"""
+    image_with_text = [
+        {'type': 'image', 'data': {'file': 'screenshot.png'}},
+        {'type': 'text', 'data': {'text': '看看这个截图'}}
+    ]
+    assert check_qrcode_ad(image_with_text, QR_KEYWORDS, mode='block_all_images') is True
+
+
+# ============================================================
+# A方案增强 — QQ号上下文判断测试
+# ============================================================
+# 注意：这些测试验证 _check_contact_detail 级别的行为，
+# check_contact_info 当前不支持上下文参数，所以通过 should_filter 间接验证
+
+def test_should_filter_qq_group_context_pass():
+    """'欢迎加群 1079264158' 含群号上下文 → QQ正则不触发"""
+    msg = [{'type': 'text', 'data': {'text': '欢迎加群 1079264158'}}]
+    filtered, reason = should_filter(msg, FILTER_CONFIG)
+    # 群号上下文应放行（不含其他联系方式关键词时）
+    assert reason == '' or '[联系方式' not in reason
+
+
+def test_should_filter_qq_no_context_blocks():
+    """'加我QQ 12345678' 无群号上下文 → 正常拦截"""
+    msg = [{'type': 'text', 'data': {'text': '加我QQ 12345678'}}]
+    filtered, reason = should_filter(msg, FILTER_CONFIG)
+    assert '[联系方式' in reason
+
+
+# ============================================================
+# A方案增强 — CQ码解析 edge case 测试
+# ============================================================
+
+from filter import _parse_cq_string
+
+
+def test_cq_parse_text_with_bracket():
+    """CQ 码 text 内容含 ] 字符时不应截断"""
+    msg = '[CQ:image,file=abc][CQ:text,text=点击[链接]查看详情]'
+    has_image, text = _parse_cq_string(msg)
+    assert has_image is True
+    assert '链接' in text
+    assert '查看详情' in text
+
+
+def test_cq_parse_record_ignored():
+    """[CQ:record 不应被误判为图片"""
+    msg = '[CQ:record,file=audio.mp3][CQ:text,text=语音消息]'
+    has_image, text = _parse_cq_string(msg)
+    assert has_image is False
+
+
+def test_cq_parse_video_ignored():
+    """[CQ:video 不应被误判为图片"""
+    msg = '[CQ:video,file=video.mp4][CQ:text,text=看看这个视频]'
+    has_image, text = _parse_cq_string(msg)
+    assert has_image is False

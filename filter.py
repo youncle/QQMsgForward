@@ -58,7 +58,7 @@ def check_qrcode_ad(
         text = _extract_text(message)
         if not text:
             return block_pure_image
-        return any(kw in text for kw in keywords)
+        return any(kw.lower() in text.lower() for kw in keywords)
     # CQ 码 string 格式
     if isinstance(message, str):
         has_image, text = _parse_cq_string(message)
@@ -66,7 +66,7 @@ def check_qrcode_ad(
             return False
         if not text:
             return block_pure_image
-        return any(kw in text for kw in keywords)
+        return any(kw.lower() in text.lower() for kw in keywords)
     return False
 
 
@@ -81,7 +81,7 @@ def check_contact_info(
     text = _extract_text(message) if isinstance(message, list) else _parse_cq_string(message)[1]
     if not text:
         return False
-    if any(kw in text for kw in keywords):
+    if any(kw.lower() in text.lower() for kw in keywords):
         return True
     for pattern in patterns.values():
         if re.search(pattern, text):
@@ -97,7 +97,7 @@ def _check_contact_detail(
     text = _extract_text(message) if isinstance(message, list) else _parse_cq_string(message)[1]
     if not text:
         return ''
-    if any(kw in text for kw in config.get('keywords', [])):
+    if any(kw.lower() in text.lower() for kw in config.get('keywords', [])):
         return '关键词'
     for name, pattern in config.get('patterns', {}).items():
         if re.search(pattern, text):
