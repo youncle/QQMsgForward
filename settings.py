@@ -185,10 +185,8 @@ def create_filter_frame(parent, cfg=None):
     ttk.Label(frm_mode, text='拦截模式').pack(side='left')
     stored_mode = qr.get('mode', 'image_with_keyword')
     display_mode = MODE_OPTIONS.get(stored_mode, MODE_OPTIONS['image_with_keyword'])
-    mode_var = tk.StringVar(value=display_mode)
-    mode_combo = ttk.Combobox(frm_mode, textvariable=mode_var, width=24,
-                              values=MODE_DISPLAY,
-                              state='readonly')
+    mode_combo = ttk.Combobox(frm_mode, width=24, values=MODE_DISPLAY, state='readonly')
+    mode_combo.set(display_mode)
     mode_combo.pack(side='left', padx=(5, 0))
 
     # 确保 Combobox 当前选中项与配置一致
@@ -205,7 +203,6 @@ def create_filter_frame(parent, cfg=None):
         desc_label.config(text=MODE_DESCRIPTIONS.get(selected, ''))
 
     mode_combo.bind('<<ComboboxSelected>>', on_mode_change)
-    mode_var.trace_add('write', on_mode_change)
     desc_label.pack(side='left', padx=(5, 0))
 
     ttk.Label(frm_qr, text='关键词（逗号分隔）').pack(anchor='w')
@@ -217,15 +214,19 @@ def create_filter_frame(parent, cfg=None):
     frm_decode = ttk.LabelFrame(frm_qr, text='QR码图像解码', padding=5)
     frm_decode.pack(fill='x', pady=(5, 0))
 
-    decode_enabled = tk.BooleanVar(value=qr.get('decode_enabled', False))
-    ttk.Checkbutton(frm_decode, text='启用真·QR码解码（需 pyzbar）', variable=decode_enabled).pack(anchor='w')
+    decode_enabled_cb = ttk.Checkbutton(frm_decode, text='启用真·QR码解码（需 pyzbar）')
+    decode_enabled_cb.pack(anchor='w')
+    if qr.get('decode_enabled', False):
+        decode_enabled_cb.state(['selected'])
+    else:
+        decode_enabled_cb.state(['!selected'])
 
     frm_decode_row = ttk.Frame(frm_decode)
     frm_decode_row.pack(fill='x', pady=(2, 0))
     ttk.Label(frm_decode_row, text='下载超时(秒)').pack(side='left')
-    decode_timeout = tk.IntVar(value=qr.get('decode_timeout', 3))
-    decode_timeout.trace_add('write', lambda *_: print(f'[TRACE] decode_timeout -> {decode_timeout.get()}'))
-    ttk.Spinbox(frm_decode_row, from_=1, to=10, textvariable=decode_timeout, width=5).pack(side='left', padx=(5, 15))
+    decode_timeout_sp = ttk.Spinbox(frm_decode_row, from_=1, to=10, width=5)
+    decode_timeout_sp.pack(side='left', padx=(5, 15))
+    decode_timeout_sp.set(str(qr.get('decode_timeout', 3)))
 
     ttk.Label(frm_decode, text='解码内容拦截关键词（逗号分隔）').pack(anchor='w')
     decode_patterns_entry = ttk.Entry(frm_decode, width=60)
@@ -242,16 +243,24 @@ def create_filter_frame(parent, cfg=None):
     frm_ct = ttk.LabelFrame(frame, text='联系方式过滤', padding=10)
     frm_ct.pack(fill='x', **pad)
 
-    ct_enabled = tk.BooleanVar(value=ct.get('enabled', True))
-    ttk.Checkbutton(frm_ct, text='启用', variable=ct_enabled).pack(anchor='w')
+    ct_enabled_cb = ttk.Checkbutton(frm_ct, text='启用')
+    ct_enabled_cb.pack(anchor='w')
+    if ct.get('enabled', True):
+        ct_enabled_cb.state(['selected'])
+    else:
+        ct_enabled_cb.state(['!selected'])
 
     ttk.Label(frm_ct, text='关键词（逗号分隔）').pack(anchor='w')
     ct_kw_entry = ttk.Entry(frm_ct, width=60)
     ct_kw_entry.pack(fill='x', **pad)
     ct_kw_entry.insert(0, ', '.join(ct.get('keywords', [])))
 
-    log_only = tk.BooleanVar(value=cfg['filter'].get('log_only', False))
-    ttk.Checkbutton(frm_ct, text='仅记录不拦截（log_only）', variable=log_only).pack(anchor='w')
+    log_only_cb = ttk.Checkbutton(frm_ct, text='仅记录不拦截（log_only）')
+    log_only_cb.pack(anchor='w')
+    if cfg['filter'].get('log_only', False):
+        log_only_cb.state(['selected'])
+    else:
+        log_only_cb.state(['!selected'])
 
     # ===== 状态标签 =====
     status_var = tk.StringVar(value='')
@@ -261,28 +270,28 @@ def create_filter_frame(parent, cfg=None):
     btn_frame.pack(fill='x', **pad)
 
     def on_save():
-        cfg['filter']['qrcode']['enabled'] = qr_enabled.get()
-        cfg['filter']['qrcode']['mode'] = MODE_REVERSE.get(mode_var.get(), 'image_with_keyword')
+        cfg['filter']['qrcode']['enabled'] = qr_enabled_cb.instate(['selected'])
+        cfg['filter']['qrcode']['mode'] = MODE_REVERSE.get(mode_combo.get(), 'image_with_keyword')
         cfg['filter']['qrcode']['keywords'] = [
             k.strip() for k in qr_kw_entry.get().split(',') if k.strip()
         ]
-        cfg['filter']['qrcode']['decode_enabled'] = decode_enabled.get()
-        cfg['filter']['qrcode']['decode_timeout'] = decode_timeout.get()
+        cfg['filter']['qrcode']['decode_enabled'] = decode_enabled_cb.instate(['selected'])
+        cfg['filter']['qrcode']['decode_timeout'] = int(decode_timeout_sp.get())
         cfg['filter']['qrcode']['decode_block_patterns'] = [
             k.strip() for k in decode_patterns_entry.get().split(',') if k.strip()
         ]
         cfg['filter']['qrcode']['decode_suspicious_domains'] = [
             k.strip() for k in decode_domains_entry.get().split(',') if k.strip()
         ]
-        cfg['filter']['contact']['enabled'] = ct_enabled.get()
+        cfg['filter']['contact']['enabled'] = ct_enabled_cb.instate(['selected'])
         cfg['filter']['contact']['keywords'] = [
             k.strip() for k in ct_kw_entry.get().split(',') if k.strip()
         ]
-        cfg['filter']['log_only'] = log_only.get()
-        print(f'[Filter保存] qrcode={{enabled={qr_enabled.get()}, mode={MODE_REVERSE.get(mode_var.get())}, keywords={[k.strip() for k in qr_kw_entry.get().split(",") if k.strip()]}}}')
-        print(f'[Filter保存] decode={{enabled={decode_enabled.get()}, timeout={decode_timeout.get()}, patterns={[k.strip() for k in decode_patterns_entry.get().split(",") if k.strip()]}, domains={[k.strip() for k in decode_domains_entry.get().split(",") if k.strip()]}}}')
-        print(f'[Filter保存] contact={{enabled={ct_enabled.get()}, keywords={[k.strip() for k in ct_kw_entry.get().split(",") if k.strip()]}}}')
-        print(f'[Filter保存] log_only={log_only.get()}')
+        cfg['filter']['log_only'] = log_only_cb.instate(['selected'])
+        print(f'[Filter保存] qrcode={{enabled={qr_enabled_cb.instate(["selected"])}, mode={MODE_REVERSE.get(mode_combo.get())}, keywords={[k.strip() for k in qr_kw_entry.get().split(",") if k.strip()]}}}')
+        print(f'[Filter保存] decode={{enabled={decode_enabled_cb.instate(["selected"])}, timeout={decode_timeout_sp.get()}, patterns={[k.strip() for k in decode_patterns_entry.get().split(",") if k.strip()]}, domains={[k.strip() for k in decode_domains_entry.get().split(",") if k.strip()]}}}')
+        print(f'[Filter保存] contact={{enabled={ct_enabled_cb.instate(["selected"])}, keywords={[k.strip() for k in ct_kw_entry.get().split(",") if k.strip()]}}}')
+        print(f'[Filter保存] log_only={log_only_cb.instate(["selected"])}')
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
