@@ -19,7 +19,7 @@
   "llbot_token": "",
   "filter": {
     "qrcode": {
-      "enabled": false,
+      "enabled": true,
       "keywords": [
         "feishu",
         "weixin",
@@ -29,7 +29,7 @@
       "mode": "image_with_keyword",
       "block_pure_image": false,
       "decode_enabled": true,
-      "decode_timeout": 3,
+      "decode_timeout": 2,
       "decode_cache_seconds": 86400,
       "decode_block_patterns": [
         "加群",

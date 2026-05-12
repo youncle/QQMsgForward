@@ -56,7 +56,8 @@
       "Bash(dir \"C:\\\\Windows\\\\SysWOW64\\\\msvcr120*\")",
       "Bash(C:/Users/Smile Uncle/.claude/plugins/cache/superpowers-marketplace/superpowers/5.1.0/skills/brainstorming/scripts/start-server.sh *)",
       "Bash(taskkill /PID 28392 /F)",
-      "Bash(python3 -c \"import tkinter as tk; from tkinter import ttk; r = tk.Tk\\(\\); f = ttk.Frame\\(r, padding=\\(5, 10\\)\\); print\\('padding str:', f['padding']\\); r.destroy\\(\\)\")"
+      "Bash(python3 -c \"import tkinter as tk; from tkinter import ttk; r = tk.Tk\\(\\); f = ttk.Frame\\(r, padding=\\(5, 10\\)\\); print\\('padding str:', f['padding']\\); r.destroy\\(\\)\")",
+      "Bash(cmd /c build.bat)"
     ]
   },
   "enabledPlugins": {
