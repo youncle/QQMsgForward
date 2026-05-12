@@ -73,7 +73,7 @@ def create_forward_frame(parent, cfg=None):
 
     def on_add_rule():
         src = src_entry.get().strip()
-        dsts = [d.strip() for d in dst_entry.get().split(',') if d.strip()]
+        dsts = [d.strip() for d in dst_entry.get().replace('，', ',').split(',') if d.strip()]
         note = note_entry.get().strip()
         if src and dsts:
             rules[src] = {'targets': dsts, 'note': note}
