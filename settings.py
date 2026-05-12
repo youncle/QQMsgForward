@@ -34,8 +34,6 @@ def create_forward_frame(parent):
     frm_rules.pack(fill='x', **pad)
 
     rules = cfg.get('forward_rules', {})
-    cfg.setdefault('filter', {}).setdefault('qrcode', {})
-    cfg.setdefault('filter', {}).setdefault('contact', {})
 
     # 迁移旧格式 → 新格式
     for src, val in list(rules.items()):
