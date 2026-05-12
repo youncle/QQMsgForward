@@ -33,11 +33,10 @@ def _parse_cq_string(message: str) -> tuple:
     """
     has_image = '[CQ:image' in message
     # 提取所有 [CQ:text,text=...] 中的文本
-    # 使用非贪婪匹配到最后一个 ] 前的内容（处理 text 内含 ] 的情况）
     text_parts = re.findall(r'\[CQ:text,text=(.+?)\]', message)
     text = ''.join(text_parts)
     # 也提取纯文字（不在任何 CQ 码内的）
-    clean = re.sub(r'\[CQ:[a-z]+,[^\]]*\]', '', message)
+    clean = re.sub(r'\[CQ:[a-z]+(?:,[^\]]*)?\]', '', message)
     if not text:
         text = clean
     else:
@@ -119,14 +118,13 @@ def _check_contact_detail(
     if any(kw.lower() in text.lower() for kw in config.get('keywords', [])):
         return '关键词'
     for name, pattern in config.get('patterns', {}).items():
-        if re.search(pattern, text):
+        match = re.search(pattern, text)
+        if match:
             # QQ 正则：检查群号上下文
             if name == 'qq':
-                match = re.search(pattern, text)
-                if match:
-                    digits = match.group()
-                    if len(digits) >= 6 and any(ctx in text for ctx in QQ_CONTEXT_WHITELIST):
-                        continue  # 群号上下文，不触发 QQ 拦截
+                digits = match.group()
+                if len(digits) >= 6 and any(ctx in text for ctx in QQ_CONTEXT_WHITELIST):
+                    continue  # 群号上下文，不触发 QQ 拦截
             return name
     return ''
 
