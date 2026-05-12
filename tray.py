@@ -640,11 +640,10 @@ if __name__ == '__main__':
         default_geo = root.geometry()
         save_window_geometry(default_geo)
 
-    # 设置最小尺寸（基于当前 geometry，用户只能调大不能调小）
+    # 设置最小尺寸（600px 为合理最小宽度，高度基于当前页）
     geo_str = root.geometry()
-    base_w = int(geo_str.split('x')[0])
     base_h = int(geo_str.split('x')[1].split('+')[0])
-    root.minsize(base_w, base_h)
+    root.minsize(600, base_h)
 
     splash.update(100, '启动完成')
     splash.close()
