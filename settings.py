@@ -146,9 +146,9 @@ def create_filter_frame(parent, cfg=None):
     """创建过滤设置界面 Frame，可嵌入 Notebook 等容器"""
     if cfg is None:
         cfg = load_config()
-    frame = ttk.Frame(parent, padding=10)
+    frame = ttk.Frame(parent, padding=(5, 10))
 
-    pad = {'padx': 10, 'pady': 5}
+    pad = {'padx': 0, 'pady': 5}
 
     cfg.setdefault('filter', {}).setdefault('qrcode', {})
     cfg.setdefault('filter', {}).setdefault('contact', {})
