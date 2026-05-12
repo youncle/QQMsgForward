@@ -176,12 +176,10 @@ def create_status_tab(parent):
             try:
                 with open(LOG_FILE, 'r', encoding='utf-8', errors='replace') as f:
                     lines = f.readlines()[-30:]
-                is_at_bottom = log_text.yview()[1] >= 1.0
                 log_text.config(state='normal')
                 log_text.delete('1.0', 'end')
                 log_text.insert('1.0', ''.join(lines))
-                if is_at_bottom:
-                    log_text.see('end')
+                log_text.see('end')
                 log_text.config(state='disabled')
             except Exception:
                 pass
