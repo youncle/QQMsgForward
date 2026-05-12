@@ -154,19 +154,31 @@ def create_status_tab(parent):
     ttk.Label(frame, text='最近日志', font=('微软雅黑', 11, 'bold')).pack(
         anchor='w', pady=(0, 5))
 
-    log_text = tk.Text(frame, height=10, wrap='word', state='disabled',
+    log_frame = ttk.Frame(frame)
+    log_frame.pack(fill='both', expand=True)
+
+    log_text = tk.Text(log_frame, height=10, wrap='word', state='disabled',
                        font=('Consolas', 9))
-    log_text.pack(fill='both', expand=True)
+    log_scrollbar = ttk.Scrollbar(log_frame, orient='vertical',
+                                  command=log_text.yview)
+    log_text.config(yscrollcommand=log_scrollbar.set)
+
+    log_text.grid(row=0, column=0, sticky='nsew')
+    log_scrollbar.grid(row=0, column=1, sticky='ns')
+    log_frame.grid_rowconfigure(0, weight=1)
+    log_frame.grid_columnconfigure(0, weight=1)
 
     def load_logs():
         if os.path.exists(LOG_FILE):
             try:
                 with open(LOG_FILE, 'r', encoding='utf-8', errors='replace') as f:
                     lines = f.readlines()[-30:]
+                is_at_bottom = log_text.yview()[1] >= 1.0
                 log_text.config(state='normal')
                 log_text.delete('1.0', 'end')
                 log_text.insert('1.0', ''.join(lines))
-                log_text.see('end')
+                if is_at_bottom:
+                    log_text.see('end')
                 log_text.config(state='disabled')
             except Exception:
                 pass
