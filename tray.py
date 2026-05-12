@@ -568,7 +568,7 @@ if __name__ == '__main__':
 
     # Tab 标签页
     style = ttk.Style()
-    style.configure('TNotebook.Tab', padding=(35, 8), font=('微软雅黑', 10))
+    style.configure('TNotebook.Tab', padding=(100, 8), font=('微软雅黑', 10))
 
     notebook = ttk.Notebook(root, padding=5)
     notebook.pack(fill='both', expand=True, padx=5, pady=5)
