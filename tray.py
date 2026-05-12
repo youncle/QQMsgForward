@@ -118,7 +118,7 @@ def create_icon_image(color: str = 'green'):
 
 def create_status_tab(parent):
     """创建状态选项卡内容"""
-    frame = ttk.Frame(parent, padding=15)
+    frame = ttk.Frame(parent, padding=(5, 15))
 
     ttk.Label(frame, text='服务状态', font=('微软雅黑', 11, 'bold')).pack(
         anchor='w', pady=(0, 10))
@@ -570,8 +570,8 @@ if __name__ == '__main__':
     style = ttk.Style()
     style.configure('TNotebook.Tab', padding=(35, 8), font=('微软雅黑', 10))
 
-    notebook = ttk.Notebook(root, padding=5)
-    notebook.pack(fill='both', expand=True, padx=5, pady=5)
+    notebook = ttk.Notebook(root, padding=0)
+    notebook.pack(fill='both', expand=True, padx=0, pady=5)
     tab1 = create_status_tab(notebook)
     notebook.add(tab1, text='状态')
     shared_cfg = settings_mod.load_config()
