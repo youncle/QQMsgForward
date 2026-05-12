@@ -38,6 +38,24 @@ def set_config_path(path: str) -> None:
     CONFIG_PATH = path
     _config = None  # 重置缓存，强制重新加载
 
+LOG_PATH = None
+
+
+def set_log_path(path: str) -> None:
+    """设置日志文件路径（由 tray.py 在启动时调用）"""
+    global LOG_PATH
+    LOG_PATH = path
+    fh = logging.FileHandler(path, encoding='utf-8')
+    fh.setFormatter(logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    ))
+    fh.setLevel(logging.INFO)
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.addHandler(fh)
+
+
 # 确保 stderr 输出 UTF-8，与日志文件编码一致（windowed 模式下 stderr 为 None）
 if sys.stderr:
     sys.stderr.reconfigure(encoding='utf-8')
