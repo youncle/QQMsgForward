@@ -2,7 +2,7 @@
 import json
 import os
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 from wizard import get_base_dir
 
@@ -133,8 +133,10 @@ def create_forward_frame(parent, cfg=None):
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
+            messagebox.showinfo('保存成功', '配置已保存，重启服务后生效。')
         except Exception as e:
             status_var.set(f'保存失败: {e}')
+            messagebox.showerror('保存失败', str(e))
 
     ttk.Button(btn_frame, text='保存', command=on_save).pack(side='right', padx=5)
     ttk.Label(btn_frame, textvariable=status_var, foreground='gray').pack(side='right', padx=10)
@@ -287,8 +289,10 @@ def create_filter_frame(parent, cfg=None):
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
+            messagebox.showinfo('保存成功', '配置已保存，重启服务后生效。')
         except Exception as e:
             status_var.set(f'保存失败: {e}')
+            messagebox.showerror('保存失败', str(e))
 
     ttk.Button(btn_frame, text='保存', command=on_save).pack(side='right', padx=5)
     ttk.Label(btn_frame, textvariable=status_var, foreground='gray').pack(side='right', padx=10)
