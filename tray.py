@@ -568,14 +568,23 @@ if __name__ == '__main__':
 
     # Tab 标签页
     style = ttk.Style()
-    style.configure('TNotebook.Tab', padding=(100, 8), font=('微软雅黑', 10))
+    style.configure('TNotebook.Tab', padding=(35, 8), font=('微软雅黑', 10))
 
     notebook = ttk.Notebook(root, padding=5)
     notebook.pack(fill='both', expand=True, padx=5, pady=5)
-    notebook.add(create_status_tab(notebook), text='状态')
+    tab1 = create_status_tab(notebook)
+    notebook.add(tab1, text='状态')
     shared_cfg = settings_mod.load_config()
-    notebook.add(settings_mod.create_forward_frame(notebook, shared_cfg), text='转发')
-    notebook.add(settings_mod.create_filter_frame(notebook, shared_cfg), text='过滤')
+    tab2 = settings_mod.create_forward_frame(notebook, shared_cfg)
+    notebook.add(tab2, text='转发')
+    tab3 = settings_mod.create_filter_frame(notebook, shared_cfg)
+    notebook.add(tab3, text='过滤')
+
+    # 加宽 tab 标签（Windows 原生主题下 style padding 无效，需在 tab 上直接设）
+    tab_pad = (100, 8)
+    notebook.tab(tab1, padding=tab_pad)
+    notebook.tab(tab2, padding=tab_pad)
+    notebook.tab(tab3, padding=tab_pad)
 
     def _geometry_on_screen(geo: str) -> bool:
         """检查窗口位置是否在任意显示器范围内"""
