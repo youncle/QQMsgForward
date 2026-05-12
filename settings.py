@@ -22,8 +22,8 @@ def save_config(data):
     os.replace(tmp, CONFIG_PATH)
 
 
-def create_settings_frame(parent):
-    """创建设置界面 Frame，可嵌入 Notebook 等容器"""
+def create_forward_frame(parent):
+    """创建转发规则设置界面 Frame，可嵌入 Notebook 等容器"""
     cfg = load_config()
     frame = ttk.Frame(parent, padding=10)
 
@@ -114,68 +114,6 @@ def create_settings_frame(parent):
 
     refresh_rules_list()
 
-    # ===== QR 码过滤 =====
-    qr = cfg['filter']['qrcode']
-    frm_qr = ttk.LabelFrame(frame, text='QR码过滤', padding=10)
-    frm_qr.pack(fill='x', **pad)
-
-    qr_enabled = tk.BooleanVar(value=qr.get('enabled', True))
-    ttk.Checkbutton(frm_qr, text='启用', variable=qr_enabled).pack(anchor='w')
-
-    # 拦截模式下拉框
-    frm_mode = ttk.Frame(frm_qr)
-    frm_mode.pack(fill='x', **pad)
-    ttk.Label(frm_mode, text='拦截模式').pack(side='left')
-    mode_var = tk.StringVar(value=qr.get('mode', 'image_with_keyword'))
-    mode_combo = ttk.Combobox(frm_mode, textvariable=mode_var, width=24,
-                              values=['image_with_keyword', 'block_pure_image', 'block_all_images'],
-                              state='readonly')
-    mode_combo.pack(side='left', padx=(5, 0))
-
-    ttk.Label(frm_qr, text='关键词（逗号分隔）').pack(anchor='w')
-    qr_kw_entry = ttk.Entry(frm_qr, width=60)
-    qr_kw_entry.pack(fill='x', **pad)
-    qr_kw_entry.insert(0, ', '.join(qr.get('keywords', [])))
-
-    # ===== QR 解码（B方案）=====
-    frm_decode = ttk.LabelFrame(frm_qr, text='QR码图像解码', padding=5)
-    frm_decode.pack(fill='x', pady=(5, 0))
-
-    decode_enabled = tk.BooleanVar(value=qr.get('decode_enabled', False))
-    ttk.Checkbutton(frm_decode, text='启用真·QR码解码（需 pyzbar）', variable=decode_enabled).pack(anchor='w')
-
-    frm_decode_row = ttk.Frame(frm_decode)
-    frm_decode_row.pack(fill='x', pady=(2, 0))
-    ttk.Label(frm_decode_row, text='下载超时(秒)').pack(side='left')
-    decode_timeout = tk.IntVar(value=qr.get('decode_timeout', 3))
-    ttk.Spinbox(frm_decode_row, from_=1, to=10, textvariable=decode_timeout, width=5).pack(side='left', padx=(5, 15))
-
-    ttk.Label(frm_decode, text='解码内容拦截关键词（逗号分隔）').pack(anchor='w')
-    decode_patterns_entry = ttk.Entry(frm_decode, width=60)
-    decode_patterns_entry.pack(fill='x', **pad)
-    decode_patterns_entry.insert(0, ', '.join(qr.get('decode_block_patterns', [])))
-
-    ttk.Label(frm_decode, text='可疑域名（逗号分隔，如 bad.com）').pack(anchor='w')
-    decode_domains_entry = ttk.Entry(frm_decode, width=60)
-    decode_domains_entry.pack(fill='x', **pad)
-    decode_domains_entry.insert(0, ', '.join(qr.get('decode_suspicious_domains', [])))
-
-    # ===== 联系方式过滤 =====
-    ct = cfg['filter']['contact']
-    frm_ct = ttk.LabelFrame(frame, text='联系方式过滤', padding=10)
-    frm_ct.pack(fill='x', **pad)
-
-    ct_enabled = tk.BooleanVar(value=ct.get('enabled', True))
-    ttk.Checkbutton(frm_ct, text='启用', variable=ct_enabled).pack(anchor='w')
-
-    ttk.Label(frm_ct, text='关键词（逗号分隔）').pack(anchor='w')
-    ct_kw_entry = ttk.Entry(frm_ct, width=60)
-    ct_kw_entry.pack(fill='x', **pad)
-    ct_kw_entry.insert(0, ', '.join(ct.get('keywords', [])))
-
-    log_only = tk.BooleanVar(value=cfg['filter'].get('log_only', False))
-    ttk.Checkbutton(frm_ct, text='仅记录不拦截（log_only）', variable=log_only).pack(anchor='w')
-
     # ===== 状态标签 =====
     status_var = tk.StringVar(value='')
 
@@ -185,24 +123,6 @@ def create_settings_frame(parent):
 
     def on_save():
         cfg['forward_rules'] = rules
-        cfg['filter']['qrcode']['enabled'] = qr_enabled.get()
-        cfg['filter']['qrcode']['mode'] = mode_var.get()
-        cfg['filter']['qrcode']['keywords'] = [
-            k.strip() for k in qr_kw_entry.get().split(',') if k.strip()
-        ]
-        cfg['filter']['qrcode']['decode_enabled'] = decode_enabled.get()
-        cfg['filter']['qrcode']['decode_timeout'] = decode_timeout.get()
-        cfg['filter']['qrcode']['decode_block_patterns'] = [
-            k.strip() for k in decode_patterns_entry.get().split(',') if k.strip()
-        ]
-        cfg['filter']['qrcode']['decode_suspicious_domains'] = [
-            k.strip() for k in decode_domains_entry.get().split(',') if k.strip()
-        ]
-        cfg['filter']['contact']['enabled'] = ct_enabled.get()
-        cfg['filter']['contact']['keywords'] = [
-            k.strip() for k in ct_kw_entry.get().split(',') if k.strip()
-        ]
-        cfg['filter']['log_only'] = log_only.get()
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
@@ -220,5 +140,5 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.title('QQ消息转发 - 设置')
     root.resizable(False, False)
-    create_settings_frame(root).pack(fill='both', expand=True)
+    create_forward_frame(root).pack(fill='both', expand=True)
     root.mainloop()
