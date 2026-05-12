@@ -9,8 +9,8 @@ class SplashScreen:
     def __init__(self) -> None:
         self._root = tk.Tk()
         self._root.overrideredirect(True)
-        self._root.attributes('-topmost', True)
         self._root.configure(bg='#2b2b2b')
+        self._root.lift()
 
         # 窗口尺寸和居中
         win_w, win_h = 400, 120
