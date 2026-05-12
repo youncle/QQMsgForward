@@ -25,7 +25,18 @@
         "私聊"
       ],
       "mode": "image_with_keyword",
-      "block_pure_image": true
+      "block_pure_image": true,
+      "decode_enabled": false,
+      "decode_timeout": 3,
+      "decode_cache_seconds": 86400,
+      "decode_block_patterns": [
+        "加群",
+        "进群",
+        "兼职",
+        "刷单",
+        "返利"
+      ],
+      "decode_suspicious_domains": []
     },
     "contact": {
       "enabled": true,
@@ -53,7 +64,7 @@
         "加我"
       ]
     },
-    "log_only": true
+    "log_only": false
   },
   "forward": {
     "duplicate_window": 5,
