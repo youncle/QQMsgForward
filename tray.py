@@ -141,11 +141,23 @@ def create_status_tab(parent):
     refresh_btn = ttk.Button(status_frm, text='刷新', command=lambda: refresh())
     refresh_btn.grid(row=0, column=2, rowspan=2, sticky='e', padx=(10, 0), pady=3)
 
+    _log_timer_id = None
+    _btn_timer_id = None
+
     def load_logs():
+        nonlocal _log_timer_id
         if os.path.exists(LOG_FILE):
             try:
                 with open(LOG_FILE, 'r', encoding='utf-8', errors='replace') as f:
-                    lines = f.readlines()[-30:]
+                    f.seek(0, 2)
+                    size = f.tell()
+                    if size > 8192:
+                        f.seek(max(0, size - 8192))
+                    else:
+                        f.seek(0)
+                    f.readline()  # 跳过可能的不完整行
+                    tail = f.read()
+                    lines = tail.splitlines(True)[-30:]
                 log_text.config(state='normal')
                 log_text.delete('1.0', 'end')
                 log_text.insert('1.0', ''.join(lines))
@@ -153,9 +165,12 @@ def create_status_tab(parent):
                 log_text.config(state='disabled')
             except Exception:
                 pass
-        frame.after(5000, load_logs)
+        if _log_timer_id is not None:
+            frame.after_cancel(_log_timer_id)
+        _log_timer_id = frame.after(5000, load_logs)
 
     def refresh():
+        nonlocal _btn_timer_id
         llbot_ok, forward_ok = get_status()
         llbot_status.config(
             text='运行中' if llbot_ok else '已停止',
@@ -165,7 +180,9 @@ def create_status_tab(parent):
             foreground='green' if forward_ok else 'red')
         load_logs()
         refresh_btn.config(text='已刷新')
-        frame.after(1500, lambda: refresh_btn.config(text='刷新'))
+        if _btn_timer_id is not None:
+            frame.after_cancel(_btn_timer_id)
+        _btn_timer_id = frame.after(1500, lambda: refresh_btn.config(text='刷新'))
 
     refresh()
     load_logs()
@@ -191,7 +208,7 @@ def create_status_tab(parent):
 
     def auto_refresh():
         refresh()
-        frame.after(3000, auto_refresh)
+        frame.after(5000, auto_refresh)
 
     auto_refresh()
 
