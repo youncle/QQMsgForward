@@ -39,35 +39,45 @@ def _parse_cq_string(message: str) -> tuple:
 def check_qrcode_ad(
     message: List[MessageSegment],
     keywords: List[str],
-    block_pure_image: bool = False
+    block_pure_image: bool = False,
+    mode: str = 'image_with_keyword'
 ) -> bool:
     """检查消息是否为二维码广告
     支持 OneBot array 格式和 CQ 码 string 格式
 
-    规则：
-    1. 无图片 → 放行
-    2. 有图片 + 关键词 → 拦截
-    3. 有图片 + 无文字 + block_pure_image → 拦截（纯图片疑似二维码）
-    4. 有图片 + 有文字但无关键词 → 放行（正常带文字图片）
+    mode:
+    - image_with_keyword: 仅图片+关键词时拦截（默认）
+    - block_pure_image: 额外拦截无文字纯图片
+    - block_all_images: 拦截所有含图片的消息
     """
-    # array 格式
+    # 统一提取 has_image 和 text
     if isinstance(message, list):
         has_image = _has_image_array(message)
-        if not has_image:
-            return False
-        text = _extract_text(message)
-        if not text:
-            return block_pure_image
-        return any(kw.lower() in text.lower() for kw in keywords)
-    # CQ 码 string 格式
-    if isinstance(message, str):
+        text = _extract_text(message) if has_image else ''
+    elif isinstance(message, str):
         has_image, text = _parse_cq_string(message)
-        if not has_image:
-            return False
-        if not text:
-            return block_pure_image
-        return any(kw.lower() in text.lower() for kw in keywords)
-    return False
+    else:
+        return False
+
+    # 向后兼容：block_pure_image=True + 默认 mode → 等效 mode='block_pure_image'
+    if block_pure_image and mode == 'image_with_keyword':
+        mode = 'block_pure_image'
+
+    if not has_image:
+        return False
+
+    # mode: block_all_images — 有图片就拦
+    if mode == 'block_all_images':
+        return True
+
+    # mode: block_pure_image — 纯图片也拦
+    if mode == 'block_pure_image' and not text:
+        return True
+
+    # mode: image_with_keyword (默认) — 仅图片+关键词时拦截
+    if not text:
+        return False
+    return any(kw.lower() in text.lower() for kw in keywords)
 
 
 def check_contact_info(
@@ -134,8 +144,11 @@ def should_filter(
 
     # QR 码检测
     if qrcode_cfg.get('enabled'):
-        block_pure = qrcode_cfg.get('block_pure_image', False)
-        if check_qrcode_ad(message, qrcode_cfg.get('keywords', []), block_pure):
+        mode = qrcode_cfg.get('mode', 'image_with_keyword')
+        # 向后兼容：block_pure_image=True 且 mode 为默认值时升级为 block_pure_image 模式
+        if qrcode_cfg.get('block_pure_image') and mode == 'image_with_keyword':
+            mode = 'block_pure_image'
+        if check_qrcode_ad(message, qrcode_cfg.get('keywords', []), mode=mode):
             reason = _format_filter_reason('QR码', message)
             return (False if log_only else True, reason)
 
