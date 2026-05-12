@@ -168,6 +168,7 @@ def create_filter_frame(parent, cfg=None):
     qr_enabled_var = tk.BooleanVar(value=qr.get('enabled', True))
     qr_enabled_cb = ttk.Checkbutton(frm_qr, text='启用', variable=qr_enabled_var)
     qr_enabled_cb.pack(anchor='w')
+    qr_enabled_cb._var = qr_enabled_var
 
     # 拦截模式下拉框
     MODE_OPTIONS = {
@@ -214,6 +215,7 @@ def create_filter_frame(parent, cfg=None):
     decode_enabled_var = tk.BooleanVar(value=qr.get('decode_enabled', False))
     decode_enabled_cb = ttk.Checkbutton(frm_decode, text='启用真·QR码解码（需 pyzbar）', variable=decode_enabled_var)
     decode_enabled_cb.pack(anchor='w')
+    decode_enabled_cb._var = decode_enabled_var
 
     frm_decode_row = ttk.Frame(frm_decode)
     frm_decode_row.pack(fill='x', pady=(2, 0))
@@ -240,6 +242,7 @@ def create_filter_frame(parent, cfg=None):
     ct_enabled_var = tk.BooleanVar(value=ct.get('enabled', True))
     ct_enabled_cb = ttk.Checkbutton(frm_ct, text='启用', variable=ct_enabled_var)
     ct_enabled_cb.pack(anchor='w')
+    ct_enabled_cb._var = ct_enabled_var
 
     ttk.Label(frm_ct, text='关键词（逗号分隔）').pack(anchor='w')
     ct_kw_entry = ttk.Entry(frm_ct, width=60)
@@ -249,6 +252,7 @@ def create_filter_frame(parent, cfg=None):
     log_only_var = tk.BooleanVar(value=cfg['filter'].get('log_only', False))
     log_only_cb = ttk.Checkbutton(frm_ct, text='仅记录不拦截（log_only）', variable=log_only_var)
     log_only_cb.pack(anchor='w')
+    log_only_cb._var = log_only_var
 
     # ===== 状态标签 =====
     status_var = tk.StringVar(value='')
