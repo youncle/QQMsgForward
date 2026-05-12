@@ -165,12 +165,9 @@ def create_filter_frame(parent, cfg=None):
     frm_qr = ttk.LabelFrame(frame, text='QR码过滤', padding=10)
     frm_qr.pack(fill='x', **pad)
 
-    qr_enabled_cb = ttk.Checkbutton(frm_qr, text='启用')
+    qr_enabled_var = tk.BooleanVar(value=qr.get('enabled', True))
+    qr_enabled_cb = ttk.Checkbutton(frm_qr, text='启用', variable=qr_enabled_var)
     qr_enabled_cb.pack(anchor='w')
-    if qr.get('enabled', True):
-        qr_enabled_cb.state(['selected'])
-    else:
-        qr_enabled_cb.state(['!selected'])
 
     # 拦截模式下拉框
     MODE_OPTIONS = {
@@ -214,12 +211,9 @@ def create_filter_frame(parent, cfg=None):
     frm_decode = ttk.LabelFrame(frm_qr, text='QR码图像解码', padding=5)
     frm_decode.pack(fill='x', pady=(5, 0))
 
-    decode_enabled_cb = ttk.Checkbutton(frm_decode, text='启用真·QR码解码（需 pyzbar）')
+    decode_enabled_var = tk.BooleanVar(value=qr.get('decode_enabled', False))
+    decode_enabled_cb = ttk.Checkbutton(frm_decode, text='启用真·QR码解码（需 pyzbar）', variable=decode_enabled_var)
     decode_enabled_cb.pack(anchor='w')
-    if qr.get('decode_enabled', False):
-        decode_enabled_cb.state(['selected'])
-    else:
-        decode_enabled_cb.state(['!selected'])
 
     frm_decode_row = ttk.Frame(frm_decode)
     frm_decode_row.pack(fill='x', pady=(2, 0))
@@ -243,24 +237,18 @@ def create_filter_frame(parent, cfg=None):
     frm_ct = ttk.LabelFrame(frame, text='联系方式过滤', padding=10)
     frm_ct.pack(fill='x', **pad)
 
-    ct_enabled_cb = ttk.Checkbutton(frm_ct, text='启用')
+    ct_enabled_var = tk.BooleanVar(value=ct.get('enabled', True))
+    ct_enabled_cb = ttk.Checkbutton(frm_ct, text='启用', variable=ct_enabled_var)
     ct_enabled_cb.pack(anchor='w')
-    if ct.get('enabled', True):
-        ct_enabled_cb.state(['selected'])
-    else:
-        ct_enabled_cb.state(['!selected'])
 
     ttk.Label(frm_ct, text='关键词（逗号分隔）').pack(anchor='w')
     ct_kw_entry = ttk.Entry(frm_ct, width=60)
     ct_kw_entry.pack(fill='x', **pad)
     ct_kw_entry.insert(0, ', '.join(ct.get('keywords', [])))
 
-    log_only_cb = ttk.Checkbutton(frm_ct, text='仅记录不拦截（log_only）')
+    log_only_var = tk.BooleanVar(value=cfg['filter'].get('log_only', False))
+    log_only_cb = ttk.Checkbutton(frm_ct, text='仅记录不拦截（log_only）', variable=log_only_var)
     log_only_cb.pack(anchor='w')
-    if cfg['filter'].get('log_only', False):
-        log_only_cb.state(['selected'])
-    else:
-        log_only_cb.state(['!selected'])
 
     # ===== 状态标签 =====
     status_var = tk.StringVar(value='')
