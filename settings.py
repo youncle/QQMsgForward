@@ -32,9 +32,9 @@ def create_forward_frame(parent, cfg=None):
     """创建转发规则设置界面 Frame，可嵌入 Notebook 等容器"""
     if cfg is None:
         cfg = load_config()
-    frame = ttk.Frame(parent, padding=10)
+    frame = ttk.Frame(parent, padding=(5, 10))
 
-    pad = {'padx': 10, 'pady': 5}
+    pad = {'padx': 0, 'pady': 5}
 
     # ===== 转发规则 =====
     frm_rules = ttk.LabelFrame(frame, text='转发规则', padding=10)
@@ -52,18 +52,20 @@ def create_forward_frame(parent, cfg=None):
 
     ttk.Label(frm_rules, text='源群').grid(row=0, column=0, sticky='w')
     src_entry = ttk.Entry(frm_rules, width=80)
-    src_entry.grid(row=0, column=1, sticky='w', **pad)
+    src_entry.grid(row=0, column=1, sticky='ew', **pad)
 
     ttk.Label(frm_rules, text='目标群（逗号分隔）').grid(row=1, column=0, sticky='w')
     dst_entry = ttk.Entry(frm_rules, width=80)
-    dst_entry.grid(row=1, column=1, sticky='w', **pad)
+    dst_entry.grid(row=1, column=1, sticky='ew', **pad)
 
     ttk.Label(frm_rules, text='备注').grid(row=2, column=0, sticky='w')
     note_entry = ttk.Entry(frm_rules, width=80)
-    note_entry.grid(row=2, column=1, sticky='w', **pad)
+    note_entry.grid(row=2, column=1, sticky='ew', **pad)
 
-    rules_list = tk.Listbox(frm_rules, height=10, width=100)
-    rules_list.grid(row=3, column=0, columnspan=2, **pad)
+    rules_list = tk.Listbox(frm_rules, height=10)
+    rules_list.grid(row=3, column=0, columnspan=2, sticky='ew', **pad)
+
+    frm_rules.grid_columnconfigure(1, weight=1)
 
     def refresh_rules_list():
         nonlocal _src_keys
