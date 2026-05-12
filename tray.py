@@ -581,7 +581,7 @@ if __name__ == '__main__':
     notebook.add(tab3, text='过滤')
 
     # 加宽 tab 标签（Windows 原生主题下 style padding 无效，需在 tab 上直接设）
-    tab_pad = (100, 8)
+    tab_pad = (0, 8)
     notebook.tab(tab1, padding=tab_pad)
     notebook.tab(tab2, padding=tab_pad)
     notebook.tab(tab3, padding=tab_pad)
