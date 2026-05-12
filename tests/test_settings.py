@@ -74,3 +74,18 @@ def test_save_and_load_new_format():
         s.CONFIG_PATH = old_path
         import shutil
         shutil.rmtree(tmpdir, ignore_errors=True)
+
+
+def test_mode_descriptions_mapping():
+    """三种模式都有对应的中文说明"""
+    import sys
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from settings import MODE_DESCRIPTIONS
+
+    assert '仅关键词图片' in MODE_DESCRIPTIONS
+    assert '拦截纯图片' in MODE_DESCRIPTIONS
+    assert '拦截所有图片' in MODE_DESCRIPTIONS
+    assert MODE_DESCRIPTIONS['仅关键词图片'] == '仅拦截同时包含图片和关键词的消息'
+    assert MODE_DESCRIPTIONS['拦截纯图片'] == '额外拦截无文字说明的纯图片消息'
+    assert MODE_DESCRIPTIONS['拦截所有图片'] == '拦截所有含图片的消息'

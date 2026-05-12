@@ -9,6 +9,12 @@ from wizard import get_base_dir
 SCRIPT_DIR = get_base_dir()
 CONFIG_PATH = os.path.join(SCRIPT_DIR, 'config.json')
 
+MODE_DESCRIPTIONS = {
+    '仅关键词图片': '仅拦截同时包含图片和关键词的消息',
+    '拦截纯图片': '额外拦截无文字说明的纯图片消息',
+    '拦截所有图片': '拦截所有含图片的消息',
+}
+
 
 def load_config():
     with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
@@ -171,6 +177,16 @@ def create_filter_frame(parent, cfg=None):
                               values=MODE_DISPLAY,
                               state='readonly')
     mode_combo.pack(side='left', padx=(5, 0))
+
+    # 拦截模式说明标签
+    desc_label = ttk.Label(frm_mode, text=MODE_DESCRIPTIONS.get(display_mode, ''), foreground='gray')
+
+    def on_mode_change(event=None):
+        selected = mode_var.get()
+        desc_label.config(text=MODE_DESCRIPTIONS.get(selected, ''))
+
+    mode_combo.bind('<<ComboboxSelected>>', on_mode_change)
+    desc_label.pack(side='left', padx=(5, 0))
 
     ttk.Label(frm_qr, text='关键词（逗号分隔）').pack(anchor='w')
     qr_kw_entry = ttk.Entry(frm_qr, width=60)
