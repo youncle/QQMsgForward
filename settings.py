@@ -22,13 +22,10 @@ def load_config():
 
 
 def save_config(data):
-    import pprint
     tmp = CONFIG_PATH + '.tmp'
     with open(tmp, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     os.replace(tmp, CONFIG_PATH)
-    print(f'[save_config] 已写入 {CONFIG_PATH}')
-    pprint.pprint(data.get('filter', {}) if 'forward_rules' in data else data)
 
 
 def create_forward_frame(parent, cfg=None):
@@ -132,16 +129,12 @@ def create_forward_frame(parent, cfg=None):
     btn_frame.pack(fill='x', **pad)
 
     def on_save():
-        print('[Forward保存] 开始保存转发规则...')
         cfg['forward_rules'] = rules
-        print(f'[Forward保存] rules keys: {list(rules.keys())}')
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
-            print('[Forward保存] 成功')
         except Exception as e:
             status_var.set(f'保存失败: {e}')
-            print(f'[Forward保存] 失败: {e}')
 
     ttk.Button(btn_frame, text='保存', command=on_save).pack(side='right', padx=5)
     ttk.Label(btn_frame, textvariable=status_var, foreground='gray').pack(side='right', padx=10)
@@ -291,17 +284,11 @@ def create_filter_frame(parent, cfg=None):
             k.strip() for k in ct_kw_entry.get().split(',') if k.strip()
         ]
         cfg['filter']['log_only'] = _cb_checked(log_only_cb)
-        print(f'[Filter保存] qrcode={{enabled={_cb_checked(qr_enabled_cb)}, mode={MODE_REVERSE.get(mode_combo.get())}, keywords={[k.strip() for k in qr_kw_entry.get().split(",") if k.strip()]}}}')
-        print(f'[Filter保存] decode={{enabled={_cb_checked(decode_enabled_cb)}, timeout={decode_timeout_sp.get()}, patterns={[k.strip() for k in decode_patterns_entry.get().split(",") if k.strip()]}, domains={[k.strip() for k in decode_domains_entry.get().split(",") if k.strip()]}}}')
-        print(f'[Filter保存] contact={{enabled={_cb_checked(ct_enabled_cb)}, keywords={[k.strip() for k in ct_kw_entry.get().split(",") if k.strip()]}}}')
-        print(f'[Filter保存] log_only={_cb_checked(log_only_cb)}')
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
-            print('[Filter保存] 成功')
         except Exception as e:
             status_var.set(f'保存失败: {e}')
-            print(f'[Filter保存] 失败: {e}')
 
     ttk.Button(btn_frame, text='保存', command=on_save).pack(side='right', padx=5)
     ttk.Label(btn_frame, textvariable=status_var, foreground='gray').pack(side='right', padx=10)
