@@ -141,6 +141,20 @@ def create_status_tab(parent):
     refresh_btn = ttk.Button(status_frm, text='刷新', command=lambda: refresh())
     refresh_btn.grid(row=0, column=2, rowspan=2, sticky='e', padx=(10, 0), pady=3)
 
+    def load_logs():
+        if os.path.exists(LOG_FILE):
+            try:
+                with open(LOG_FILE, 'r', encoding='utf-8', errors='replace') as f:
+                    lines = f.readlines()[-30:]
+                log_text.config(state='normal')
+                log_text.delete('1.0', 'end')
+                log_text.insert('1.0', ''.join(lines))
+                log_text.see('end')
+                log_text.config(state='disabled')
+            except Exception:
+                pass
+        frame.after(5000, load_logs)
+
     def refresh():
         llbot_ok, forward_ok = get_status()
         llbot_status.config(
@@ -149,8 +163,12 @@ def create_status_tab(parent):
         forward_status.config(
             text='运行中' if forward_ok else '已停止',
             foreground='green' if forward_ok else 'red')
+        load_logs()
+        refresh_btn.config(text='已刷新')
+        frame.after(1500, lambda: refresh_btn.config(text='刷新'))
 
     refresh()
+    load_logs()
 
     ttk.Separator(frame, orient='horizontal').pack(fill='x', pady=10)
 
@@ -170,22 +188,6 @@ def create_status_tab(parent):
     log_scrollbar.grid(row=0, column=1, sticky='ns')
     log_frame.grid_rowconfigure(0, weight=1)
     log_frame.grid_columnconfigure(0, weight=1)
-
-    def load_logs():
-        if os.path.exists(LOG_FILE):
-            try:
-                with open(LOG_FILE, 'r', encoding='utf-8', errors='replace') as f:
-                    lines = f.readlines()[-30:]
-                log_text.config(state='normal')
-                log_text.delete('1.0', 'end')
-                log_text.insert('1.0', ''.join(lines))
-                log_text.see('end')
-                log_text.config(state='disabled')
-            except Exception:
-                pass
-        frame.after(5000, load_logs)
-
-    load_logs()
 
     def auto_refresh():
         refresh()
