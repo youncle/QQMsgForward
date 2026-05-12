@@ -9,8 +9,10 @@ class SplashScreen:
     def __init__(self) -> None:
         self._root = tk.Tk()
         self._root.overrideredirect(True)
+        self._root.attributes('-topmost', True)
         self._root.configure(bg='#2b2b2b')
         self._root.lift()
+        self._destroyed = False
 
         # 窗口尺寸和居中
         win_w, win_h = 520, 150
@@ -52,7 +54,9 @@ class SplashScreen:
         self._root.update()
 
     def update(self, percent: float, text: str) -> None:
-        """平滑动画更新进度条到目标值"""
+        """平滑动画更新进度条到目标值；已关闭则忽略"""
+        if self._destroyed:
+            return
         current = self._bar['value']
         target = float(percent)
         step = 0.5 if target > current else -0.5
@@ -67,4 +71,7 @@ class SplashScreen:
 
     def close(self) -> None:
         """销毁窗口"""
+        if self._destroyed:
+            return
+        self._destroyed = True
         self._root.destroy()

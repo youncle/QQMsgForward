@@ -522,6 +522,7 @@ if __name__ == '__main__':
         splash.update(50 + (i + 1) * 2.5, '正在启动转发服务...')
 
     if not check_port(FORWARD_PORT):
+        splash.close()
         from tkinter import messagebox
         root_tmp = tk.Tk()
         root_tmp.withdraw()
