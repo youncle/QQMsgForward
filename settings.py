@@ -45,16 +45,16 @@ def create_forward_frame(parent, cfg=None):
     _src_keys = []
 
     ttk.Label(frm_rules, text='源群').grid(row=0, column=0, sticky='w')
-    src_entry = ttk.Entry(frm_rules, width=20)
-    src_entry.grid(row=0, column=1, **pad)
+    src_entry = ttk.Entry(frm_rules, width=80)
+    src_entry.grid(row=0, column=1, sticky='w', **pad)
 
     ttk.Label(frm_rules, text='目标群（逗号分隔）').grid(row=1, column=0, sticky='w')
-    dst_entry = ttk.Entry(frm_rules, width=50)
-    dst_entry.grid(row=1, column=1, **pad)
+    dst_entry = ttk.Entry(frm_rules, width=80)
+    dst_entry.grid(row=1, column=1, sticky='w', **pad)
 
     ttk.Label(frm_rules, text='备注').grid(row=2, column=0, sticky='w')
-    note_entry = ttk.Entry(frm_rules, width=50)
-    note_entry.grid(row=2, column=1, **pad)
+    note_entry = ttk.Entry(frm_rules, width=80)
+    note_entry.grid(row=2, column=1, sticky='w', **pad)
 
     rules_list = tk.Listbox(frm_rules, height=10, width=100)
     rules_list.grid(row=3, column=0, columnspan=2, **pad)
