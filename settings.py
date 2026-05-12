@@ -181,11 +181,11 @@ def create_filter_frame(parent, cfg=None):
     # 拦截模式说明标签
     desc_label = ttk.Label(frm_mode, text=MODE_DESCRIPTIONS.get(display_mode, ''), foreground='gray')
 
-    def on_mode_change(event=None):
+    def on_mode_change(*args):
         selected = mode_var.get()
         desc_label.config(text=MODE_DESCRIPTIONS.get(selected, ''))
 
-    mode_combo.bind('<<ComboboxSelected>>', on_mode_change)
+    mode_var.trace_add('write', on_mode_change)
     desc_label.pack(side='left', padx=(5, 0))
 
     ttk.Label(frm_qr, text='关键词（逗号分隔）').pack(anchor='w')
