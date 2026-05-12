@@ -523,7 +523,7 @@ if __name__ == '__main__':
             forward_app.run(
                 host='127.0.0.1',
                 port=FORWARD_PORT,
-                debug=True,
+                debug=False,
                 threaded=True,
                 use_reloader=False,
             )
