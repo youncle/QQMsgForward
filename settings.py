@@ -56,7 +56,7 @@ def create_forward_frame(parent, cfg=None):
     note_entry = ttk.Entry(frm_rules, width=50)
     note_entry.grid(row=2, column=1, **pad)
 
-    rules_list = tk.Listbox(frm_rules, height=10, width=60)
+    rules_list = tk.Listbox(frm_rules, height=10, width=100)
     rules_list.grid(row=3, column=0, columnspan=2, **pad)
 
     def refresh_rules_list():
