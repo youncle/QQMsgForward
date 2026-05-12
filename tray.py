@@ -136,8 +136,10 @@ def create_status_tab(parent):
     forward_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
     forward_status.grid(row=1, column=1, sticky='w', pady=3)
 
-    ttk.Button(frame, text='刷新', command=lambda: refresh()).pack(
-        anchor='w', pady=(5, 10))
+    status_frm.grid_columnconfigure(1, weight=1)
+
+    refresh_btn = ttk.Button(status_frm, text='刷新', command=lambda: refresh())
+    refresh_btn.grid(row=0, column=2, rowspan=2, sticky='e', padx=(10, 0), pady=3)
 
     def refresh():
         llbot_ok, forward_ok = get_status()
@@ -353,6 +355,9 @@ def _set_taskbar_icon(hwnd: int, ico_path: str) -> None:
 
 
 if __name__ == '__main__':
+    splash = splash_mod.SplashScreen()
+    splash.update(0, '正在准备环境...')
+
     import wizard as wizard_mod
     import forward as forward_mod
     forward_app = forward_mod.app
@@ -383,6 +388,7 @@ if __name__ == '__main__':
             f'期望路径: {llbot_dir}'
         )
         root_tmp.destroy()
+        splash.close()
         sys.exit(1)
 
     # 检查 config.json，不存在则弹出向导
@@ -396,10 +402,12 @@ if __name__ == '__main__':
         )
         root_tmp.destroy()
         if not answer:
+            splash.close()
             sys.exit(0)
 
         wizard_config = wizard_mod.run_wizard()
         if wizard_config is None:
+            splash.close()
             sys.exit(0)
         wizard_mod.save_config(wizard_config, fwd_config_path)
 
@@ -419,13 +427,14 @@ if __name__ == '__main__':
         if rebuild:
             wizard_config = wizard_mod.run_wizard()
             if wizard_config is None:
+                splash.close()
                 sys.exit(0)
             wizard_mod.save_config(wizard_config, fwd_config_path)
         else:
+            splash.close()
             sys.exit(1)
 
-    splash = splash_mod.SplashScreen()
-    splash.update(0, '正在准备环境...')
+    splash.update(25, '正在准备环境...')
 
     # 启动 LLBot（后台隐藏窗口）
     llbot_exe = os.path.join(llbot_dir, 'llbot.exe')
@@ -552,7 +561,7 @@ if __name__ == '__main__':
 
     # Tab 标签页
     style = ttk.Style()
-    style.configure('TNotebook.Tab', padding=(20, 5))
+    style.configure('TNotebook.Tab', padding=(35, 8), font=('微软雅黑', 10))
 
     notebook = ttk.Notebook(root, padding=5)
     notebook.pack(fill='both', expand=True, padx=5, pady=5)

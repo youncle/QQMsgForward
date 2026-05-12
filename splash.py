@@ -13,7 +13,7 @@ class SplashScreen:
         self._root.lift()
 
         # 窗口尺寸和居中
-        win_w, win_h = 400, 120
+        win_w, win_h = 520, 150
         scr_w = self._root.winfo_screenwidth()
         scr_h = self._root.winfo_screenheight()
         x = (scr_w - win_w) // 2
@@ -24,7 +24,7 @@ class SplashScreen:
         title = tk.Label(
             self._root,
             text='QQ Forward',
-            font=('微软雅黑', 14, 'bold'),
+            font=('微软雅黑', 16, 'bold'),
             fg='#ffffff',
             bg='#2b2b2b',
         )
@@ -34,7 +34,7 @@ class SplashScreen:
         self._bar = ttk.Progressbar(
             self._root,
             mode='determinate',
-            length=340,
+            length=460,
             maximum=100,
         )
         self._bar.pack(pady=(0, 6))
@@ -43,7 +43,7 @@ class SplashScreen:
         self._label = tk.Label(
             self._root,
             text='正在准备...',
-            font=('微软雅黑', 9),
+            font=('微软雅黑', 10),
             fg='#aaaaaa',
             bg='#2b2b2b',
         )
