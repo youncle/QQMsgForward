@@ -358,6 +358,12 @@ if __name__ == '__main__':
     splash = splash_mod.SplashScreen()
     splash.update(0, '正在准备环境...')
 
+    # 清理上次运行残留进程（端口 3000/8080 被占用时强制释放）
+    if check_port(LLBOT_PORT):
+        kill_port_process(LLBOT_PORT)
+    if check_port(FORWARD_PORT):
+        kill_port_process(FORWARD_PORT)
+
     import wizard as wizard_mod
     import forward as forward_mod
     forward_app = forward_mod.app
