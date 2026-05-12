@@ -548,7 +548,8 @@ if __name__ == '__main__':
 
 # 恢复窗口尺寸
     saved_geo = load_window_geometry()
-    root.geometry(saved_geo or '1100x750')
+    if saved_geo:
+        root.geometry(saved_geo)
 
     def _on_configure(event):
         global _save_timer_id
@@ -571,5 +572,17 @@ if __name__ == '__main__':
     # 显示主窗口
     show_main_window(root)
     _set_taskbar_icon(root.winfo_id(), ico_path)
+
+    # 首次运行：捕获布局自然尺寸作为默认
+    if not saved_geo:
+        root.update_idletasks()
+        default_geo = root.geometry()
+        save_window_geometry(default_geo)
+
+    # 设置最小尺寸（基于当前 geometry，用户只能调大不能调小）
+    geo_str = root.geometry()
+    base_w = int(geo_str.split('x')[0])
+    base_h = int(geo_str.split('x')[1].split('+')[0])
+    root.minsize(base_w, base_h)
 
     root.mainloop()
