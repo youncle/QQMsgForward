@@ -9,9 +9,10 @@
     },
     "107054156": {
       "targets": [
-        "702961941"
+        "702961941",
+        "1098354853"
       ],
-      "note": "生产：朝暮说-私享会-商家（107054156）=》朝暮说-私享会-客户（702961941）"
+      "note": "生产：朝暮说-私享会-商家（107054156）=》朝暮说-私享会-客户（702961941）+朝暮说-拼夕夕（1098354853）"
     }
   },
   "llbot_api": "http://127.0.0.1:3000",
@@ -19,7 +20,12 @@
   "filter": {
     "qrcode": {
       "enabled": false,
-      "keywords": [],
+      "keywords": [
+        "feishu",
+        "weixin",
+        "qq",
+        "dingding"
+      ],
       "mode": "image_with_keyword",
       "block_pure_image": false,
       "decode_enabled": true,

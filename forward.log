@@ -377,3 +377,73 @@
 2026-05-12 15:52:31 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:8080
 2026-05-12 15:52:31 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 20:24:06 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 20:24:06 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 20:25:42 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | 检查好发货...
+2026-05-12 20:25:42 - INFO - 127.0.0.1 - - [12/May/2026 20:25:42] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 20:25:42 - INFO - 127.0.0.1 - - [12/May/2026 20:25:42] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 20:40:06 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 20:40:06 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:05:19 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:05:19 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:09:05 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:09:05 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:18:19 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:18:19 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:21:11 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:21:11 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:26:25 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:26:25 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:31:18 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:31:18 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:31:44 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | 保护方法...
+2026-05-12 21:31:44 - INFO - 127.0.0.1 - - [12/May/2026 21:31:44] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 21:31:44 - INFO - 127.0.0.1 - - [12/May/2026 21:31:44] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 21:32:00 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | [CQ:image,file=C82813A4FE1D0A51605D109FD4D436AE.pn...
+2026-05-12 21:32:00 - INFO - 127.0.0.1 - - [12/May/2026 21:32:00] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 21:32:00 - INFO - 127.0.0.1 - - [12/May/2026 21:32:00] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 21:32:16 - INFO - 127.0.0.1 - - [12/May/2026 21:32:16] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 21:32:26 - INFO - ✅ 转发成功: 1079264158 → 1080631149 | [CQ:image,file=82CBBAC31EB07404F48B3C18893CF54C.pn...
+2026-05-12 21:32:26 - INFO - 127.0.0.1 - - [12/May/2026 21:32:26] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 21:32:26 - INFO - 127.0.0.1 - - [12/May/2026 21:32:26] "POST /webhook HTTP/1.1" 200 -
+2026-05-12 21:35:24 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:35:24 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:40:10 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:40:10 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:43:30 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:43:30 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:48:21 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:48:21 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 21:55:01 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 21:55:01 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 22:00:12 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 22:00:12 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 22:59:12 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 22:59:12 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 23:12:41 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 23:12:41 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 23:20:49 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 23:20:49 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 23:23:04 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 23:23:04 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 23:27:38 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2026-05-12 23:27:38 - INFO - [33mPress CTRL+C to quit[0m
