@@ -165,7 +165,8 @@ def webhook():
                             f"| 文本={raw_text[:50]}")
 
         # 7. 执行转发
-        target_groups = forward_rules[group_id]
+        rule = forward_rules[group_id]
+        target_groups = rule['targets'] if isinstance(rule, dict) else rule
         for to_group in target_groups:
             try:
                 rate_limit(to_group)
