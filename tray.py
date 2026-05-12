@@ -16,6 +16,7 @@ from PIL import Image, ImageDraw
 
 import settings as settings_mod
 
+import splash as splash_mod
 
 # 路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -423,6 +424,9 @@ if __name__ == '__main__':
         else:
             sys.exit(1)
 
+    splash = splash_mod.SplashScreen()
+    splash.update(0, '正在准备环境...')
+
     # 启动 LLBot（后台隐藏窗口）
     llbot_exe = os.path.join(llbot_dir, 'llbot.exe')
     if os.path.exists(llbot_exe) and not check_port(LLBOT_PORT):
@@ -431,7 +435,9 @@ if __name__ == '__main__':
             cwd=llbot_dir,
             creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
         )
+        splash.update(25, '正在启动 LLBot 服务...')
     elif not os.path.exists(llbot_exe):
+        splash.close()
         from tkinter import messagebox
         root_tmp = tk.Tk()
         root_tmp.withdraw()
@@ -444,12 +450,15 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # 等待 LLBot 端口就绪
-    for _ in range(20):
+    for i in range(20):
         if check_port(LLBOT_PORT):
+            splash.update(50, '正在启动 LLBot 服务...')
             break
         time.sleep(1)
+        splash.update(25 + (i + 1) * 1.25, '正在启动 LLBot 服务...')
 
     if not check_port(LLBOT_PORT):
+        splash.close()
         from tkinter import messagebox
         root_tmp = tk.Tk()
         root_tmp.withdraw()
@@ -465,6 +474,7 @@ if __name__ == '__main__':
     if check_port(FORWARD_PORT):
         kill_port_process(FORWARD_PORT)
         if check_port(FORWARD_PORT):
+            splash.close()
             from tkinter import messagebox
             root_tmp = tk.Tk()
             root_tmp.withdraw()
@@ -492,12 +502,15 @@ if __name__ == '__main__':
 
     flask_thread = threading.Thread(target=run_flask, daemon=True)
     flask_thread.start()
+    splash.update(50, '正在启动转发服务...')
 
     # 等待转发端口就绪
-    for _ in range(10):
+    for i in range(10):
         if check_port(FORWARD_PORT):
+            splash.update(75, '正在启动转发服务...')
             break
         time.sleep(1)
+        splash.update(50 + (i + 1) * 2.5, '正在启动转发服务...')
 
     if not check_port(FORWARD_PORT):
         from tkinter import messagebox
@@ -508,6 +521,8 @@ if __name__ == '__main__':
             '转发服务可能未启动成功，请稍后在托盘面板中查看状态。'
         )
         root_tmp.destroy()
+
+    splash.update(75, '正在加载界面...')
 
     # 声明应用身份
     try:
@@ -605,5 +620,8 @@ if __name__ == '__main__':
     base_w = int(geo_str.split('x')[0])
     base_h = int(geo_str.split('x')[1].split('+')[0])
     root.minsize(base_w, base_h)
+
+    splash.update(100, '启动完成')
+    splash.close()
 
     root.mainloop()
