@@ -529,13 +529,7 @@ if __name__ == '__main__':
     notebook.add(create_status_tab(notebook), text='状态')
     notebook.add(settings_mod.create_settings_frame(notebook), text='设置')
 
-    # 底部按钮栏
-    bottom = ttk.Frame(root, padding=5)
-    bottom.pack(fill='x', side='bottom')
-    ttk.Button(bottom, text='隐藏到托盘',
-               command=lambda: hide_main_window(root)).pack(side='right', padx=5)
-
-    # 恢复窗口尺寸
+# 恢复窗口尺寸
     saved_geo = load_window_geometry()
     root.geometry(saved_geo or '1100x750')
 

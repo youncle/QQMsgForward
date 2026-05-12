@@ -41,7 +41,12 @@
       "Bash(git -C D:/DevVProgram/QQLLOneBotCLI commit -m 'fix\\(forward\\): reconfigure stderr to utf-8 for correct log encoding')",
       "Bash(echo \"exit: $?\")",
       "Read(//c/Users/Smile Uncle/.claude/plugins/cache/superpowers-marketplace/superpowers/5.1.0/skills/openspec/**)",
-      "Bash(bash \"C:\\\\Users\\\\Smile Uncle\\\\.claude\\\\plugins\\\\cache\\\\superpowers-marketplace\\\\superpowers\\\\5.1.0\\\\skills\\\\brainstorming\\\\scripts\\\\start-server.sh\" --project-dir \"D:\\\\DevVProgram\\\\QQLLOneBotCLI\")"
+      "Bash(bash \"C:\\\\Users\\\\Smile Uncle\\\\.claude\\\\plugins\\\\cache\\\\superpowers-marketplace\\\\superpowers\\\\5.1.0\\\\skills\\\\brainstorming\\\\scripts\\\\start-server.sh\" --project-dir \"D:\\\\DevVProgram\\\\QQLLOneBotCLI\")",
+      "Bash(git *)",
+      "Bash(rm -rf build dist)",
+      "Bash(pyinstaller --onefile --windowed --icon=app.ico --name QQForward --clean --hidden-import pystray --hidden-import PIL --hidden-import flask --hidden-import requests tray.py)",
+      "Bash(pip --version)",
+      "Bash(echo \"Exit code: $?\")"
     ]
   },
   "enabledPlugins": {
