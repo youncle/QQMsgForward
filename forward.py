@@ -5,6 +5,7 @@ from urllib3.util.retry import Retry
 import sys
 import time
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import json
 import os
 from typing import Dict, List
@@ -45,7 +46,7 @@ def set_log_path(path: str) -> None:
     """设置日志文件路径（由 tray.py 在启动时调用）"""
     global LOG_PATH
     LOG_PATH = path
-    fh = logging.FileHandler(path, encoding='utf-8')
+    fh = TimedRotatingFileHandler(path, when='midnight', backupCount=2, encoding='utf-8')
     fh.setFormatter(logging.Formatter(
         '%(asctime)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
