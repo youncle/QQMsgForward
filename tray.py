@@ -351,6 +351,9 @@ if __name__ == '__main__':
     fwd_config_path = os.path.join(base_dir, 'config.json')
     set_forward_config(fwd_config_path)
 
+    # 设置 forward 模块的日志文件路径（PyInstaller 下与 exe 同目录）
+    forward_mod.set_log_path(os.path.join(base_dir, 'forward.log'))
+
     # 检查 LLBot-CLI-Win-x64 目录是否存在
     llbot_dir = os.path.join(base_dir, 'LLBot-CLI-Win-x64')
     if not os.path.isdir(llbot_dir):
