@@ -20,15 +20,19 @@ import splash as splash_mod
 
 # 路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-SHUTDOWN_FLAG = os.path.join(SCRIPT_DIR, '.shutdown.flag')
-LOG_FILE = os.path.join(SCRIPT_DIR, 'forward.log')
+if getattr(sys, 'frozen', False):
+    APP_DIR = os.path.dirname(sys.executable)
+else:
+    APP_DIR = SCRIPT_DIR
+SHUTDOWN_FLAG = os.path.join(APP_DIR, '.shutdown.flag')
+LOG_FILE = os.path.join(APP_DIR, 'forward.log')
 
 # 端口
 LLBOT_PORT = 3000
 FORWARD_PORT = 8080
 
 # 窗口状态文件
-WINDOW_STATE_FILE = os.path.join(SCRIPT_DIR, '.window_state.json')
+WINDOW_STATE_FILE = os.path.join(APP_DIR, '.window_state.json')
 _save_timer_id = None
 
 

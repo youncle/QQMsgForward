@@ -69,7 +69,8 @@
       "Bash(mkdir -p QQForward)",
       "Bash(cp dist/QQForward.exe QQForward/)",
       "Bash(cp -r LLBot-CLI-Win-x64 QQForward/)",
-      "Bash(cp libiconv.dll libzbar-64.dll msvcr120.dll QQForward/)"
+      "Bash(cp libiconv.dll libzbar-64.dll msvcr120.dll QQForward/)",
+      "Bash(cp config.json QQForward/)"
     ]
   },
   "enabledPlugins": {
