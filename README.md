@@ -15,26 +15,29 @@
 ## 用户使用（安装包）
 
 1. 双击 `QQForward_Setup.exe`，选择目录解压
-2. 进入 `QQForward/`，双击 `QQForward.exe` 启动
-3. 首次启动自动创建桌面快捷方式
-4. 配置说明见下文「配置」章节
+2. 首次登录，进入 'QQForward/LLBot-CLI-Win-x64/'，双击 'llbot.exe' 启动，配置 LLOneBot
+3. 进入 `QQForward/`，双击 `QQForward.exe` 启动
+4. 首次启动自动创建桌面快捷方式
+5. 配置说明见下文「配置」章节
 
 构建安装包详见 [BUILD.md](BUILD.md)。
 
 ## 开发使用
 
-### 1. 安装依赖
+### 1. 配置 LLOneBot
+
+1.运行 QQForward/LLBot-CLI-Win-x64/llbot.exe 程序；根据提示登录机器人 QQ 号。
+
+2.打开 LLOneBot WebUI（`http://127.0.0.1:3080/#onebot`，密码 `llbot@forward123`），确保启用：
+
+- **HTTP API**（端口 3000）— 发送消息
+- **HTTP POST Webhook**（URL: `http://127.0.0.1:8080/webhook`）— 接收消息
+
+### 2. 安装依赖
 
 ```bash
 pip install -r requirements.txt
 ```
-
-### 2. 配置 LLOneBot
-
-打开 LLOneBot WebUI（`http://127.0.0.1:3080/#onebot`，密码 `llbot@forward123`），确保启用：
-
-- **HTTP API**（端口 3000）— 发送消息
-- **HTTP POST Webhook**（URL: `http://127.0.0.1:8080/webhook`）— 接收消息
 
 ### 3. 启动
 
