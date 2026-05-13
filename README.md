@@ -1,18 +1,27 @@
 # QQ 群消息转发
 
-基于 [LLOneBot](https://github.com/LLOneBot/LuckyLilliaBot) 的 QQ 群消息实时转发系统，支持广告过滤、一键启停、托盘管理。
+基于 [LLOneBot](https://github.com/LLOneBot/LuckyLilliaBot) 的 QQ 群消息实时转发系统，支持广告过滤、系统托盘管理、一键安装。
 
 ## 功能
 
 - **群消息转发** — 监听源群消息，实时转发到目标群
-- **广告过滤** — 自动拦截二维码广告和私人联系方式
-  - QR 码检测：图片 + 关键词 / 纯图片拦截
+- **广告过滤** — QR 码解码识别 + 联系方式正则匹配
+  - QR 码检测：图片 + 关键词 / 纯图片 / 所有图片 三种拦截模式
   - 联系方式检测：正则匹配手机号、QQ 号、微信号、邮箱
   - 试运行模式：先观察再拦截
-- **一键启停** — 双击 `start.vbs` 启动，双击 `stop.vbs` 关闭
-- **托盘管理** — 系统托盘图标显示运行状态，右键菜单可查看状态或关闭
+- **系统托盘** — 托盘图标显示运行状态，右键菜单可查看状态、修改配置、退出
+- **一键安装包** — 用户无需安装 Python，双击安装即用
 
-## 快速开始
+## 用户使用（安装包）
+
+1. 双击 `QQForward_Setup.exe`，选择目录解压
+2. 进入 `QQForward/`，双击 `QQForward.exe` 启动
+3. 首次启动自动创建桌面快捷方式
+4. 配置说明见下文「配置」章节
+
+构建安装包详见 [BUILD.md](BUILD.md)。
+
+## 开发使用
 
 ### 1. 安装依赖
 
@@ -24,44 +33,41 @@ pip install -r requirements.txt
 
 打开 LLOneBot WebUI（`http://127.0.0.1:3080/#onebot`，密码 `llbot@forward123`），确保启用：
 
-- **HTTP API**（端口 3000）— 用于发送消息
-- **HTTP POST Webhook**（URL: `http://127.0.0.1:8080/webhook`）— 用于接收消息
+- **HTTP API**（端口 3000）— 发送消息
+- **HTTP POST Webhook**（URL: `http://127.0.0.1:8080/webhook`）— 接收消息
 
-### 3. 修改转发规则
+### 3. 启动
 
-编辑 `config.json`：
-
-```json
-{
-  "forward_rules": {
-    "1079264158": ["1080631149"]
-  }
-}
+```bash
+python tray.py
 ```
 
-格式：`"源群ID": ["目标群ID1", "目标群ID2"]`
+或双击 `start.vbs`。
 
-### 4. 启动
+## 配置
 
-双击 `start.vbs`，UAC 确认后服务在后台启动，托盘出现绿色圆点。
-
-## 配置说明
+编辑 `config.json`（安装包已内置默认配置）：
 
 ```json
 {
   "robot_qq": 2776992588,
-  "forward_rules": { "源群": ["目标群"] },
+  "forward_rules": { "源群QQ": ["目标群QQ"] },
   "llbot_api": "http://127.0.0.1:3000",
   "filter": {
     "qrcode": {
       "enabled": true,
       "keywords": ["加我", "扫码", "微信", ...],
-      "block_pure_image": true
+      "mode": "image_with_keyword"
     },
     "contact": {
       "enabled": true,
-      "patterns": { "phone": "1[3-9]\\d{9}", ... },
-      "keywords": ["我的Q", "私聊我", ...]
+      "patterns": {
+        "phone": "1[3-9]\\d{9}",
+        "qq": "(?<!\\d)[1-9]\\d{4,9}(?!\\d)",
+        "wechat": "wxid_[a-z0-9]+",
+        "email": "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
+      },
+      "keywords": ["QQ", "微信", "加好友", ...]
     },
     "log_only": false
   }
@@ -70,25 +76,35 @@ pip install -r requirements.txt
 
 | 配置项 | 说明 |
 |--------|------|
+| `robot_qq` | 机器人 QQ 号，用于区分自身消息 |
+| `forward_rules` | 转发规则，格式 `{"源群": ["目标群1", "目标群2"]}` |
 | `filter.qrcode.enabled` | 是否启用二维码过滤 |
+| `filter.qrcode.mode` | `image_with_keyword` / `pure_image` / `all_images` |
 | `filter.qrcode.keywords` | 触发拦截的关键词列表 |
-| `filter.qrcode.block_pure_image` | 是否拦截所有纯图片消息（无文字 = 疑似二维码） |
 | `filter.contact.enabled` | 是否启用联系方式过滤 |
 | `filter.contact.patterns` | 正则表达式（手机号/QQ号/微信号/邮箱） |
-| `filter.log_only` | `true` 时仅记录日志不拦截（先观察再启用） |
+| `filter.log_only` | `true` 时仅记录日志不拦截（试运行） |
 
 ## 目录结构
 
 ```
-├── config.json              # 配置文件
-├── qq-message-forward.py    # 转发服务（Flask webhook）
+├── tray.py                  # 主入口，系统托盘 + GUI
+├── forward.py               # 转发服务（Flask webhook）
 ├── filter.py                # 消息过滤模块
-├── tray.py                  # 系统托盘程序
-├── start.vbs                # 一键启动
-├── stop.vbs                 # 一键关闭
+├── qr_decoder.py            # QR 码解码（pyzbar）
+├── settings.py              # 设置界面
+├── wizard.py                # 首次配置向导
+├── splash.py                # 启动进度条
+├── config.json              # 配置文件
 ├── requirements.txt         # Python 依赖
-├── tests/
-│   └── test_filter.py       # 过滤单元测试（32 个）
+├── build.bat                # 一键构建安装包
+├── install.bat              # 开发环境安装脚本
+├── start.vbs / stop.vbs     # 一键启停
+├── app.ico                  # 程序图标（自动生成）
+├── libiconv.dll             # zbar 依赖
+├── libzbar-64.dll           # 二维码解码引擎
+├── msvcr120.dll             # VC++ 2013 运行时
 ├── LLBot-CLI-Win-x64/       # LLOneBot 运行环境
-└── forward.log              # 运行日志
+├── tests/                   # 单元测试
+└── openspec/                # 规格文档
 ```
