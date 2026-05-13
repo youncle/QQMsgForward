@@ -386,6 +386,15 @@ if __name__ == '__main__':
     splash = splash_mod.SplashScreen()
     splash.update(0, '正在准备环境...')
 
+    # 注册异常钩子：启动过程中任何未处理异常都会关闭进度条
+    _orig_excepthook = sys.excepthook
+
+    def _splash_excepthook(exc_type, exc_val, exc_tb):
+        splash.close()
+        _orig_excepthook(exc_type, exc_val, exc_tb)
+
+    sys.excepthook = _splash_excepthook
+
     # 清理上次运行残留进程（端口 3000/8080 被占用时强制释放）
     if check_port(LLBOT_PORT):
         kill_port_process(LLBOT_PORT)

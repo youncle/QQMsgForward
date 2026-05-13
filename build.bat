@@ -66,7 +66,6 @@ echo [5/5] 7-Zip SFX 打包 ...
 echo ;!@Install@!UTF-8!
 echo Title="QQ消息转发"
 echo BeginPrompt="即将安装 QQ消息转发 到当前目录。继续？"
-echo ExecuteFile="QQForward\\QQForward.exe"
 echo ;!@InstallEnd@!
 ) > sfx_config.txt
 
