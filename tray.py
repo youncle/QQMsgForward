@@ -312,23 +312,30 @@ def setup_tray(root, on_open):
 
 
 def create_desktop_shortcut():
-    """在桌面创建指向 start.vbs 的快捷方式，使用圆点图标"""
+    """在桌面创建快捷方式（PyInstaller 下指向 exe，开发模式下指向 start.vbs）"""
     try:
         desktop = os.path.join(os.environ['USERPROFILE'], 'Desktop')
         lnk_path = os.path.join(desktop, 'QQ Forward.lnk')
 
+        # PyInstaller 下 exe 目录 ≠ __file__ 目录，需用 get_base_dir()
+        if getattr(sys, 'frozen', False):
+            app_dir = os.path.dirname(sys.executable)
+            target_path = sys.executable
+        else:
+            app_dir = SCRIPT_DIR
+            target_path = os.path.join(SCRIPT_DIR, 'start.vbs')
+
         # 生成 .ico 图标文件
-        ico_path = os.path.join(SCRIPT_DIR, 'app.ico')
+        ico_path = os.path.join(app_dir, 'app.ico')
         _save_icon_file(ico_path)
 
-        start_vbs = os.path.join(SCRIPT_DIR, 'start.vbs')
-        tmp_vbs = os.path.join(SCRIPT_DIR, '.create_shortcut.vbs')
+        tmp_vbs = os.path.join(app_dir, '.create_shortcut.vbs')
 
         vbs_code = (
             f'Set ws = CreateObject("WScript.Shell")\r\n'
             f'Set sc = ws.CreateShortcut("{lnk_path}")\r\n'
-            f'sc.TargetPath = "{start_vbs}"\r\n'
-            f'sc.WorkingDirectory = "{SCRIPT_DIR}"\r\n'
+            f'sc.TargetPath = "{target_path}"\r\n'
+            f'sc.WorkingDirectory = "{app_dir}"\r\n'
             f'sc.Description = "QQ Forward - 一键启动"\r\n'
             f'sc.IconLocation = "{ico_path}"\r\n'
             f'sc.Save()\r\n'

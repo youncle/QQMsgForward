@@ -64,7 +64,12 @@
       "Read(//c/Program Files \\(x86\\)/7-Zip/**)",
       "Bash(\"/c/Program Files/7-Zip/7z.exe\" a -mx=9 -mfb=273 -ms=on -mmt=on output/QQForward.7z \"output/QQForward/\")",
       "Bash(\"/c/Program Files/7-Zip/7z.exe\" a -mx=9 -mfb=273 -ms=on -mmt=on \"output/QQForward.7z\" \"output/QQForward/\")",
-      "Bash(\"/c/Program Files/7-Zip/7z.exe\" a -mx=9 -mfb=273 -ms=on -mmt=on \"QQForward.7z\" \"QQForward/\")"
+      "Bash(\"/c/Program Files/7-Zip/7z.exe\" a -mx=9 -mfb=273 -ms=on -mmt=on \"QQForward.7z\" \"QQForward/\")",
+      "Bash(rm -rf QQForward)",
+      "Bash(mkdir -p QQForward)",
+      "Bash(cp dist/QQForward.exe QQForward/)",
+      "Bash(cp -r LLBot-CLI-Win-x64 QQForward/)",
+      "Bash(cp libiconv.dll libzbar-64.dll msvcr120.dll QQForward/)"
     ]
   },
   "enabledPlugins": {
