@@ -132,26 +132,20 @@ def run_wizard() -> dict | None:
     qq_label = ttk.Label(p2, textvariable=qq_error, foreground='red')
     qq_label.grid(row=3, column=0, columnspan=2, pady=5)
 
-    def on_qq_change(*_):
+    def validate_and_next():
         val = qq_var.get().strip()
         if not val:
-            qq_error.set('')
-            next_btn.state(['disabled'])
+            qq_error.set('请输入机器人 QQ 号')
         elif not validate_qq_number(val):
             qq_error.set('QQ 号必须是纯数字，至少 5 位')
-            next_btn.state(['disabled'])
         else:
             qq_error.set('')
-            next_btn.state(['!disabled'])
-
-    qq_var.trace_add('write', on_qq_change)
+            show_page(2)
 
     btn_frame_2 = ttk.Frame(p2)
     btn_frame_2.grid(row=4, column=0, columnspan=2, pady=(30, 10))
     ttk.Button(btn_frame_2, text='← 上一步', command=lambda: show_page(0)).pack(side='left', padx=5)
-    next_btn = ttk.Button(btn_frame_2, text='下一步 →', command=lambda: show_page(2))
-    next_btn.pack(side='left', padx=5)
-    next_btn.state(['disabled'])
+    ttk.Button(btn_frame_2, text='下一步 →', command=validate_and_next).pack(side='left', padx=5)
     pages[1] = p2
 
     # ---- Page 3: Forward Rules ----

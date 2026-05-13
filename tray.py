@@ -427,6 +427,7 @@ if __name__ == '__main__':
 
     # 检查 config.json，不存在则弹出向导
     if not os.path.exists(fwd_config_path):
+        splash.close()
         from tkinter import messagebox
         root_tmp = tk.Tk()
         root_tmp.withdraw()
@@ -436,20 +437,21 @@ if __name__ == '__main__':
         )
         root_tmp.destroy()
         if not answer:
-            splash.close()
             sys.exit(0)
 
         wizard_config = wizard_mod.run_wizard()
         if wizard_config is None:
-            splash.close()
             sys.exit(0)
         wizard_mod.save_config(wizard_config, fwd_config_path)
+        splash = splash_mod.SplashScreen()
+        splash.update(0, '正在准备环境...')
 
     # 检查 config.json 是否有效
     try:
         with open(fwd_config_path, 'r', encoding='utf-8') as f:
             json.load(f)
     except (json.JSONDecodeError, FileNotFoundError):
+        splash.close()
         from tkinter import messagebox
         root_tmp = tk.Tk()
         root_tmp.withdraw()
@@ -461,11 +463,11 @@ if __name__ == '__main__':
         if rebuild:
             wizard_config = wizard_mod.run_wizard()
             if wizard_config is None:
-                splash.close()
                 sys.exit(0)
             wizard_mod.save_config(wizard_config, fwd_config_path)
+            splash = splash_mod.SplashScreen()
+            splash.update(0, '正在准备环境...')
         else:
-            splash.close()
             sys.exit(1)
 
     splash.update(25, '正在准备环境...')
