@@ -64,7 +64,7 @@
       {
         "type": "http-post",
         "enable": true,
-        "url": "http://127.0.0.1:8080/webhook",
+        "url": "http://127.0.0.1:9090/webhook",
         "enableHeart": false,
         "heartInterval": 60000,
         "token": "",

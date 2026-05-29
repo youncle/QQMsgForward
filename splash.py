@@ -46,7 +46,7 @@ class SplashScreen:
             self._root,
             text='正在准备...',
             font=('微软雅黑', 10),
-            fg='#aaaaaa',
+            fg='#ffcc00',
             bg='#2b2b2b',
         )
         self._label.pack()
@@ -63,10 +63,10 @@ class SplashScreen:
         while abs(current - target) > abs(step):
             current += step
             self._bar['value'] = current
-            self._label.config(text=text)
+            self._label.config(text=text, fg='#ffcc00')
             self._root.update()
         self._bar['value'] = target
-        self._label.config(text=text)
+        self._label.config(text=text, fg='#ffcc00')
         self._root.update()
 
     def close(self) -> None:

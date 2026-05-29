@@ -29,7 +29,7 @@ LOG_FILE = os.path.join(APP_DIR, 'forward.log')
 
 # 端口
 LLBOT_PORT = 3000
-FORWARD_PORT = 8080
+FORWARD_PORT = 9090
 
 # 窗口状态文件
 WINDOW_STATE_FILE = os.path.join(APP_DIR, '.window_state.json')
@@ -153,7 +153,7 @@ def create_status_tab(parent):
         _llbot_labels.append(_sl)
 
     _row_offset = len(_rq_list_status) if _rq_list_status else 1
-    ttk.Label(status_frm, text='转发脚本 (端口 8080):', width=20, anchor='w').grid(
+    ttk.Label(status_frm, text='转发脚本 (端口 9090):', width=20, anchor='w').grid(
         row=_row_offset, column=0, sticky='w', pady=3)
     forward_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
     forward_status.grid(row=_row_offset, column=1, sticky='w', pady=3)
@@ -544,7 +544,7 @@ if __name__ == '__main__':
             # 不存在则复制目录
             if not os.path.isdir(_inst_dir):
                 import shutil
-                splash.update(25, f'正在复制 LLBot 实例 {_idx + 1}...')
+                splash.update(25, f'正在复制 LLBot 实例 {_idx + 1} (QQ {_qq})...')
                 shutil.copytree(llbot_dir, _inst_dir)
 
             # 从实例1同步所有QQ配置数据到实例2，并更新端口
@@ -611,7 +611,7 @@ if __name__ == '__main__':
             )
             # 实例间间隔5秒，让QQ窗口依次弹出
             if _idx < len(_rq_list) - 1:
-                splash.update(25, f'已启动 LLBot 实例 {_idx + 1}，10秒后启动下一个...')
+                splash.update(25, f'已启动 LLBot 实例 {_idx + 1} (QQ {_qq})，10秒后启动下一个...')
                 time.sleep(10)
         elif not os.path.exists(_exe):
             splash.close()
@@ -623,18 +623,20 @@ if __name__ == '__main__':
             root_tmp.destroy()
             sys.exit(1)
 
-        splash.update(25, f'已启动 LLBot 实例 {_idx + 1}/{len(_rq_list)}')
+        splash.update(25, f'已启动 LLBot 实例 {_idx + 1}/{len(_rq_list)} (QQ {_qq})')
 
-    splash.update(30, '正在等待 LLBot 登录...')
+    splash.update(30, '请查看弹出的QQ登录窗口，扫码登录...')
 
     # 统一等待所有实例 HTTP API 端口就绪
     for _wait_i in range(60):
         _ready_ports = [p for p in [LLBOT_PORT + i for i in range(len(_rq_list))] if check_port(p)]
         if len(_ready_ports) == len(_rq_list):
             break
+        _pending_idx = [i for i in range(len(_rq_list)) if not check_port(LLBOT_PORT + i)]
+        _pending_text = ', '.join([f'QQ {_rq_list[i]}' for i in _pending_idx])
         time.sleep(1)
         splash.update(30 + min(_wait_i * 0.5, 20),
-            f'等待登录... ({len(_ready_ports)}/{len(_rq_list)} 已就绪)')
+            f'等待登录... ({len(_ready_ports)}/{len(_rq_list)}) 请登录: {_pending_text}')
 
     _failed = [p for p in [LLBOT_PORT + i for i in range(len(_rq_list))] if not check_port(p)]
     if _failed:
@@ -661,7 +663,7 @@ if __name__ == '__main__':
     except Exception:
         pass
 
-    # 检查端口 8080，如果被旧进程占用则 kill
+    # 检查端口 9090，如果被旧进程占用则 kill
     if check_port(FORWARD_PORT):
         kill_port_process(FORWARD_PORT)
         if check_port(FORWARD_PORT):

@@ -14,6 +14,8 @@ app.ico
 
 # LLBot logs (bundled)
 LLBot-CLI-Win-x64/bin/llbot/data/logs/
+LLBot-CLI-Win-x64-2/bin/llbot/data/logs/
+LLBot-CLI-Win-x64-3/bin/llbot/data/logs/
 
 # OS
 Thumbs.db
