@@ -130,20 +130,38 @@ def create_status_tab(parent):
     status_frm = ttk.Frame(frame)
     status_frm.pack(fill='x')
 
-    ttk.Label(status_frm, text='LLBot (端口 3000):', width=20, anchor='w').grid(
-        row=0, column=0, sticky='w', pady=3)
-    llbot_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
-    llbot_status.grid(row=0, column=1, sticky='w', pady=3)
+    # 读取 robot_qq 确定实例数
+    _rq_list_status = []
+    try:
+        with open(os.path.join(APP_DIR, 'config.json'), 'r', encoding='utf-8') as _f:
+            _rq_data_status = json.load(_f)
+            _rqt = _rq_data_status.get('robot_qq', [])
+            if isinstance(_rqt, list):
+                _rq_list_status = _rqt
+            elif isinstance(_rqt, int):
+                _rq_list_status = [_rqt]
+    except Exception:
+        _rq_list_status = []
 
+    _llbot_labels = []
+    for _si, _sq in enumerate(_rq_list_status or [0]):
+        _sport = LLBOT_PORT + _si
+        ttk.Label(status_frm, text=f'LLBot-{_si + 1} ({_sq}):', width=20, anchor='w').grid(
+            row=_si, column=0, sticky='w', pady=3)
+        _sl = ttk.Label(status_frm, text='检测中...', foreground='gray')
+        _sl.grid(row=_si, column=1, sticky='w', pady=3)
+        _llbot_labels.append(_sl)
+
+    _row_offset = len(_rq_list_status) if _rq_list_status else 1
     ttk.Label(status_frm, text='转发脚本 (端口 8080):', width=20, anchor='w').grid(
-        row=1, column=0, sticky='w', pady=3)
+        row=_row_offset, column=0, sticky='w', pady=3)
     forward_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
-    forward_status.grid(row=1, column=1, sticky='w', pady=3)
+    forward_status.grid(row=_row_offset, column=1, sticky='w', pady=3)
 
     status_frm.grid_columnconfigure(1, weight=1)
 
     refresh_btn = ttk.Button(status_frm, text='刷新', command=lambda: refresh())
-    refresh_btn.grid(row=0, column=2, rowspan=2, sticky='e', padx=(10, 0), pady=3)
+    refresh_btn.grid(row=0, column=2, rowspan=_row_offset + 1, sticky='e', padx=(10, 0), pady=3)
 
     _log_timer_id = None
     _btn_timer_id = None
@@ -175,10 +193,12 @@ def create_status_tab(parent):
 
     def refresh():
         nonlocal _btn_timer_id
-        llbot_ok, forward_ok = get_status()
-        llbot_status.config(
-            text='运行中' if llbot_ok else '已停止',
-            foreground='green' if llbot_ok else 'red')
+        forward_ok = check_port(FORWARD_PORT)
+        for _si, _sl in enumerate(_llbot_labels):
+            _sok = check_port(LLBOT_PORT + _si)
+            _sl.config(
+                text=f'运行中 (端口 {LLBOT_PORT + _si})' if _sok else '已停止',
+                foreground='green' if _sok else 'red')
         forward_status.config(
             text='运行中' if forward_ok else '已停止',
             foreground='green' if forward_ok else 'red')
@@ -251,6 +271,23 @@ def shutdown_service(icon):
         except OSError:
             pass
 
+    # 清理多余实例目录
+    try:
+        with open(os.path.join(APP_DIR, 'config.json'), 'r', encoding='utf-8') as _cf:
+            _cfg_data = json.load(_cf)
+        _rq = _cfg_data.get('robot_qq', [])
+        if isinstance(_rq, int):
+            _rq = [_rq]
+        _keep = max(1, len(_rq))  # 至少保留1个
+    except Exception:
+        _keep = 1
+    _base = os.path.join(APP_DIR, 'LLBot-CLI-Win-x64')
+    for _idx_dir in range(_keep, 20):
+        _dir = _base + (f'-{_idx_dir + 1}' if _idx_dir > 0 else '')
+        if _dir != _base and os.path.isdir(_dir):
+            import shutil
+            shutil.rmtree(_dir, ignore_errors=True)
+
     icon.stop()
 
 
@@ -266,7 +303,7 @@ def monitor_loop(icon, root):
     """监控线程：每5秒检查服务状态 + 关闭标志文件"""
     was_ok = True
     while running:
-        time.sleep(5)
+        time.sleep(10)
         if not running:
             break
 
@@ -395,11 +432,10 @@ if __name__ == '__main__':
 
     sys.excepthook = _splash_excepthook
 
-    # 清理上次运行残留进程（端口 3000/8080 被占用时强制释放）
-    if check_port(LLBOT_PORT):
-        kill_port_process(LLBOT_PORT)
-    if check_port(FORWARD_PORT):
-        kill_port_process(FORWARD_PORT)
+    # 清理上次运行残留进程
+    for _cp in [LLBOT_PORT, LLBOT_PORT + 1, LLBOT_PORT + 2, FORWARD_PORT]:
+        if check_port(_cp):
+            kill_port_process(_cp)
 
     import wizard as wizard_mod
     import forward as forward_mod
@@ -481,48 +517,149 @@ if __name__ == '__main__':
 
     splash.update(25, '正在准备环境...')
 
-    # 启动 LLBot（后台隐藏窗口）
-    llbot_exe = os.path.join(llbot_dir, 'llbot.exe')
-    if os.path.exists(llbot_exe) and not check_port(LLBOT_PORT):
-        subprocess.Popen(
-            [llbot_exe],
-            cwd=llbot_dir,
-            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
-        )
-        splash.update(25, '正在启动 LLBot 服务...')
-    elif not os.path.exists(llbot_exe):
-        splash.close()
-        from tkinter import messagebox
-        root_tmp = tk.Tk()
-        root_tmp.withdraw()
-        messagebox.showerror(
-            '组件缺失',
-            f'未找到 LLBot 程序:\n{llbot_exe}\n\n'
-            '请确认安装包已完整解压。'
-        )
-        root_tmp.destroy()
-        sys.exit(1)
+    # ====== 多 LLBot 实例启动 ======
+    # 读取 robot_qq 数组，确定实例数
+    _instances = []
+    try:
+        with open(fwd_config_path, 'r', encoding='utf-8') as _f:
+            _cfg_data = json.load(_f)
+            _rq_list = _cfg_data.get('robot_qq', [])
+            if isinstance(_rq_list, int):
+                _rq_list = [_rq_list]
+    except Exception:
+        _rq_list = []
+    if not _rq_list:
+        _rq_list = [0]
 
-    # 等待 LLBot 端口就绪
-    for i in range(20):
-        if check_port(LLBOT_PORT):
-            splash.update(50, '正在启动 LLBot 服务...')
+    _llbot_apis = {}
+    for _idx, _qq in enumerate(_rq_list):
+        _port = LLBOT_PORT + _idx
+        _webui_port = 3080 + _idx
+        _llbot_apis[str(_qq)] = f'http://127.0.0.1:{_port}'
+
+        if _idx == 0:
+            _inst_dir = llbot_dir
+        else:
+            _inst_dir = llbot_dir.rstrip('\\') + f'-{_idx + 1}'
+            # 不存在则复制目录
+            if not os.path.isdir(_inst_dir):
+                import shutil
+                splash.update(25, f'正在复制 LLBot 实例 {_idx + 1}...')
+                shutil.copytree(llbot_dir, _inst_dir)
+
+            # 从实例1同步所有QQ配置数据到实例2，并更新端口
+            _src_data = os.path.join(llbot_dir, 'bin', 'llbot', 'data')
+            _dst_data = os.path.join(_inst_dir, 'bin', 'llbot', 'data')
+            if os.path.isdir(_src_data) and _idx > 0:
+                if not os.path.isdir(_dst_data):
+                    os.makedirs(_dst_data, exist_ok=True)
+                import shutil
+                for _fname in os.listdir(_src_data):
+                    _srcf = os.path.join(_src_data, _fname)
+                    _dstf = os.path.join(_dst_data, _fname)
+                    if os.path.isfile(_srcf) and _fname.endswith('.json'):
+                        try:
+                            shutil.copy2(_srcf, _dstf)
+                        except Exception:
+                            pass
+
+        # 更新实例2中所有配置文件的端口
+        _inst_data_dir = os.path.join(_inst_dir, 'bin', 'llbot', 'data')
+        if _idx > 0 and os.path.isdir(_inst_data_dir):
+            for _cfg_fn in os.listdir(_inst_data_dir):
+                if not _cfg_fn.endswith('.json'):
+                    continue
+                _cfg_fp = os.path.join(_inst_data_dir, _cfg_fn)
+                try:
+                    with open(_cfg_fp, 'r', encoding='utf-8') as _f:
+                        _c = json.load(_f)
+                    _ch = False
+                    for _conn in _c.get('ob11', {}).get('connect', []):
+                        if _conn.get('type') == 'http':
+                            if _conn.get('port') != _port:
+                                _conn['port'] = _port
+                                _ch = True
+                    _wu = _c.get('webui', {})
+                    if _wu.get('port') != _webui_port:
+                        _wu['port'] = _webui_port
+                        _ch = True
+                    if _ch:
+                        with open(_cfg_fp, 'w', encoding='utf-8') as _f:
+                            json.dump(_c, _f, ensure_ascii=False, indent=2)
+                except Exception:
+                    pass
+
+        # 同步更新 default_config.json 的 webui 端口
+        _def_cfg_path = os.path.join(_inst_dir, 'bin', 'llbot', 'default_config.json')
+        if os.path.exists(_def_cfg_path) and _idx > 0:
+            try:
+                with open(_def_cfg_path, 'r', encoding='utf-8') as _f:
+                    _def_cfg = json.load(_f)
+                if _def_cfg.get('webui', {}).get('port') != _webui_port:
+                    _def_cfg['webui']['port'] = _webui_port
+                    with open(_def_cfg_path, 'w', encoding='utf-8') as _f:
+                        json.dump(_def_cfg, _f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+
+        # 启动实例
+        _exe = os.path.join(_inst_dir, 'llbot.exe')
+        if os.path.exists(_exe) and not check_port(_port):
+            subprocess.Popen(
+                [_exe], cwd=_inst_dir,
+                creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
+            )
+            # 实例间间隔5秒，让QQ窗口依次弹出
+            if _idx < len(_rq_list) - 1:
+                splash.update(25, f'已启动 LLBot 实例 {_idx + 1}，10秒后启动下一个...')
+                time.sleep(10)
+        elif not os.path.exists(_exe):
+            splash.close()
+            from tkinter import messagebox
+            root_tmp = tk.Tk()
+            root_tmp.withdraw()
+            messagebox.showerror('组件缺失',
+                f'未找到 LLBot 程序:\n{_exe}')
+            root_tmp.destroy()
+            sys.exit(1)
+
+        splash.update(25, f'已启动 LLBot 实例 {_idx + 1}/{len(_rq_list)}')
+
+    splash.update(30, '正在等待 LLBot 登录...')
+
+    # 统一等待所有实例 HTTP API 端口就绪
+    for _wait_i in range(60):
+        _ready_ports = [p for p in [LLBOT_PORT + i for i in range(len(_rq_list))] if check_port(p)]
+        if len(_ready_ports) == len(_rq_list):
             break
         time.sleep(1)
-        splash.update(25 + (i + 1) * 1.25, '正在启动 LLBot 服务...')
+        splash.update(30 + min(_wait_i * 0.5, 20),
+            f'等待登录... ({len(_ready_ports)}/{len(_rq_list)} 已就绪)')
 
-    if not check_port(LLBOT_PORT):
+    _failed = [p for p in [LLBOT_PORT + i for i in range(len(_rq_list))] if not check_port(p)]
+    if _failed:
         splash.close()
         from tkinter import messagebox
         root_tmp = tk.Tk()
         root_tmp.withdraw()
-        messagebox.showerror(
-            '启动失败',
-            'LLBot 启动超时（端口 3000 未响应）。\n\n'
-            '请确认 LLBot-CLI-Win-x64 目录是否存在且完整。'
-        )
+        messagebox.showwarning('启动提示',
+            f'部分 LLBot 实例未登录（端口 {_failed}）\n\n'
+            '请在 WebUI 中完成登录后重新刷新。')
         root_tmp.destroy()
-        sys.exit(1)
+
+    splash.update(50, f'启动完成 {len(_rq_list)} 个 LLBot 实例')
+
+    # 写入 llbot_apis 到 config.json
+    try:
+        with open(fwd_config_path, 'r', encoding='utf-8') as _f:
+            _cfg_save = json.load(_f)
+        _cfg_save['llbot_apis'] = _llbot_apis
+        _tmp = fwd_config_path + '.tmp'
+        with open(_tmp, 'w', encoding='utf-8') as _f:
+            json.dump(_cfg_save, _f, ensure_ascii=False, indent=2)
+        os.replace(_tmp, fwd_config_path)
+    except Exception:
+        pass
 
     # 检查端口 8080，如果被旧进程占用则 kill
     if check_port(FORWARD_PORT):

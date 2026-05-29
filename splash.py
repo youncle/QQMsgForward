@@ -19,7 +19,7 @@ class SplashScreen:
         scr_w = self._root.winfo_screenwidth()
         scr_h = self._root.winfo_screenheight()
         x = (scr_w - win_w) // 2
-        y = (scr_h - win_h) // 2
+        y = (scr_h - win_h) // 3  # 位置上移
         self._root.geometry(f'{win_w}x{win_h}+{x}+{y}')
 
         # 标题

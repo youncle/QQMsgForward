@@ -12,6 +12,8 @@ QQ_CONTEXT_WHITELIST = ['群', '加群', '群号', '频道', 'channel', 'guild',
 
 def _extract_text(message: List[MessageSegment]) -> str:
     """从消息段数组（array 格式）中提取所有纯文本"""
+    if not isinstance(message, list):
+        return ""
     return ''.join(
         seg.get('data', {}).get('text', '')
         for seg in message
@@ -21,6 +23,8 @@ def _extract_text(message: List[MessageSegment]) -> str:
 
 def _has_image_array(message: List[MessageSegment]) -> bool:
     """检查消息数组是否包含图片段"""
+    if not isinstance(message, list):
+        return False
     return any(
         isinstance(seg, dict) and seg.get('type') == 'image'
         for seg in message

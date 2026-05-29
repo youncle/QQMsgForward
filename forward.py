@@ -17,11 +17,27 @@ CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.j
 _config = None
 
 
+def _mig_save(cfg):
+    """原子写入（仅供迁移用）"""
+    tmp = CONFIG_PATH + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(cfg, f, ensure_ascii=False, indent=2)
+    try:
+        os.replace(tmp, CONFIG_PATH)
+    except PermissionError:
+        logger.warning("迁移写入失败：无权限更新配置文件，内存已迁移")
+
+
 def load_config():
     """从文件加载配置（强制重新加载）"""
     global _config
     with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
         _config = json.load(f)
+    # 向后兼容：单 int → 数组
+    rq = _config.get('robot_qq')
+    if isinstance(rq, int):
+        _config['robot_qq'] = [rq]
+        _mig_save(_config)
     return _config
 
 
@@ -92,24 +108,25 @@ def _get_headers():
     return h
 
 # 缓存：去重+限流
-msg_cache: Dict[str, float] = {}
+msg_cache: Dict[tuple, float] = {}
 last_send_time: Dict[str, float] = {}
 
 app = Flask(__name__)
 
 
-def is_duplicate(msg_id: str) -> bool:
-    """检查消息是否重复，同时清理过期缓存"""
+def is_duplicate(group_id: str, raw_text: str) -> bool:
+    """检查消息是否重复（按群+内容判重），同时清理过期缓存"""
     cfg = get_config()
     window = cfg['forward']['duplicate_window']
     now = time.time()
     expired = [k for k, v in msg_cache.items() if now - v > window * 10]
     for k in expired:
         del msg_cache[k]
-    if msg_id in msg_cache:
-        if now - msg_cache[msg_id] < window:
+    key = (group_id, raw_text)
+    if key in msg_cache:
+        if now - msg_cache[key] < window:
             return True
-    msg_cache[msg_id] = now
+    msg_cache[key] = now
     return False
 
 
@@ -131,13 +148,38 @@ def webhook():
         cfg = get_config()
         robot_qq = cfg['robot_qq']
         forward_rules = cfg['forward_rules']
-        llbot_api = cfg['llbot_api']
-        filter_config = cfg.get('filter', {})
 
         data = request.json
         if not data:
             logger.warning("收到空的WebHook请求")
             return "ok"
+        logger.debug("Webhook data: group_id=%s msg_type=%s sender=%s raw=%s",
+                     data.get("group_id"), data.get("message_type"),
+                     data.get("sender",{}).get("user_id"),
+                     str(data.get("raw_message",""))[:60])
+
+        # 解析 llbot_apis（支持 dict/list/str 三种格式）
+        _raw_apis = cfg.get('llbot_apis', cfg.get('llbot_api', 'http://127.0.0.1:3000'))
+        if isinstance(_raw_apis, dict):
+            llbot_apis = list(_raw_apis.values())
+            _self_id = str(data.get('self_id', '')) if data else ''
+            _pref = _raw_apis.get(_self_id)
+        elif isinstance(_raw_apis, str):
+            llbot_apis = [_raw_apis]
+            _pref = None
+        else:
+            llbot_apis = list(_raw_apis)
+            _pref = None
+        if _pref and _pref in llbot_apis:
+            llbot_apis = [_pref] + [a for a in llbot_apis if a != _pref]
+        filter_config = cfg.get('filter', {})
+        if not data:
+            logger.warning("收到空的WebHook请求")
+            return "ok"
+        gid = data.get("group_id", "?")
+        uid = data.get("sender", {}).get("user_id", "?")
+        mt = data.get("message_type", "?")
+        logger.info(f"[DEBUG] webhook group={gid} type={mt} sender={uid} raw={str(data.get("raw_message",""))[:60]}")
 
         # 1. 过滤非群聊消息
         post_type = data.get("post_type")
@@ -157,7 +199,7 @@ def webhook():
             return "ok"
 
         # 3. 跳过自己发的消息（防止循环转发）
-        if sender_qq == robot_qq:
+        if sender_qq in robot_qq:
             logger.debug(f"跳过自身消息: {raw_text[:30]}")
             return "ok"
 
@@ -166,7 +208,7 @@ def webhook():
             return "ok"
 
         # 5. 去重
-        if is_duplicate(msg_id):
+        if is_duplicate(group_id, raw_text):
             logger.info(f"重复消息，跳过: {raw_text[:30]}")
             return "ok"
 
@@ -187,31 +229,36 @@ def webhook():
         rule = forward_rules[group_id]
         target_groups = rule['targets'] if isinstance(rule, dict) else rule
         for to_group in target_groups:
-            try:
-                rate_limit(to_group)
-                resp = session.post(
-                    f"{llbot_api}/send_group_msg",
-                    json={
-                        "group_id": int(to_group),
-                        "message": message_content
-                    },
-                    headers=_get_headers(),
-                    timeout=5
-                )
-                resp.raise_for_status()
-                result = resp.json()
-                if result.get("status") == "ok":
-                    logger.info(f"✅ 转发成功: {group_id} → {to_group} | {raw_text[:50]}...")
-                else:
-                    err_msg = result.get("msg", result.get("wording", "未知错误"))
-                    logger.error(f"❌ API处理失败: {group_id} → {to_group} | 错误: {err_msg}")
-
-            except requests.exceptions.ConnectionError:
-                logger.error(f"❌ 连接失败！请检查LLOneBot的HTTP服务是否开启，端口3000是否正常")
-            except requests.exceptions.Timeout:
-                logger.error(f"❌ 转发超时: {group_id} → {to_group}")
-            except Exception as e:
-                logger.error(f"❌ 转发异常: {group_id} → {to_group} | 错误: {str(e)}")
+            _sent = False
+            for _api in llbot_apis:
+                try:
+                    rate_limit(to_group)
+                    resp = session.post(
+                        f"{_api}/send_group_msg",
+                        json={
+                            "group_id": int(to_group),
+                            "message": message_content
+                        },
+                        headers=_get_headers(),
+                        timeout=5
+                    )
+                    resp.raise_for_status()
+                    result = resp.json()
+                    if result.get("status") == "ok":
+                        logger.info(f"✅ 转发成功: {group_id} → {to_group} | {raw_text[:50]}...")
+                        _sent = True
+                        break
+                    else:
+                        err_msg = result.get("msg", result.get("wording", "未知错误"))
+                        logger.warning(f"⚠️ API({_api})处理失败: {err_msg}，尝试下一个")
+                except requests.exceptions.ConnectionError:
+                    logger.warning(f"⚠️ 连接 {_api} 失败，尝试下一个")
+                except requests.exceptions.Timeout:
+                    logger.warning(f"⚠️ 转发超时({_api})，尝试下一个")
+                except Exception as e:
+                    logger.warning(f"⚠️ 转发异常({_api}): {str(e)}，尝试下一个")
+            if not _sent:
+                logger.error(f"❌ 所有API转发失败: {group_id} → {to_group}")
 
         return "ok"
 

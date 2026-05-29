@@ -33,7 +33,7 @@ DEFAULT_CONFIG = {
             'enabled': True,
             'patterns': {
                 'phone': '1[3-9]\\d{9}',
-                'qq': '(?<!\\d)[1-9]\\d{7,9}(?!\\d)',
+                'qq': '(?<!\\d)[1-9]\\d{8,9}(?!\\d)',
                 'wechat': 'wxid_[a-z0-9]+',
                 'email': '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}',
             },
@@ -53,8 +53,11 @@ DEFAULT_CONFIG = {
 
 
 def validate_qq_number(value: str) -> bool:
-    """QQ 号纯数字且至少 5 位"""
-    return value.isdigit() and len(value) >= 5
+    """QQ 号纯数字且至少 5 位，支持逗号分隔多个"""
+    parts = [v.strip() for v in value.replace("，", ",").split(",") if v.strip()]
+    if not parts:
+        return False
+    return all(p.isdigit() and len(p) >= 5 for p in parts)
 
 
 def generate_config(robot_qq: str, forward_rules: dict, filter_enabled: bool) -> dict:
@@ -62,7 +65,7 @@ def generate_config(robot_qq: str, forward_rules: dict, filter_enabled: bool) ->
     if not validate_qq_number(robot_qq):
         raise ValueError(f'无效的 QQ 号: {robot_qq}')
     cfg = copy.deepcopy(DEFAULT_CONFIG)
-    cfg['robot_qq'] = int(robot_qq)
+    cfg['robot_qq'] = [int(v.strip()) for v in robot_qq.replace('，', ',').split(',') if v.strip()]
     cfg['forward_rules'] = forward_rules
     if not filter_enabled:
         cfg['filter']['qrcode']['enabled'] = False

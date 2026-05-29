@@ -1,0 +1,16 @@
+[info] | 2026-05-29 21:12:24 | LLBot 7.11.4
+
+[info] | 2026-05-29 21:12:24 | Webui 服务器已启动 127.0.0.1:3080
+
+[error] | 2026-05-29 21:12:30 | [uncaughtException] listen EADDRINUSE: address already in use 127.0.0.1:3000
+
+[info] | 2026-05-29 21:14:31 | 发包获取rkey成功, private:&rkey=CAISMFhZG4lL8EC9YgMI_c2QDDSzF1INHQ7mtIyM3SLhnH8rxNOYyFND-ONGno58yMnEGQ, group:&rkey=CAISMFhZG4lL8EC9YgMI_c2QDDSzF1INHQ7mtPbhiuDo6RWUOZyoU_hzRqTgPNeee43ovw
+
+[info] | 2026-05-29 21:14:31 | 发包获取rkey成功, private:&rkey=CAQSMNid2KMypTI6UrYMbrgaaFG5_o6HIS36AldCXbJ-7D68oHm4XLRlZS3eADnt6NJsVw, group:&rkey=CAESMAymGqBkUPOh8Bv9hDQIdIgzpiiF1iTi6AAkaWNar0EYBJg84SW7CbSsL1ll5ps4HA
+
+[info] | 2026-05-29 21:14:31 | 发包获取rkey成功, private:&rkey=CAMSMMcrVQ_VEkjq7jEBL3ubGm5U_8wjXy5O_uW7IF6TWQMu2knZ9J7NsTyFGeFJc7-XMQ, group:&rkey=CAISMFhZG4lL8EC9YgMI_c2QDDSzF1INHQ7mtHvbWVbgACg_45GJl5OG6jWiKlfWV7_8jg
+
+[warn] | 2026-05-29 21:18:24 | [EmailNotification] PMHQ disconnected for 10016ms
+
+[info] | 2026-05-29 21:18:24 | [EmailNotification] Bot went offline, sending notification
+
