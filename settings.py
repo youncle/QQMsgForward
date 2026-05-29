@@ -36,6 +36,21 @@ def create_forward_frame(parent, cfg=None):
 
     pad = {'padx': 0, 'pady': 5}
 
+    # ===== 机器人QQ =====
+    frm_qq = ttk.LabelFrame(frame, text='机器人QQ', padding=10)
+    frm_qq.pack(fill='x', **pad)
+
+    robot_qqs = cfg.get('robot_qq', [])
+    if isinstance(robot_qqs, int):
+        robot_qqs = [robot_qqs]
+
+    ttk.Label(frm_qq, text='QQ号码（多个用逗号分隔）').pack(anchor='w')
+    qq_entry = ttk.Entry(frm_qq, width=60)
+    qq_entry.pack(fill='x', padx=0, pady=3)
+    qq_entry.insert(0, ', '.join(str(q) for q in robot_qqs))
+
+    ttk.Label(frm_qq, text='注：修改后需重启服务生效，端口按顺序自动分配。').pack(anchor='w')
+
     # ===== 转发规则 =====
     frm_rules = ttk.LabelFrame(frame, text='转发规则', padding=10)
     frm_rules.pack(fill='x', **pad)
@@ -130,6 +145,10 @@ def create_forward_frame(parent, cfg=None):
 
     def on_save():
         cfg['forward_rules'] = rules
+        # 保存机器人QQ
+        _raw = qq_entry.get().strip()
+        _parts = [v.strip() for v in _raw.replace('，', ',').split(',') if v.strip()]
+        cfg['robot_qq'] = [int(p) for p in _parts if p.isdigit()]
         try:
             save_config(cfg)
             status_var.set('配置已保存，重启服务后生效。')
