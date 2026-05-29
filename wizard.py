@@ -33,7 +33,7 @@ DEFAULT_CONFIG = {
             'enabled': True,
             'patterns': {
                 'phone': '1[3-9]\\d{9}',
-                'qq': '(?<!\\d)[1-9]\\d{4,9}(?!\\d)',
+                'qq': '(?<!\\d)[1-9]\\d{7,9}(?!\\d)',
                 'wechat': 'wxid_[a-z0-9]+',
                 'email': '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}',
             },

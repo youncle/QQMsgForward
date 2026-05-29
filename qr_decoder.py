@@ -17,7 +17,7 @@ except Exception:
 # 联系方式正则（与 filter.py 公用）
 CONTACT_PATTERNS = {
     'phone': r'1[3-9]\d{9}',
-    'qq': r'(?<!\d)[1-9]\d{4,9}(?!\d)',
+    'qq': r'(?<!\d)[1-9]\d{7,9}(?!\d)',
     'wechat': r'wxid_[a-z0-9]+',
     'email': r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
 }

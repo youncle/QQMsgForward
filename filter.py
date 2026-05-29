@@ -123,7 +123,7 @@ def _check_contact_detail(
             # QQ 正则：检查群号上下文
             if name == 'qq':
                 digits = match.group()
-                if len(digits) >= 6 and any(ctx in text for ctx in QQ_CONTEXT_WHITELIST):
+                if len(digits) >= 8 and any(ctx in text for ctx in QQ_CONTEXT_WHITELIST):
                     continue  # 群号上下文，不触发 QQ 拦截
             return name
     return ''
