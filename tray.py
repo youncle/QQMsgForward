@@ -561,7 +561,7 @@ if __name__ == '__main__':
             # 不存在则复制目录
             if not os.path.isdir(_inst_dir):
                 import shutil
-                splash.update(25, f'正在复制 LLBot 实例 {_idx + 1} (QQ {_qq})...')
+                splash.update(25, f'正在复制 LLBot 实例 {_idx + 1}...')
                 shutil.copytree(llbot_dir, _inst_dir)
 
             # 从实例1同步所有QQ配置数据到实例2，并更新端口
@@ -626,9 +626,12 @@ if __name__ == '__main__':
                 [_exe], cwd=_inst_dir,
                 creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
             )
-            # 实例间间隔5秒，让QQ窗口依次弹出
+            # 登录窗口已弹出，引导用户操作
+            if _idx == 0:
+                splash.update(30, '请查看弹出的QQ登录窗口，扫码登录...')
+            # 实例间间隔10秒，让QQ窗口依次弹出
             if _idx < len(_rq_list) - 1:
-                splash.update(25, f'已启动 LLBot 实例 {_idx + 1} (QQ {_qq})，10秒后启动下一个...')
+                splash.update(25, f'已启动 LLBot 实例 {_idx + 1}，10秒后启动下一个...')
                 time.sleep(10)
         elif not os.path.exists(_exe):
             splash.close()
@@ -640,20 +643,16 @@ if __name__ == '__main__':
             root_tmp.destroy()
             sys.exit(1)
 
-        splash.update(25, f'已启动 LLBot 实例 {_idx + 1}/{len(_rq_list)} (QQ {_qq})')
-
-    splash.update(30, '请查看弹出的QQ登录窗口，扫码登录...')
+        splash.update(25, f'已启动 LLBot 实例 {_idx + 1}/{len(_rq_list)}')
 
     # 统一等待所有实例 HTTP API 端口就绪
     for _wait_i in range(60):
         _ready_ports = [p for p in [LLBOT_PORT + i for i in range(len(_rq_list))] if check_port(p)]
         if len(_ready_ports) == len(_rq_list):
             break
-        _pending_idx = [i for i in range(len(_rq_list)) if not check_port(LLBOT_PORT + i)]
-        _pending_text = ', '.join([f'QQ {_rq_list[i]}' for i in _pending_idx])
         time.sleep(1)
         splash.update(30 + min(_wait_i * 0.5, 20),
-            f'等待登录... ({len(_ready_ports)}/{len(_rq_list)}) 请登录: {_pending_text}')
+            f'等待实例就绪... ({len(_ready_ports)}/{len(_rq_list)})')
 
     _failed = [p for p in [LLBOT_PORT + i for i in range(len(_rq_list))] if not check_port(p)]
     if _failed:
