@@ -17,6 +17,7 @@ sfx_*
 logs/
 
 # 多实例
+runtime/LLBot-CLI-Win-x64/bin/llbot/logs/
 runtime/LLBot-CLI-Win-x64-2
 runtime/LLBot-CLI-Win-x64-3
 runtime/LLBot-CLI-Win-x64-4
