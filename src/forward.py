@@ -273,11 +273,11 @@ if __name__ == '__main__':
     cfg = get_config()
     logger.info("=" * 50)
     logger.info("✅ QQ群转发服务已启动")
-    logger.info(f"📋 WebHook地址: http://127.0.0.1:8080/webhook")
+    logger.info(f"📋 WebHook地址: http://127.0.0.1:9090/webhook")
     logger.info(f"📋 转发规则: {cfg['forward_rules']}")
     filter_cfg = cfg.get('filter', {})
     logger.info(f"📋 过滤状态: QR码={'启用' if filter_cfg.get('qrcode',{}).get('enabled') else '关闭'} | 联系方式={'启用' if filter_cfg.get('contact',{}).get('enabled') else '关闭'} | 模式={'仅日志' if filter_cfg.get('log_only') else '拦截'}")
     logger.info("=" * 50)
-    app.run(host="127.0.0.1", port=8080, debug=False, threaded=True)
+    app.run(host="127.0.0.1", port=9090, debug=False, threaded=True)
 
 
