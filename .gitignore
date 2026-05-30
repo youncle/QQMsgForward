@@ -2,32 +2,32 @@
 __pycache__/
 *.pyc
 *.pyo
-.pytest_cache/
+*.spec
 
-# Runtime
-forward.log
-.window_state.json
-.shutdown.flag
-
-# Auto-generated
-app.ico
-
-# LLBot logs (bundled)
-LLBot-CLI-Win-x64/qrcode.png
-LLBot-CLI-Win-x64/bin/llbot/data/logs/
-LLBot-CLI-Win-x64-2/
-LLBot-CLI-Win-x64-3/
-LLBot-CLI-Win-x64-4/
-LLBot-CLI-Win-x64-5/
-
-# OS
-Thumbs.db
-.DS_Store
-
-# Build artifacts
+# 构建产出
+QQMsgForward/
+_stage/
 build/
 dist/
-output/
 *.spec
-# Installer
-QQForward_Setup.exe
+*.7z
+sfx_config.txt
+sfx_*
+
+# 运行时
+logs/
+output/
+
+# LLBot 运行时（不在源码中追踪）
+runtime/
+*.dll
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统
+Thumbs.db
+.DS_Store
