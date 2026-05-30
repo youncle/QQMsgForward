@@ -49,7 +49,7 @@ def create_forward_frame(parent, cfg=None):
     qq_entry.pack(fill='x', padx=0, pady=3)
     qq_entry.insert(0, ', '.join(str(q) for q in robot_qqs))
 
-    ttk.Label(frm_qq, text='注：修改后需重启服务生效，端口按顺序自动分配。').pack(anchor='w')
+    ttk.Label(frm_qq, text='注：修改后需重启服务生效，启动后自动检测QQ登录与端口对应关系。').pack(anchor='w')
 
     # ===== 转发规则 =====
     frm_rules = ttk.LabelFrame(frame, text='转发规则', padding=10)

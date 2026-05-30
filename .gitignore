@@ -13,6 +13,7 @@ forward.log
 app.ico
 
 # LLBot logs (bundled)
+LLBot-CLI-Win-x64/qrcode.png
 LLBot-CLI-Win-x64/bin/llbot/data/logs/
 LLBot-CLI-Win-x64-2/
 LLBot-CLI-Win-x64-3/

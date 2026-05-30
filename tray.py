@@ -14,6 +14,8 @@ import ctypes
 import pystray
 from PIL import Image, ImageDraw
 
+import requests
+
 import settings as settings_mod
 
 import splash as splash_mod
@@ -130,29 +132,44 @@ def create_status_tab(parent):
     status_frm = ttk.Frame(frame)
     status_frm.pack(fill='x')
 
-    # 读取 robot_qq 确定实例数
-    _rq_list_status = []
+    # 读取 llbot_apis 获取真实 QQ→端口映射（探测后已写入）
+    _llbot_entries = []  # [(port, qq)]
     try:
         with open(os.path.join(APP_DIR, 'config.json'), 'r', encoding='utf-8') as _f:
-            _rq_data_status = json.load(_f)
-            _rqt = _rq_data_status.get('robot_qq', [])
-            if isinstance(_rqt, list):
-                _rq_list_status = _rqt
-            elif isinstance(_rqt, int):
-                _rq_list_status = [_rqt]
+            _cfg = json.load(_f)
+            _apis = _cfg.get('llbot_apis', {})
+            for _qq, _url in _apis.items():
+                try:
+                    _port = int(_url.rsplit(':', 1)[-1])
+                except (ValueError, IndexError):
+                    _port = 0
+                _llbot_entries.append((_port, _qq))
+            _llbot_entries.sort()
     except Exception:
-        _rq_list_status = []
+        pass
 
+    # fallback: 无 llbot_apis 时从 robot_qq 推断
     _llbot_labels = []
-    for _si, _sq in enumerate(_rq_list_status or [0]):
-        _sport = LLBOT_PORT + _si
-        ttk.Label(status_frm, text=f'LLBot-{_si + 1} ({_sq}):', width=20, anchor='w').grid(
-            row=_si, column=0, sticky='w', pady=3)
-        _sl = ttk.Label(status_frm, text='检测中...', foreground='gray')
-        _sl.grid(row=_si, column=1, sticky='w', pady=3)
-        _llbot_labels.append(_sl)
+    if not _llbot_entries:
+        try:
+            with open(os.path.join(APP_DIR, 'config.json'), 'r', encoding='utf-8') as _f:
+                _cfg = json.load(_f)
+                _rqt = _cfg.get('robot_qq', [])
+                if isinstance(_rqt, int):
+                    _rqt = [_rqt]
+        except Exception:
+            _rqt = []
+        for _si, _sq in enumerate(_rqt or [0]):
+            _llbot_entries.append((LLBOT_PORT + _si, str(_sq)))
 
-    _row_offset = len(_rq_list_status) if _rq_list_status else 1
+    for _idx, (_port, _qq) in enumerate(_llbot_entries):
+        ttk.Label(status_frm, text=f"{_qq} (端口 {_port}):", width=22, anchor="w").grid(
+            row=_idx, column=0, sticky="w", pady=3)
+        _sl = ttk.Label(status_frm, text="检测中...", foreground="gray")
+        _sl.grid(row=_idx, column=1, sticky="w", pady=3)
+        _llbot_labels.append((_port, _sl))
+
+    _row_offset = len(_llbot_entries) if _llbot_entries else 1
     ttk.Label(status_frm, text='转发脚本 (端口 9090):', width=20, anchor='w').grid(
         row=_row_offset, column=0, sticky='w', pady=3)
     forward_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
@@ -194,10 +211,10 @@ def create_status_tab(parent):
     def refresh():
         nonlocal _btn_timer_id
         forward_ok = check_port(FORWARD_PORT)
-        for _si, _sl in enumerate(_llbot_labels):
-            _sok = check_port(LLBOT_PORT + _si)
+        for _port, _sl in _llbot_labels:
+            _sok = check_port(_port)
             _sl.config(
-                text=f'运行中 (端口 {LLBOT_PORT + _si})' if _sok else '已停止',
+                text=f'运行中 (端口 {_port})' if _sok else '已停止',
                 foreground='green' if _sok else 'red')
         forward_status.config(
             text='运行中' if forward_ok else '已停止',
@@ -650,6 +667,36 @@ if __name__ == '__main__':
         root_tmp.destroy()
 
     splash.update(50, f'启动完成 {len(_rq_list)} 个 LLBot 实例')
+    # ====== 探测各端口实际登录的 QQ (绕开索引顺序假设) ======
+    splash.update(55, '正在探测机器人登录状态...')
+    _probed_apis = {}
+    _probefail_ports = []
+    for _idx in range(len(_rq_list)):
+        _port = LLBOT_PORT + _idx
+        _base = f'http://127.0.0.1:{_port}'
+        _real_qq = None
+        for _try in range(5):
+            try:
+                _r = requests.get(f'{_base}/get_login_info', timeout=3)
+                _j = _r.json()
+                _uid = _j.get('data', {}).get('user_id') if _j.get('retcode') == 0 else None
+                if _uid:
+                    _real_qq = str(_uid)
+                    break
+            except Exception:
+                pass
+            time.sleep(2)
+        if _real_qq:
+            _probed_apis[_real_qq] = _base
+            splash.update(55, f'探测完成: QQ {_real_qq} → 127.0.0.1:{_port}')
+        else:
+            _probefail_ports.append(_port)
+            _fallback_qq = str(_rq_list[_idx]) if _idx < len(_rq_list) else str(_port)
+            _probed_apis[_fallback_qq] = _base
+            splash.update(55, f'⚠ 探测失败: 端口 {_port}，使用索引映射')
+    if _probed_apis:
+        _llbot_apis = _probed_apis
+
 
     # 写入 llbot_apis 到 config.json
     try:
