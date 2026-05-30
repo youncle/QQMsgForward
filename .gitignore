@@ -18,10 +18,6 @@ sfx_*
 logs/
 output/
 
-# LLBot 运行时（不在源码中追踪）
-runtime/
-*.dll
-
 # 编辑器
 .vscode/
 .idea/
