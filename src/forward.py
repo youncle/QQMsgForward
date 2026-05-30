@@ -230,6 +230,7 @@ def webhook():
         # 7. 执行转发
         rule = forward_rules[group_id]
         target_groups = rule['targets'] if isinstance(rule, dict) else rule
+        time.sleep(1)  # 每条消息转发前延时1秒
         for to_group in target_groups:
             _sent = False
             for _api in llbot_apis:
