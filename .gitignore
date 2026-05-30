@@ -29,3 +29,5 @@ build/
 dist/
 output/
 *.spec
+# Installer
+QQForward_Setup.exe
