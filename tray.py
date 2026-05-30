@@ -629,10 +629,21 @@ if __name__ == '__main__':
             # 登录窗口已弹出，引导用户操作
             if _idx == 0:
                 splash.update(30, '请查看弹出的QQ登录窗口，扫码登录...')
-            # 实例间间隔10秒，让QQ窗口依次弹出
+            # 主动等待当前实例登录再启动下一个
             if _idx < len(_rq_list) - 1:
-                splash.update(25, f'已启动 LLBot 实例 {_idx + 1}，10秒后启动下一个...')
-                time.sleep(10)
+                splash.update(25, f'等待第 {_idx + 1} 个 QQ 扫码登录...')
+                for _w in range(60):
+                    if check_port(_port):
+                        try:
+                            _r = requests.get(f'http://127.0.0.1:{_port}/get_login_info', timeout=3)
+                            _j = _r.json()
+                            if _j.get("retcode") == 0 and _j.get("data", {}).get("user_id"):
+                                break
+                        except Exception:
+                            pass
+                    time.sleep(1)
+                    splash.update(30, f'等待扫码登录... ({_w + 1}s)')
+                splash.update(25, f'已登录，启动下一个...')
         elif not os.path.exists(_exe):
             splash.close()
             from tkinter import messagebox
