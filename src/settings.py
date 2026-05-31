@@ -9,6 +9,12 @@ from wizard import get_base_dir
 SCRIPT_DIR = get_base_dir()
 CONFIG_PATH = os.path.join(SCRIPT_DIR, 'config', 'config.json')
 
+
+def set_config_path(path: str) -> None:
+    """设置配置文件路径（由 tray.py 在启动时调用）"""
+    global CONFIG_PATH
+    CONFIG_PATH = path
+
 MODE_DESCRIPTIONS = {
     '仅关键词图片': '仅拦截同时包含图片和关键词的消息',
     '拦截纯图片': '额外拦截无文字说明的纯图片消息',
@@ -152,8 +158,8 @@ def create_forward_frame(parent, cfg=None):
         cfg['robot_qq'] = [int(p) for p in _parts if p.isdigit()]
         try:
             save_config(cfg)
-            status_var.set('配置已保存，重启服务后生效。')
-            messagebox.showinfo('保存成功', '配置已保存，重启服务后生效。')
+            status_var.set('配置已保存，立即生效。')
+            messagebox.showinfo('保存成功', '配置已保存，立即生效。')
         except Exception as e:
             status_var.set(f'保存失败: {e}')
             messagebox.showerror('保存失败', str(e))
@@ -312,8 +318,8 @@ def create_filter_frame(parent, cfg=None):
         cfg['filter']['log_only'] = _cb_checked(log_only_cb)
         try:
             save_config(cfg)
-            status_var.set('配置已保存，重启服务后生效。')
-            messagebox.showinfo('保存成功', '配置已保存，重启服务后生效。')
+            status_var.set('配置已保存，立即生效。')
+            messagebox.showinfo('保存成功', '配置已保存，立即生效。')
         except Exception as e:
             status_var.set(f'保存失败: {e}')
             messagebox.showerror('保存失败', str(e))

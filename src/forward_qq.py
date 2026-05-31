@@ -42,11 +42,14 @@ def load_config():
 
 
 def get_config():
-    """获取配置（延迟加载，首次访问时从文件读取）"""
-    global _config
-    if _config is None:
-        _config = load_config()
-    return _config
+    """获取配置（每次从文件重新读取，支持热重载）"""
+    return load_config()
+
+
+def get_config_path() -> str:
+    """获取当前配置文件路径"""
+    global CONFIG_PATH
+    return CONFIG_PATH
 
 
 def set_config_path(path: str) -> None:

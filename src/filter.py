@@ -1,5 +1,6 @@
 """消息过滤模块 — QR码广告检测 + 联系方式检测"""
 
+import os
 import re
 from typing import List, Dict, Union, Tuple
 
@@ -8,6 +9,15 @@ MessageSegment = Dict[str, Union[str, Dict[str, str]]]
 
 # QQ 号上下文白名单：含这些词且数字 >= 6 位时豁免 QQ 正则
 QQ_CONTEXT_WHITELIST = ['群', '加群', '群号', '频道', 'channel', 'guild', '进群']
+
+# 图片文件扩展名（文件类型消息中视为图片）
+IMAGE_FILE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'}
+
+
+def _is_image_filename(filename: str) -> bool:
+    """检查文件名是否为常见图片格式"""
+    ext = os.path.splitext(filename.lower())[1]
+    return ext in IMAGE_FILE_EXTENSIONS
 
 
 def _extract_text(message: List[MessageSegment]) -> str:
@@ -22,20 +32,32 @@ def _extract_text(message: List[MessageSegment]) -> str:
 
 
 def _has_image_array(message: List[MessageSegment]) -> bool:
-    """检查消息数组是否包含图片段"""
+    """检查消息数组是否包含图片段（含文件类型中的图片）"""
     if not isinstance(message, list):
         return False
-    return any(
-        isinstance(seg, dict) and seg.get('type') == 'image'
-        for seg in message
-    )
+    for seg in message:
+        if not isinstance(seg, dict):
+            continue
+        if seg.get('type') == 'image':
+            return True
+        if seg.get('type') == 'file':
+            fname = seg.get('data', {}).get('file', '') or seg.get('data', {}).get('name', '')
+            if _is_image_filename(fname):
+                return True
+    return False
 
 
 def _parse_cq_string(message: str) -> tuple:
     """解析 CQ 码字符串，返回 (has_image, text)
-    只将 [CQ:image 视为图片，排除 record/video/file 等
+    识别 [CQ:image 和 [CQ:file 中的图片文件
     """
     has_image = '[CQ:image' in message
+    if not has_image:
+        # 检查 [CQ:file 中是否有图片扩展名
+        for m in re.finditer(r'\[CQ:file,[^\]]*?file=([^,\]]+)', message):
+            if _is_image_filename(m.group(1)):
+                has_image = True
+                break
     # 提取所有 [CQ:text,text=...] 中的文本
     text_parts = re.findall(r'\[CQ:text,text=(.+?)\]', message)
     text = ''.join(text_parts)

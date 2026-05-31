@@ -137,16 +137,16 @@ def create_status_tab(parent):
     # 读取 llbot_apis 获取真实 QQ→端口映射（探测后已写入）
     _llbot_entries = []  # [(port, qq)]
     try:
-        with open(os.path.join(BASE_DIR, 'config', 'config.json'), 'r', encoding='utf-8') as _f:
-            _cfg = json.load(_f)
-            _apis = _cfg.get('llbot_apis', {})
-            for _qq, _url in _apis.items():
-                try:
-                    _port = int(_url.rsplit(':', 1)[-1])
-                except (ValueError, IndexError):
-                    _port = 0
-                _llbot_entries.append((_port, _qq))
-            _llbot_entries.sort()
+        import forward_qq as _fwd
+        _cfg = _fwd.get_config()
+        _apis = _cfg.get('llbot_apis', {})
+        for _qq, _url in _apis.items():
+            try:
+                _port = int(_url.rsplit(':', 1)[-1])
+            except (ValueError, IndexError):
+                _port = 0
+            _llbot_entries.append((_port, _qq))
+        _llbot_entries.sort()
     except Exception:
         pass
 
@@ -154,11 +154,11 @@ def create_status_tab(parent):
     _llbot_labels = []
     if not _llbot_entries:
         try:
-            with open(os.path.join(BASE_DIR, 'config', 'config.json'), 'r', encoding='utf-8') as _f:
-                _cfg = json.load(_f)
-                _rqt = _cfg.get('robot_qq', [])
-                if isinstance(_rqt, int):
-                    _rqt = [_rqt]
+            import forward_qq as _fwd
+            _cfg = _fwd.get_config()
+            _rqt = _cfg.get('robot_qq', [])
+            if isinstance(_rqt, int):
+                _rqt = [_rqt]
         except Exception:
             _rqt = []
         for _si, _sq in enumerate(_rqt or [0]):
@@ -281,10 +281,9 @@ def shutdown_service(icon):
         )
     _llbot_pids.clear()
 
-    cfg_path = os.path.join(BASE_DIR, 'config', 'config.json')
     try:
-        with open(cfg_path, 'r', encoding='utf-8') as f:
-            _cfg = json.load(f)
+        import forward_qq as _fwd
+        _cfg = _fwd.get_config()
         _rq_list = _cfg.get('robot_qq', [])
         if isinstance(_rq_list, int):
             _rq_list = [_rq_list]
@@ -478,7 +477,7 @@ def main():
             kill_port_process(_cp)
 
     import wizard as wizard_mod
-    import forward as forward_mod
+    import forward_qq as forward_mod
     forward_app = forward_mod.app
     set_forward_config = forward_mod.set_config_path
 
@@ -487,6 +486,7 @@ def main():
     # 设置 forward 模块的配置文件路径（PyInstaller 下与 exe 同目录）
     fwd_config_path = os.path.join(BASE_DIR, 'config', 'config.json')
     set_forward_config(fwd_config_path)
+    settings_mod.set_config_path(fwd_config_path)
 
     # 设置 forward 模块的日志文件路径（PyInstaller 下与 exe 同目录）
     forward_mod.set_log_path(os.path.join(BASE_DIR, 'logs', 'forward.log'))
