@@ -42,11 +42,26 @@ Do While waited < 15
     If Not fso.FileExists(flagFile) Then Exit Do
 Loop
 
-' Force kill any remaining processes
-WshShell.Run "taskkill /f /im python.exe >nul 2>&1", 0, True
-WshShell.Run "taskkill /f /im pythonw.exe >nul 2>&1", 0, True
+' Force kill — 端口反查 LLBot PID + 按名杀 QQ/pythonw
+' 第2层：端口反查（3000-3010），精准杀 LLBot 及其子进程
+Dim port, pid, cmd, exec_out, line, parts
+For port = 3000 To 3010
+    cmd = "cmd /c netstat -ano | findstr :" & port & " | findstr LISTENING"
+    Set exec_out = WshShell.Exec(cmd)
+    line = exec_out.StdOut.ReadAll()
+    If line <> "" Then
+        line = Trim(line)
+        parts = Split(line, " ")
+        pid = parts(UBound(parts))
+        If IsNumeric(pid) Then
+            WshShell.Run "taskkill /f /pid " & pid & " >nul 2>&1", 0, True
+        End If
+    End If
+Next
+
+' 第3层：按名杀
 WshShell.Run "taskkill /f /im llbot.exe >nul 2>&1", 0, True
-WshShell.Run "taskkill /f /im node.exe >nul 2>&1", 0, True
+WshShell.Run "taskkill /f /im pythonw.exe >nul 2>&1", 0, True
 WshShell.Run "taskkill /f /im QQ.exe >nul 2>&1", 0, True
 WshShell.Run "taskkill /f /im QQNT.exe >nul 2>&1", 0, True
 

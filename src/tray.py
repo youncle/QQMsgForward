@@ -59,6 +59,7 @@ def save_window_geometry(geometry: str) -> None:
 
 
 running = True
+_llbot_pids: list[int] = []
 
 
 def find_port_pid(port: int) -> str | None:
@@ -270,33 +271,53 @@ def hide_main_window(root):
 
 
 def shutdown_service(icon):
-    """执行服务关闭（终止子进程、清理残留进程）"""
     global running
     running = False
 
-    # 清理残留进程
-    for proc in ['node.exe', 'llbot.exe']:
-        subprocess.run(['taskkill', '/f', '/im', proc], capture_output=True)
+    for pid in _llbot_pids:
+        subprocess.run(
+            ['taskkill', '/f', '/t', '/pid', str(pid)],
+            capture_output=True, timeout=3,
+        )
+    _llbot_pids.clear()
 
-    # 关闭 QQ
-    for qq_name in ['QQ.exe', 'QQNT.exe']:
-        subprocess.run(['taskkill', '/f', '/im', qq_name], capture_output=True)
+    cfg_path = os.path.join(BASE_DIR, 'config', 'config.json')
+    try:
+        with open(cfg_path, 'r', encoding='utf-8') as f:
+            _cfg = json.load(f)
+        _rq_list = _cfg.get('robot_qq', [])
+        if isinstance(_rq_list, int):
+            _rq_list = [_rq_list]
+    except Exception:
+        _rq_list = []
+    for _idx in range(len(_rq_list or [])):
+        _port = LLBOT_PORT + _idx
+        _pid = find_port_pid(_port)
+        if _pid:
+            subprocess.run(
+                ['taskkill', '/f', '/pid', _pid],
+                capture_output=True, timeout=3,
+            )
 
-    # 清理标志文件
+    for _name in ['QQ.exe', 'QQNT.exe', 'pythonw.exe']:
+        subprocess.run(
+            ['taskkill', '/f', '/im', _name],
+            capture_output=True, timeout=3,
+        )
+
     if os.path.exists(SHUTDOWN_FLAG):
         try:
             os.remove(SHUTDOWN_FLAG)
         except OSError:
             pass
 
-    # 清理多余实例目录
     try:
-        with open(os.path.join(BASE_DIR, 'config', 'config.json'), 'r', encoding='utf-8') as _cf:
-            _cfg_data = json.load(_cf)
+        with open(cfg_path, 'r', encoding='utf-8') as f:
+            _cfg_data = json.load(f)
         _rq = _cfg_data.get('robot_qq', [])
         if isinstance(_rq, int):
             _rq = [_rq]
-        _keep = max(1, len(_rq))  # 至少保留1个
+        _keep = max(1, len(_rq))
     except Exception:
         _keep = 1
     _base = os.path.join(BASE_DIR, 'runtime', 'LLBot-CLI-Win-x64')
@@ -307,8 +328,6 @@ def shutdown_service(icon):
             shutil.rmtree(_dir, ignore_errors=True)
 
     icon.stop()
-
-
 def handle_shutdown(icon, root):
     """用户点击"关闭服务"：创建标志文件 → 立即关闭 → 销毁窗口"""
     with open(SHUTDOWN_FLAG, 'w') as f:
@@ -388,7 +407,9 @@ def create_desktop_shortcut():
         ico_path = os.path.join(BASE_DIR, 'resources', 'app.ico')
         _save_icon_file(ico_path)
 
-        tmp_vbs = os.path.join(app_dir, '.create_shortcut.vbs')
+        scripts_dir = os.path.join(BASE_DIR, 'scripts')
+        os.makedirs(scripts_dir, exist_ok=True)
+        tmp_vbs = os.path.join(scripts_dir, '.create_shortcut.vbs')
 
         vbs_code = (
             f'Set ws = CreateObject("WScript.Shell")\r\n'
@@ -624,10 +645,11 @@ def main():
         # 启动实例
         _exe = os.path.join(_inst_dir, 'llbot.exe')
         if os.path.exists(_exe) and not check_port(_port):
-            subprocess.Popen(
+            proc = subprocess.Popen(
                 [_exe], cwd=_inst_dir,
                 creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
             )
+            _llbot_pids.append(proc.pid)
             # 登录窗口已弹出，引导用户操作
             if _idx == 0:
                 splash.update(30, '请查看弹出的QQ登录窗口，扫码登录...')
