@@ -26,7 +26,7 @@ where 7z >nul 2>&1 || (echo [ERROR] 7-Zip not found & timeout /t 3 >nul & exit /
 
 :: [1/5] Clean
 echo [1/5] Cleaning old builds ...
-for %%d in (build dist %NAME% %NAME%.spec %NAME%.7z sfx_config.txt) do (
+for %%d in (build dist %NAME% %NAME%.spec %NAME%.7z sfx_config.txt output) do (
     if exist %%d\ (rmdir /s /q %%d) else if exist %%d del %%d
 )
 echo     Done
@@ -44,23 +44,23 @@ pyinstaller --onefile --windowed --icon=resources\app.ico --name %NAME% --clean 
 if %errorlevel% neq 0 (echo [ERROR] PyInstaller failed & timeout /t 3 >nul & exit /b 1)
 echo     OK: dist\%NAME%.exe
 
-:: [4/5] Prepare staging (QQMsgForward\ prefix for 7z)
+:: [4/5] Prepare staging (single-level: %NAME%\ prefix for 7z)
 echo [4/5] Preparing staging ...
-mkdir %NAME%\ 2>nul
-cd %NAME%
 mkdir %NAME% 2>nul
-mkdir %NAME%\runtime %NAME%\config %NAME%\resources %NAME%\scripts 2>nul
-copy ..\dist\%NAME%.exe %NAME%\ >nul
-xcopy /E /I /Q ..\runtime\LLBot-CLI-Win-x64 %NAME%\runtime\LLBot-CLI-Win-x64 >nul
-copy ..\runtime\libiconv.dll ..\runtime\libzbar-64.dll ..\runtime\msvcr120.dll %NAME%\runtime\ >nul
-copy ..\config\config.json %NAME%\config\ >nul
-copy ..\resources\app.ico %NAME%\resources\ >nul
-copy ..\scripts\start.vbs ..\scripts\stop.vbs %NAME%\scripts\ >nul
-cd ..
+mkdir %NAME%\runtime\LLBot-CLI-Win-x64 %NAME%\config %NAME%\resources 2>nul
+copy dist\%NAME%.exe %NAME%\ >nul
+robocopy runtime\LLBot-CLI-Win-x64 %NAME%\runtime\LLBot-CLI-Win-x64 /E /XD logs /NFL /NDL /NJH /NJS >nul 2>&1
+if exist runtime\libiconv.dll copy runtime\libiconv.dll %NAME%\runtime\ >nul
+if exist runtime\libzbar-64.dll copy runtime\libzbar-64.dll %NAME%\runtime\ >nul
+if exist runtime\msvcr120.dll copy runtime\msvcr120.dll %NAME%\runtime\ >nul
+copy config\config.json %NAME%\config\ >nul
+copy resources\app.ico %NAME%\resources\ >nul
+
 echo     Done
 
 :: [5/5] 7z + SFX
 echo [5/5] Packaging ...
+mkdir output 2>nul
 7z a -mx=5 -mmt=on %NAME%.7z %NAME%\* >nul
 if not exist %NAME%.7z (echo [ERROR] 7z failed & timeout /t 3 >nul & exit /b 1)
 
@@ -88,4 +88,3 @@ echo   BUILD COMPLETE
 echo   output\%NAME%_Setup.exe
 echo ====================================
 pause
-
