@@ -109,6 +109,8 @@ def run_wizard() -> dict | None:
 
     container = ttk.Frame(root)
     container.pack(fill='both', expand=True)
+    container.grid_rowconfigure(0, weight=1)
+    container.grid_columnconfigure(0, weight=1)
 
     # ---- Page 1: Welcome ----
     p1 = ttk.Frame(container)
@@ -128,7 +130,7 @@ def run_wizard() -> dict | None:
     p2.columnconfigure(0, weight=1)
     ttk.Label(p2, text='请输入机器人 QQ 号', font=('微软雅黑', 12, 'bold')).grid(
         row=0, column=0, pady=(60, 15), columnspan=2)
-    ttk.Label(p2, text='即您的 QQ 机器人账号，用于区分自身消息', font=('微软雅黑', 9)).grid(
+    ttk.Label(p2, text='即您的 QQ 机器人账号（多个用逗号分隔），用于区分自身消息', font=('微软雅黑', 9)).grid(
         row=1, column=0, pady=(0, 15), columnspan=2)
 
     qq_entry = ttk.Entry(p2, textvariable=qq_var, width=30, font=('微软雅黑', 11))
@@ -217,10 +219,10 @@ def run_wizard() -> dict | None:
 
     ttk.Radiobutton(p4, text='开启过滤（推荐）— 自动拦截二维码广告、联系方式等',
                     variable=filter_var, value=True).grid(
-        row=1, column=0, columnspan=2, sticky='w', pady=5, padx=40)
+        row=1, column=0, columnspan=2, pady=5)
     ttk.Radiobutton(p4, text='暂时关闭 — 所有消息都会转发',
                     variable=filter_var, value=False).grid(
-        row=2, column=0, columnspan=2, sticky='w', pady=5, padx=40)
+        row=2, column=0, columnspan=2, pady=5)
 
     ttk.Label(p4, text='配置可在启动后通过托盘菜单「设置」随时修改',
               font=('微软雅黑', 8), foreground='gray').grid(
