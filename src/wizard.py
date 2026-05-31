@@ -75,6 +75,7 @@ def generate_config(robot_qq: str, forward_rules: dict, filter_enabled: bool) ->
 
 def save_config(cfg: dict, path: str) -> None:
     """原子写入配置文件"""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = path + '.tmp'
     with open(tmp, 'w', encoding='utf-8') as f:
         json.dump(cfg, f, ensure_ascii=False, indent=2)
