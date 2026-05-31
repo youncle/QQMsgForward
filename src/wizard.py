@@ -27,7 +27,23 @@ DEFAULT_CONFIG = {
                 'VX', 'v:', '微信', '私聊',
             ],
             'mode': 'image_with_keyword',
-            'block_pure_image': True,
+            'block_pure_image': False,
+            "decode_enabled": True,
+            "decode_timeout": 2,
+            "decode_cache_seconds": 86400,
+            "decode_block_patterns": [
+                "加群",
+                "进群",
+                "兼职",
+                "刷单",
+                "返利",
+                "feishu",
+                "qq",
+                "weixin",
+                "wechat",
+                "dingding"
+            ],
+            "decode_suspicious_domains": []
         },
         'contact': {
             'enabled': True,
@@ -38,7 +54,7 @@ DEFAULT_CONFIG = {
                 'email': '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}',
             },
             'keywords': [
-                'QQ', '微信', '飞书', '续费', '费用', 'VX', 'v:',
+                '飞书', '续费', '费用', 'VX', 'v:',
                 '钉钉', '联系人', '我的Q', '我的V', '联系我',
                 '加好友', '私聊我', '加我',
             ],
