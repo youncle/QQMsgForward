@@ -270,7 +270,11 @@ def create_filter_frame(parent, cfg=None):
     ct_kw_entry.pack(fill='x', **pad)
     ct_kw_entry.insert(0, ', '.join(ct.get('keywords', [])))
 
-    log_only_cb = tk.Checkbutton(frm_ct, text='仅记录不拦截（log_only）')
+    # ===== 试运行模式 =====
+    frm_log = ttk.LabelFrame(frame, text='试运行模式', padding=10)
+    frm_log.pack(fill='x', **pad)
+
+    log_only_cb = tk.Checkbutton(frm_log, text='仅日志记录不拦截，即：QR码过滤、联系方式过滤过滤规则无效')
     log_only_cb.pack(anchor='w')
     if cfg['filter'].get('log_only', False):
         log_only_cb.select()

@@ -879,7 +879,7 @@ def main():
     # 设置最小尺寸（600px 为合理最小宽度，高度基于当前页）
     geo_str = root.geometry()
     base_h = int(geo_str.split('x')[1].split('+')[0])
-    root.minsize(600, base_h)
+    root.minsize(1024, base_h)
 
     splash.update(100, '启动完成')
     splash.close()
