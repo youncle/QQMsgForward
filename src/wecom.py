@@ -86,6 +86,8 @@ def send_to_bot(key: str, payload: dict) -> bool:
 
 def try_forward(data: dict, cfg: dict) -> None:
     """企微转发入口 — 由 forward_qq.py webhook 调用"""
+    if not cfg.get("wecom_enabled", True):
+        return
     bots = cfg.get("wecom_bots", [])
     if not bots:
         return

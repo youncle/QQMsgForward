@@ -298,6 +298,7 @@ def create_filter_frame(parent, cfg=None):
         return bool(int(cb.getvar(cb['variable'])))
 
     def on_save():
+        cfg['wecom_enabled'] = bool(int(enabled_cb.getvar(enabled_cb['variable'])))
         cfg['filter']['qrcode']['enabled'] = _cb_checked(qr_enabled_cb)
         cfg['filter']['qrcode']['mode'] = MODE_REVERSE.get(mode_combo.get(), 'image_with_keyword')
         cfg['filter']['qrcode']['keywords'] = [
@@ -337,6 +338,17 @@ def create_wecom_frame(parent, cfg=None):
         cfg = load_config()
     frame = ttk.Frame(parent, padding=(5, 10))
     pad = {"padx": 0, "pady": 5}
+
+    enabled = cfg.get("wecom_enabled", True)
+
+    frm_top = ttk.Frame(frame)
+    frm_top.pack(fill="x", pady=(0, 5))
+    enabled_cb = tk.Checkbutton(frm_top, text="启用微信转发")
+    enabled_cb.pack(anchor="w")
+    if enabled:
+        enabled_cb.select()
+    else:
+        enabled_cb.deselect()
 
     bots = cfg.get("wecom_bots", [])
     if not isinstance(bots, list):
@@ -449,6 +461,8 @@ def create_wecom_frame(parent, cfg=None):
     status_var = tk.StringVar(value="")
 
     def on_save():
+        cfg["wecom_enabled"] = bool(int(enabled_cb.getvar(enabled_cb["variable"])))
+        cfg['wecom_enabled'] = bool(int(enabled_cb.getvar(enabled_cb['variable'])))
         cfg["wecom_bots"] = bots
         try:
             save_config(cfg)
