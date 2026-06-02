@@ -64,7 +64,6 @@ def _extract_key(key: str) -> str:
             return m.group(1).strip()
     return key
 
-
 def send_to_bot(key: str, payload: dict) -> bool:
     """发送消息到企微机器人"""
     msgtype = payload.get("msgtype", "未知")
@@ -90,7 +89,6 @@ def send_to_bot(key: str, payload: dict) -> bool:
     except Exception as e:
         logger.error(f"[WECOM] 发送异常: status=??? errcode=-1 msgtype={msgtype} key={key_preview} → {e}")
         return False
-
 
 def try_forward(data: dict, cfg: dict) -> None:
     """企微转发入口 — 由 forward_qq.py webhook 调用"""
@@ -135,7 +133,7 @@ def try_forward(data: dict, cfg: dict) -> None:
         if reason:
             logger.info(f"[WECOM] 过滤仅记录: 群{group_id} - {reason}")
 
-    # 解析消息段：分离文本、图片URL、文件/视频
+    # 解析消息段：分离文本、图片URL
     text_chunks = []
     image_urls = []
 
@@ -152,42 +150,50 @@ def try_forward(data: dict, cfg: dict) -> None:
                 if u:
                     image_urls.append(u)
 
-
     display_text = "".join(text_chunks)
 
-    # 计算发送次数，控频提示
-    total_msg = 1
-    if image_urls:
-        total_msg += min(len(image_urls), 3)
-
-    # 发送到每个匹配的机器人
+    # 按 mode 路由到不同发送通道
+    mode = cfg.get("wecom_mode", "api")
     for bot in matched:
-        key = _extract_key(bot.get("key", ""))
-        if not key:
-            continue
-        nm = bot.get("name", "") or key[:8]
+        if mode == "ui":
+            _forward_ui(bot, display_text, image_urls, group_id)
+        else:
+            _forward_api(bot, display_text, image_urls, group_id)
 
-        # 1. 发送文本
-        if display_text:
-            text_ok = send_to_bot(key, {"msgtype": "text", "text": {"content": display_text[:2000]}})
-            if text_ok:
-                logger.info(f"[WECOM] ✅ 文本转发: 群{group_id} → {nm}")
-            else:
-                logger.warning(f"[WECOM] ❌ 文本失败: 群{group_id} → {nm}")
 
-        # 2. 发送图片（最多3张）
-        for i, url in enumerate(image_urls[:3]):
-            img_data = _download_image(url)
-            if img_data:
-                img_ok = _send_image(key, img_data)
-                if img_ok:
-                    logger.info(f"[WECOM] ✅ 图片转发({i+1}): 群{group_id} → {nm}")
-                else:
-                    logger.warning(f"[WECOM] ❌ 图片失败({i+1}): 群{group_id} → {nm}")
-                    send_to_bot(key, {"msgtype": "text", "text": {"content": "[图片]"}})
+def _forward_api(bot: dict, text: str, image_urls: list, group_id: str) -> None:
+    """API 模式发送 — 通过企微 Webhook API"""
+    key = _extract_key(bot.get("key", ""))
+    if not key:
+        return
+    nm = bot.get("name", "") or key[:8]
+
+    # 1. 发送文本
+    if text:
+        text_ok = send_to_bot(key, {"msgtype": "text", "text": {"content": text[:2000]}})
+        if text_ok:
+            logger.info(f"[WECOM] ✅ 文本转发: 群{group_id} → {nm}")
+        else:
+            logger.warning(f"[WECOM] ❌ 文本失败: 群{group_id} → {nm}")
+
+    # 2. 发送图片（最多3张）
+    for i, url in enumerate(image_urls[:3]):
+        img_data = _download_image(url)
+        if img_data:
+            img_ok = _send_image(key, img_data)
+            if img_ok:
+                logger.info(f"[WECOM] ✅ 图片转发({i+1}): 群{group_id} → {nm}")
             else:
-                logger.warning(f"[WECOM] ⚠️ 图片下载失败({i+1}): 群{group_id}")
+                logger.warning(f"[WECOM] ❌ 图片失败({i+1}): 群{group_id} → {nm}")
                 send_to_bot(key, {"msgtype": "text", "text": {"content": "[图片]"}})
+        else:
+            logger.warning(f"[WECOM] ⚠️ 图片下载失败({i+1}): 群{group_id}")
+            send_to_bot(key, {"msgtype": "text", "text": {"content": "[图片]"}})
+
+
+def _forward_ui(bot: dict, text: str, image_urls: list, group_id: str) -> None:
+    """UI 模式发送 — 下一阶段实现"""
+    raise NotImplementedError("UI 模式将在下一阶段实现")
 
 
 def test_bot(key: str) -> tuple:

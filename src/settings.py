@@ -344,11 +344,26 @@ def create_wecom_frame(parent, cfg=None):
     frm_top = ttk.Frame(frame)
     frm_top.pack(fill="x", pady=(0, 5))
     enabled_cb = tk.Checkbutton(frm_top, text="启用微信转发")
-    enabled_cb.pack(anchor="w")
+    enabled_cb.pack(side="left", padx=(0, 15))
+
     if enabled:
         enabled_cb.select()
     else:
         enabled_cb.deselect()
+
+    ui_mode = cfg.get("wecom_mode", "api") == "ui"
+    ui_var = tk.IntVar(value=1 if ui_mode else 0)
+    ui_cb = tk.Checkbutton(frm_top, text="启用UI转发 (操控企业微信)", variable=ui_var)
+    ui_cb.pack(side="left")
+
+    def _toggle_ui_state():
+        is_en = bool(int(enabled_cb.getvar(enabled_cb["variable"])))
+        ui_cb.config(state="normal" if is_en else "disabled")
+        if not is_en:
+            ui_var.set(0)
+
+    enabled_cb.configure(command=_toggle_ui_state)
+    _toggle_ui_state()
 
     bots = cfg.get("wecom_bots", [])
     if not isinstance(bots, list):
@@ -463,6 +478,7 @@ def create_wecom_frame(parent, cfg=None):
     def on_save():
         cfg["wecom_enabled"] = bool(int(enabled_cb.getvar(enabled_cb["variable"])))
         cfg['wecom_enabled'] = bool(int(enabled_cb.getvar(enabled_cb['variable'])))
+        cfg["wecom_mode"] = "ui" if ui_var.get() else "api"
         cfg["wecom_bots"] = bots
         try:
             save_config(cfg)
