@@ -197,31 +197,35 @@ class WeComUIEngine:
         if not name or not HAS_SENDKEYS:
             return False
         try:
+            self._ensure_window()
             send_keys("^f")       # Ctrl+F
             time.sleep(0.3)
-            send_keys("^a")       # Ctrl+A (select all)
+            send_keys("^a")       # Ctrl+A
             time.sleep(0.05)
             send_keys("{DELETE}") # clear
             time.sleep(0.1)
-            send_keys(name)       # type name
+            self._set_clipboard_text(name)
+            send_keys("^v")
             time.sleep(0.5)
-            send_keys("{ENTER}")  # select first result
+            send_keys("{ENTER}")
             time.sleep(0.5)
-            send_keys("{ESC}")    # escape search focus
-            time.sleep(0.2)
+            time.sleep(0.3)
             return True
         except Exception as e:
             logger.error(f"[WECOM_UI] search failed: {e}")
             return False
-
     # === send text ===
     def _send_text(self, text):
         if not HAS_SENDKEYS:
             return
-        send_keys(text)
-        time.sleep(0.1)
+        self._ensure_window()
+        time.sleep(0.2)
+        # Click input area to ensure focus
+        send_keys("{ENTER}")   # wake up input box
+        self._set_clipboard_text(text)
+        send_keys("^v")
+        time.sleep(0.3)
         send_keys("{ENTER}")
-
     # === send image ===
     def _send_image(self, data):
         if not HAS_SENDKEYS:
@@ -233,6 +237,35 @@ class WeComUIEngine:
         self._clear_clipboard()
 
     # === clipboard ===
+    @staticmethod
+    def _set_clipboard_text(text: str):
+        """Copy text to clipboard (supports Unicode)"""
+        if win32clipboard:
+            try:
+                win32clipboard.OpenClipboard()
+                win32clipboard.EmptyClipboard()
+                win32clipboard.SetClipboardData(win32con.CF_UNICODETEXT, text)
+                win32clipboard.CloseClipboard()
+                return
+            except Exception:
+                win32clipboard.CloseClipboard()
+        # fallback: ctypes
+        try:
+            CF_UNICODETEXT = 13
+            GMEM_MOVEABLE = 0x0002
+            data = (text + "\0").encode("utf-16-le")
+            hMem = ctypes.windll.kernel32.GlobalAlloc(GMEM_MOVEABLE, len(data))
+            if hMem:
+                pMem = ctypes.windll.kernel32.GlobalLock(hMem)
+                ctypes.memmove(pMem, data, len(data))
+                ctypes.windll.kernel32.GlobalUnlock(hMem)
+                user32.OpenClipboard(None)
+                ctypes.windll.user32.EmptyClipboard()
+                ctypes.windll.user32.SetClipboardData(CF_UNICODETEXT, hMem)
+                ctypes.windll.user32.CloseClipboard()
+        except Exception as e:
+            logger.error(f"[WECOM_UI] clipboard text failed: {e}")
+
     @staticmethod
     def _set_clipboard_image(data):
         from PIL import Image
