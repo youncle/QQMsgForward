@@ -218,10 +218,6 @@ class WeComUIEngine:
     def _send_text(self, text):
         if not HAS_SENDKEYS:
             return
-        self._ensure_window()
-        time.sleep(0.2)
-        # Click input area to ensure focus
-        send_keys("{ENTER}")   # wake up input box
         self._set_clipboard_text(text)
         send_keys("^v")
         time.sleep(0.3)
