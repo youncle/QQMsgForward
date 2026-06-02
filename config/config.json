@@ -100,5 +100,6 @@
       "source_groups": []
     }
   ],
-  "wecom_enabled": true
+  "wecom_enabled": true,
+  "wecom_mode": "api"
 }
