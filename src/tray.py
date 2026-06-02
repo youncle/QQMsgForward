@@ -172,15 +172,21 @@ def create_status_tab(parent):
         _llbot_labels.append((_port, _sl))
 
     _row_offset = len(_llbot_entries) if _llbot_entries else 1
-    ttk.Label(status_frm, text='转发脚本 (端口 9090):', width=20, anchor='w').grid(
+    ttk.Label(status_frm, text='QQ转发 (端口 9090):', width=20, anchor='w').grid(
         row=_row_offset, column=0, sticky='w', pady=3)
     forward_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
     forward_status.grid(row=_row_offset, column=1, sticky='w', pady=3)
 
+    _wecom_row = _row_offset + 1
+    ttk.Label(status_frm, text='企业微信转发:', width=20, anchor='w').grid(
+        row=_wecom_row, column=0, sticky='w', pady=3)
+    wecom_status = ttk.Label(status_frm, text='检测中...', foreground='gray')
+    wecom_status.grid(row=_wecom_row, column=1, sticky='w', pady=3)
+
     status_frm.grid_columnconfigure(1, weight=1)
 
     refresh_btn = ttk.Button(status_frm, text='刷新', command=lambda: refresh())
-    refresh_btn.grid(row=0, column=2, rowspan=_row_offset + 1, sticky='e', padx=(10, 0), pady=3)
+    refresh_btn.grid(row=0, column=2, rowspan=_wecom_row + 1, sticky='e', padx=(10, 0), pady=3)
 
     _log_timer_id = None
     _btn_timer_id = None
@@ -221,6 +227,21 @@ def create_status_tab(parent):
         forward_status.config(
             text='运行中' if forward_ok else '已停止',
             foreground='green' if forward_ok else 'red')
+
+        # 微信状态
+        try:
+            import json
+            _wc_cfg = json.load(open(r"D:\DevGiteegent-space\QQMsgForward\config\config.json", encoding="utf-8"))
+            _wc_enabled = _wc_cfg.get("wecom_enabled", True)
+            _wc_bots = _wc_cfg.get("wecom_bots", [])
+            if not _wc_bots:
+                wecom_status.config(text="未配置", foreground="gray")
+            elif not _wc_enabled:
+                wecom_status.config(text="未启用", foreground="gray")
+            else:
+                wecom_status.config(text=f"已配置 {len(_wc_bots)} 个机器人", foreground="green")
+        except Exception:
+            wecom_status.config(text="读取失败", foreground="red")
         load_logs()
         refresh_btn.config(text='已刷新')
         if _btn_timer_id is not None:
