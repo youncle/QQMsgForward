@@ -167,27 +167,30 @@ class WeComUIEngine:
                 self._try_fallback(fb)
             return
 
-        for msg, fallback_cb in batch:
-            text = msg.get("text", "")
-            images = msg.get("images", [])
+        # 合并 batch 中所有文本和图片（同一长文本被分片时合并发送）
+        texts = [msg.get("text", "") for msg, _ in batch if msg.get("text")]
+        images = []
+        for msg, _ in batch:
+            images.extend(msg.get("images", []))
 
-            if text:
-                try:
-                    self._send_text(text)
-                    self._sent_count += 1
-                except Exception as e:
-                    logger.error(f"[WECOM_UI] text send failed: {e}")
-                    self._try_fallback(fallback_cb)
-                    continue
+        if texts:
+            combined = " ".join(texts)
+            try:
+                self._send_text(combined)
+                self._sent_count += 1
+            except Exception as e:
+                logger.error(f"[WECOM_UI] text send failed: {e}")
+                for _, fb in batch:
+                    self._try_fallback(fb)
 
-            for i, img_data in enumerate(images):
-                try:
-                    self._send_image(img_data)
-                    self._sent_count += 1
-                except Exception as e:
-                    logger.error(f"[WECOM_UI] image send failed ({i+1}): {e}")
+        for i, img_data in enumerate(images[:3]):
+            try:
+                self._send_image(img_data)
+                self._sent_count += 1
+            except Exception as e:
+                logger.error(f"[WECOM_UI] image send failed ({i+1}): {e}")
 
-            self._rand_sleep(0.8, 0.4)  # 消息间隔随机化
+        self._rand_sleep(0.8, 0.4)
 
         self._last_chat = chat_name
 
@@ -268,15 +271,6 @@ class WeComUIEngine:
             return
         self._set_clipboard_text(text)
         send_keys("^v")
-        self._rand_sleep(0.3, 0.15)
-        send_keys("{ENTER}")
-        if not HAS_SENDKEYS:
-            return
-        if len(text) <= 20:
-            self._type_text(text)
-        else:
-            self._set_clipboard_text(text)
-            send_keys("^v")
         self._rand_sleep(0.3, 0.15)
         send_keys("{ENTER}")
     # === send image ===
