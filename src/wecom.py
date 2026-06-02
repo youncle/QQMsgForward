@@ -67,21 +67,29 @@ def _extract_key(key: str) -> str:
 
 def send_to_bot(key: str, payload: dict) -> bool:
     """发送消息到企微机器人"""
+    msgtype = payload.get("msgtype", "未知")
+    key_preview = key[:8] + "..." if len(key) > 8 else key
     try:
         resp = requests.post(
             f"{WECOM_API}?key={key}",
             json=payload,
             timeout=5,
         )
-        result = resp.json()
-        if result.get("errcode") == 0:
-            return True
-        logger.warning(f"企微API返回错误: {result.get('errmsg', '未知')}")
-        return False
+        try:
+            result = resp.json()
+            errcode = result.get("errcode", -1)
+            errmsg = result.get("errmsg", "无")
+            if errcode == 0:
+                logger.info(f"[WECOM] 发送结果: status={resp.status_code} errcode={errcode} msgtype={msgtype} key={key_preview} → 成功")
+                return True
+            logger.warning(f"[WECOM] 发送结果: status={resp.status_code} errcode={errcode} errmsg={errmsg} msgtype={msgtype} key={key_preview} → 失败")
+            return False
+        except (ValueError, TypeError):
+            logger.warning(f"[WECOM] 发送结果: status={resp.status_code} JSON解析失败 msgtype={msgtype} key={key_preview} → 原文: {resp.text[:200]}")
+            return False
     except Exception as e:
-        logger.error(f"企微发送异常: {e}")
+        logger.error(f"[WECOM] 发送异常: status=??? errcode=-1 msgtype={msgtype} key={key_preview} → {e}")
         return False
-
 
 
 def try_forward(data: dict, cfg: dict) -> None:
