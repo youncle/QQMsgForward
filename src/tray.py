@@ -308,6 +308,18 @@ def hide_main_window(root):
     root.withdraw()
 
 
+def _abort_startup(splash):
+    """取消启动，清理所有已启动的进程"""
+    for pid in _llbot_pids:
+        subprocess.run(
+            ['taskkill', '/f', '/t', '/pid', str(pid)],
+            capture_output=True, timeout=3,
+        )
+    _llbot_pids.clear()
+    splash.close()
+    os._exit(0)
+
+
 def shutdown_service(icon):
     global running
     running = False
@@ -497,7 +509,7 @@ def _set_taskbar_icon(hwnd: int, ico_path: str) -> None:
 
 
 def main():
-    splash = splash_mod.SplashScreen()
+    splash = splash_mod.SplashScreen(on_cancel=lambda: _abort_startup(splash))
     splash.update(0, '正在准备环境...')
 
     # 注册异常钩子：启动过程中任何未处理异常都会关闭进度条
@@ -566,7 +578,7 @@ def main():
         if wizard_config is None:
             sys.exit(0)
         wizard_mod.save_config(wizard_config, fwd_config_path)
-        splash = splash_mod.SplashScreen()
+        splash = splash_mod.SplashScreen(on_cancel=lambda: _abort_startup(splash))
         splash.update(0, '正在准备环境...')
 
     # 检查 config.json 是否有效
@@ -588,7 +600,7 @@ def main():
             if wizard_config is None:
                 sys.exit(0)
             wizard_mod.save_config(wizard_config, fwd_config_path)
-            splash = splash_mod.SplashScreen()
+            splash = splash_mod.SplashScreen(on_cancel=lambda: _abort_startup(splash))
             splash.update(0, '正在准备环境...')
         else:
             sys.exit(1)
@@ -688,24 +700,46 @@ def main():
                 creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0,
             )
             _llbot_pids.append(proc.pid)
+            if splash.canceled:
+                _abort_startup(splash)
             # 登录窗口已弹出，引导用户操作
             if _idx == 0:
                 splash.update(30, '请查看弹出的QQ登录窗口，扫码登录...')
             # 主动等待当前实例登录再启动下一个
             if _idx < len(_rq_list) - 1:
                 splash.update(25, f'等待第 {_idx + 1} 个 QQ 扫码登录...')
+                _logged_in = False
                 for _w in range(60):
+                    if splash.canceled:
+                        _abort_startup(splash)
                     if check_port(_port):
                         try:
                             _r = requests.get(f'http://127.0.0.1:{_port}/get_login_info', timeout=3)
                             _j = _r.json()
                             if _j.get("retcode") == 0 and _j.get("data", {}).get("user_id"):
+                                _logged_in = True
                                 break
                         except Exception:
                             pass
-                    time.sleep(1)
+                    # 响应式睡眠：100ms 间隔 + 事件处理
+                    for _t in range(10):
+                        if splash.canceled:
+                            _abort_startup(splash)
+                        time.sleep(0.1)
+                        splash._root.update()
                     splash.update(30, f'等待扫码登录... ({_w + 1}s)')
-                splash.update(25, f'已登录，启动下一个...')
+                if not _logged_in:
+                    splash.close()
+                    from tkinter import messagebox
+                    _root_tmp = tk.Tk()
+                    _root_tmp.withdraw()
+                    messagebox.showerror('登录超时',
+                        f'第 {_idx + 1} 个 QQ 未在 60 秒内完成登录\n程序将关闭。')
+                    _root_tmp.destroy()
+                    for pid in _llbot_pids:
+                        subprocess.run(['taskkill', '/f', '/t', '/pid', str(pid)], capture_output=True, timeout=3)
+                    _llbot_pids.clear()
+                    sys.exit(1)
         elif not os.path.exists(_exe):
             splash.close()
             from tkinter import messagebox
@@ -739,6 +773,8 @@ def main():
         root_tmp.destroy()
 
     splash.update(50, f'启动完成 {len(_rq_list)} 个 LLBot 实例')
+    if splash.canceled:
+        _abort_startup(splash)
     # ====== 探测各端口实际登录的 QQ (绕开索引顺序假设) ======
     splash.update(55, '正在探测机器人登录状态...')
     _probed_apis = {}
@@ -766,6 +802,8 @@ def main():
             _fallback_qq = str(_rq_list[_idx]) if _idx < len(_rq_list) else str(_port)
             _probed_apis[_fallback_qq] = _base
             splash.update(55, f'⚠ 探测失败: 端口 {_port}，使用索引映射')
+        if splash.canceled:
+            _abort_startup(splash)
     if _probed_apis:
         _llbot_apis = _probed_apis
 
@@ -836,6 +874,8 @@ def main():
         root_tmp.destroy()
 
     splash.update(75, '正在加载界面...')
+    if splash.canceled:
+        _abort_startup(splash)
 
     # 初始化企微 UI 引擎（仅在 UI 模式下使用）
     from wecom import get_ui_engine
