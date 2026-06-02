@@ -15,6 +15,7 @@ sfx_*
 
 # 运行时
 logs/
+.shutdown.flag
 
 # 多实例
 runtime/LLBot-CLI-Win-x64/bin/llbot/logs/

@@ -204,15 +204,42 @@ class WeComUIEngine:
         hwnd = user32.FindWindowW(self.WECHAT_WORK_CLASS, None)
         if not hwnd:
             hwnd = user32.FindWindowW(None, self.WECHAT_WORK_TITLE)
-        if hwnd:
-            if user32.IsIconic(hwnd):
-                user32.ShowWindow(hwnd, SW_RESTORE)
-            user32.SetForegroundWindow(hwnd)
-            self._rand_sleep(0.3, 0.15)
-            self._hwnd = hwnd
-            return True
-        return False
+        if not hwnd:
+            return False
 
+        # 恢复窗口（如果最小化）
+        if user32.IsIconic(hwnd):
+            user32.ShowWindow(hwnd, SW_RESTORE)
+
+        # 绕过 Windows 前台锁定
+        for attempt in range(3):
+            # 发送 ALT 键事件，让 Windows 记录此进程有用户输入
+            ctypes.windll.user32.keybd_event(0x12, 0, 0, 0)  # ALT down
+            ctypes.windll.user32.keybd_event(0x12, 0, 2, 0)  # ALT up
+
+            current_tid = ctypes.windll.kernel32.GetCurrentThreadId()
+            target_tid = ctypes.windll.user32.GetWindowThreadProcessId(hwnd, None)
+            ctypes.windll.user32.AttachThreadInput(current_tid, target_tid, True)
+            user32.SetForegroundWindow(hwnd)
+            user32.BringWindowToTop(hwnd)
+            user32.SwitchToThisWindow(hwnd, True)
+            ctypes.windll.user32.AttachThreadInput(current_tid, target_tid, False)
+
+            # WScript.Shell fallback
+            if _shell:
+                try:
+                    _shell.AppActivate("企业微信")
+                except Exception:
+                    pass
+
+            # 验证是否真的激活成功
+            if user32.GetForegroundWindow() == hwnd:
+                break
+            time.sleep(0.15)
+
+        self._rand_sleep(0.3, 0.15)
+        self._hwnd = hwnd
+        return True
     # === search chat ===
     def _find_chat(self, name):
         if not name or not HAS_SENDKEYS:
