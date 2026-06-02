@@ -228,10 +228,10 @@ def create_status_tab(parent):
             text='运行中' if forward_ok else '已停止',
             foreground='green' if forward_ok else 'red')
 
-        # 微信状态
+        # 企业微信状态
         try:
-            import json
-            _wc_cfg = json.load(open(r"D:\DevGiteegent-space\QQMsgForward\config\config.json", encoding="utf-8"))
+            import forward_qq as _fwd
+            _wc_cfg = _fwd.get_config()
             _wc_enabled = _wc_cfg.get("wecom_enabled", True)
             _wc_bots = _wc_cfg.get("wecom_bots", [])
             if not _wc_bots:

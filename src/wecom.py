@@ -146,9 +146,6 @@ def try_forward(data: dict, cfg: dict) -> None:
 
 
     display_text = "".join(text_chunks)
-    if display_text and image_urls:
-        count = min(len(image_urls), 3)
-        display_text += "\n\U0001f4f7 \u5171 %d \u5f20\u56fe\u7247" % count
 
     # 计算发送次数，控频提示
     total_msg = 1
