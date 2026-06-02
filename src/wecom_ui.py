@@ -7,7 +7,6 @@ import io
 import random
 from typing import Callable
 
-import uiautomation as auto
 
 logger = logging.getLogger(__name__)
 
@@ -63,11 +62,6 @@ class WeComUIEngine:
         """base ± jitter 随机睡眠"""
         time.sleep(max(0.05, base + random.uniform(-jitter, jitter)))
 
-    def _type_text(self, text: str):
-        """逐字输入（用于短文本，绕过剪贴板检测）"""
-        for char in text:
-            auto.SendKeys(char)
-            time.sleep(random.uniform(0.06, 0.28))
 
     # === lifecycle ===
     def start(self):
@@ -231,6 +225,12 @@ class WeComUIEngine:
             return False
     # === send text ===
     def _send_text(self, text):
+        if not HAS_SENDKEYS:
+            return
+        self._set_clipboard_text(text)
+        send_keys("^v")
+        self._rand_sleep(0.3, 0.15)
+        send_keys("{ENTER}")
         if not HAS_SENDKEYS:
             return
         if len(text) <= 20:
