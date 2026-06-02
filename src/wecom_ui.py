@@ -3,6 +3,8 @@ import queue
 import threading
 import time
 import logging
+import os
+import uuid
 import io
 import random
 from typing import Callable
@@ -46,6 +48,8 @@ def send_keys(keys: str):
 class WeComUIEngine:
     WECHAT_WORK_CLASS = "WeChatWorkMainFrameForPC"
     WECHAT_WORK_TITLE = "\u4f01\u4e1a\u5fae\u4fe1"
+    TEMP_DIR = None
+    TEMP_MAX_AGE = 600  # seconds
 
     def __init__(self):
         self._queue = queue.Queue()
@@ -183,6 +187,7 @@ class WeComUIEngine:
                 for _, fb in batch:
                     self._try_fallback(fb)
 
+        self._cleanup_temp_files()
         for i, img_data in enumerate(images[:3]):
             try:
                 self._send_image(img_data)
@@ -262,6 +267,7 @@ class WeComUIEngine:
             self._rand_sleep(0.5, 0.2)
             self._rand_sleep(0.3, 0.15)
             return True
+            self._clear_clipboard()  # clear name residue after search
         except Exception as e:
             logger.error(f"[WECOM_UI] search failed: {e}")
             return False
@@ -277,13 +283,19 @@ class WeComUIEngine:
     def _send_image(self, data):
         if not HAS_SENDKEYS:
             return
-        self._set_clipboard_image(data)
-        send_keys("^v")       # Ctrl+V
-        self._rand_sleep(0.5, 0.25)
-        send_keys("{ENTER}")  # send
-        self._clear_clipboard()
+        path = None
+        try:
+            path = WeComUIEngine._save_temp_image(data)
+            self._clear_clipboard()  # clear residue from _find_chat
+            WeComUIEngine._set_clipboard_files([path])
+            self._rand_sleep(0.3, 0.15)
+            send_keys("^v")
+            self._rand_sleep(0.5, 0.25)
+            send_keys("{ENTER}")
+            self._clear_clipboard()
+        except Exception as e:
+            __import__("logging").getLogger(__name__).error(f"[WECOM_UI] _send_image error: {e}")
 
-    # === clipboard ===
     @staticmethod
     def _set_clipboard_text(text: str):
         """Copy text to clipboard (supports Unicode)"""
@@ -314,43 +326,80 @@ class WeComUIEngine:
             logger.error(f"[WECOM_UI] clipboard text failed: {e}")
 
     @staticmethod
-    def _set_clipboard_image(data):
+    def _get_temp_dir():
+        """get or create temp dir"""
+        if WeComUIEngine.TEMP_DIR is None:
+            import tempfile
+            WeComUIEngine.TEMP_DIR = os.path.join(tempfile.gettempdir(), "qqmsgforward")
+            os.makedirs(WeComUIEngine.TEMP_DIR, exist_ok=True)
+        return WeComUIEngine.TEMP_DIR
+
+    @staticmethod
+    def _save_temp_image(data) -> str:
+        """save image bytes to temp PNG file"""
         from PIL import Image
-        img = Image.open(io.BytesIO(data))
+        img = Image.open(__import__("io").BytesIO(data))
+        name = __import__("uuid").uuid4().hex + ".png"
+        path = os.path.join(WeComUIEngine._get_temp_dir(), name)
+        img.save(path, "PNG")
+        __import__("logging").getLogger(__name__).debug(f"[WECOM_UI] temp image saved: {path}")
+        return path
+
+    @staticmethod
+    def _cleanup_temp_files():
+        """clean old temp files"""
+        d = WeComUIEngine._get_temp_dir()
+        now = __import__("time").time()
+        age = WeComUIEngine.TEMP_MAX_AGE
+        for fname in os.listdir(d):
+            fpath = os.path.join(d, fname)
+            try:
+                if now - os.path.getmtime(fpath) > age:
+                    os.remove(fpath)
+            except Exception:
+                pass
+
+    @staticmethod
+    def _set_clipboard_files(file_paths):
+        """set CF_HDROP clipboard with file paths"""
+        if not file_paths:
+            return
+        file_list = "\0".join(str(p) for p in file_paths) + "\0\0"
+        file_bytes = file_list.encode("utf-16-le")
+        header = b"\x14\x00\x00\x00" + b"\x00" * 8 + b"\x00" * 4 + b"\x01\x00\x00\x00"
+        total_data = header + file_bytes
 
         if win32clipboard:
-            buf = io.BytesIO()
-            img.convert("RGB").save(buf, format="BMP")
-            bmp_data = buf.getvalue()[14:]
-            buf.close()
             try:
                 win32clipboard.OpenClipboard()
                 win32clipboard.EmptyClipboard()
-                win32clipboard.SetClipboardData(win32con.CF_DIB, bmp_data)
+                win32clipboard.SetClipboardData(15, total_data)
                 win32clipboard.CloseClipboard()
                 return
             except Exception:
-                win32clipboard.CloseClipboard()
+                try:
+                    win32clipboard.CloseClipboard()
+                except Exception:
+                    pass
 
-        # fallback: ctypes
         try:
-            CF_DIB = 8
             GMEM_MOVEABLE = 0x0002
-            buf = io.BytesIO()
-            img.convert("RGB").save(buf, format="BMP")
-            bmp_data = buf.getvalue()[14:]
-            buf.close()
-            hMem = ctypes.windll.kernel32.GlobalAlloc(GMEM_MOVEABLE, len(bmp_data))
+            ctypes.windll.kernel32.GlobalAlloc.restype = ctypes.c_void_p
+            ctypes.windll.kernel32.GlobalLock.restype = ctypes.c_void_p
+            hMem = ctypes.windll.kernel32.GlobalAlloc(GMEM_MOVEABLE, len(total_data))
             if hMem:
                 pMem = ctypes.windll.kernel32.GlobalLock(hMem)
-                ctypes.memmove(pMem, bmp_data, len(bmp_data))
-                ctypes.windll.kernel32.GlobalUnlock(hMem)
-                user32.OpenClipboard(None)
-                ctypes.windll.user32.EmptyClipboard()
-                ctypes.windll.user32.SetClipboardData(CF_DIB, hMem)
-                ctypes.windll.user32.CloseClipboard()
+                if pMem:
+                    ptr = pMem.value if isinstance(pMem, ctypes.c_void_p) else pMem
+                    arr = (ctypes.c_char * len(total_data)).from_address(ptr)
+                    arr.value = total_data
+                    ctypes.windll.kernel32.GlobalUnlock(hMem)
+                    user32.OpenClipboard(None)
+                    user32.EmptyClipboard()
+                    user32.SetClipboardData(15, hMem)
+                    user32.CloseClipboard()
         except Exception as e:
-            logger.error(f"[WECOM_UI] clipboard fallback failed: {e}")
+            __import__("logging").getLogger(__name__).error(f"[WECOM_UI] clipboard CF_HDROP fallback failed: {e}")
 
     @staticmethod
     def _clear_clipboard():
