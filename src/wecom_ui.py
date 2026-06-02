@@ -4,7 +4,10 @@ import threading
 import time
 import logging
 import io
+import random
 from typing import Callable
+
+import uiautomation as auto
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +56,18 @@ class WeComUIEngine:
         self._last_chat = ""
         self._sent_count = 0
         self._fallback_count = 0
+
+    # --- humanization helpers ---
+    @staticmethod
+    def _rand_sleep(base=0.5, jitter=0.4):
+        """base ± jitter 随机睡眠"""
+        time.sleep(max(0.05, base + random.uniform(-jitter, jitter)))
+
+    def _type_text(self, text: str):
+        """逐字输入（用于短文本，绕过剪贴板检测）"""
+        for char in text:
+            auto.SendKeys(char)
+            time.sleep(random.uniform(0.06, 0.28))
 
     # === lifecycle ===
     def start(self):
@@ -139,7 +154,7 @@ class WeComUIEngine:
                 ok = True
                 break
             logger.warning(f"[WECOM_UI] search failed (attempt {attempt+1}): {chat_name}")
-            time.sleep(0.5)
+            self._rand_sleep(0.5, 0.2)
         if not ok:
             logger.error(f"[WECOM_UI] search exhausted, fallback all: {chat_name}")
             for _, fb in batch:
@@ -166,7 +181,7 @@ class WeComUIEngine:
                 except Exception as e:
                     logger.error(f"[WECOM_UI] image send failed ({i+1}): {e}")
 
-            time.sleep(0.5)
+            self._rand_sleep(0.8, 0.4)  # 消息间隔随机化
 
         self._last_chat = chat_name
 
@@ -187,7 +202,7 @@ class WeComUIEngine:
             if user32.IsIconic(hwnd):
                 user32.ShowWindow(hwnd, SW_RESTORE)
             user32.SetForegroundWindow(hwnd)
-            time.sleep(0.3)
+            self._rand_sleep(0.3, 0.15)
             self._hwnd = hwnd
             return True
         return False
@@ -199,17 +214,17 @@ class WeComUIEngine:
         try:
             self._ensure_window()
             send_keys("^f")       # Ctrl+F
-            time.sleep(0.3)
+            self._rand_sleep(0.3, 0.15)
             send_keys("^a")       # Ctrl+A
-            time.sleep(0.05)
+            self._rand_sleep(0.08, 0.05)
             send_keys("{DELETE}") # clear
-            time.sleep(0.1)
+            self._rand_sleep(0.12, 0.08)
             self._set_clipboard_text(name)
             send_keys("^v")
-            time.sleep(0.5)
+            self._rand_sleep(0.5, 0.2)
             send_keys("{ENTER}")
-            time.sleep(0.5)
-            time.sleep(0.3)
+            self._rand_sleep(0.5, 0.2)
+            self._rand_sleep(0.3, 0.15)
             return True
         except Exception as e:
             logger.error(f"[WECOM_UI] search failed: {e}")
@@ -218,9 +233,12 @@ class WeComUIEngine:
     def _send_text(self, text):
         if not HAS_SENDKEYS:
             return
-        self._set_clipboard_text(text)
-        send_keys("^v")
-        time.sleep(0.3)
+        if len(text) <= 20:
+            self._type_text(text)
+        else:
+            self._set_clipboard_text(text)
+            send_keys("^v")
+        self._rand_sleep(0.3, 0.15)
         send_keys("{ENTER}")
     # === send image ===
     def _send_image(self, data):
@@ -228,7 +246,7 @@ class WeComUIEngine:
             return
         self._set_clipboard_image(data)
         send_keys("^v")       # Ctrl+V
-        time.sleep(0.5)
+        self._rand_sleep(0.5, 0.25)
         send_keys("{ENTER}")  # send
         self._clear_clipboard()
 
