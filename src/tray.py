@@ -7,7 +7,7 @@ import threading
 import json
 import socket
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 import ctypes
 
@@ -253,8 +253,11 @@ def create_status_tab(parent):
 
     ttk.Separator(frame, orient='horizontal').pack(fill='x', pady=10)
 
-    ttk.Label(frame, text='最近日志', font=('微软雅黑', 11, 'bold')).pack(
-        anchor='w', pady=(0, 5))
+    # 日志标题行：标签 + 清空按钮
+    log_header = ttk.Frame(frame)
+    log_header.pack(fill="x", pady=(0, 5))
+    ttk.Label(log_header, text="最近日志", font=("微软雅黑", 11, "bold")).pack(side="left")
+    ttk.Button(log_header, text="清空日志", command=lambda: clear_logs()).pack(side="right")
 
     log_frame = ttk.Frame(frame)
     log_frame.pack(fill='both', expand=True)
@@ -269,6 +272,20 @@ def create_status_tab(parent):
     log_scrollbar.grid(row=0, column=1, sticky='ns')
     log_frame.grid_rowconfigure(0, weight=1)
     log_frame.grid_columnconfigure(0, weight=1)
+
+    def clear_logs():
+        """清空全部日志（文件 + 界面）"""
+        if not messagebox.askyesno("确认清空", "确定要清空所有日志吗？\n此操作不可恢复。"):
+            return
+        try:
+            with open(LOG_FILE, "w", encoding="utf-8") as f:
+                f.write("")
+            log_text.config(state="normal")
+            log_text.delete("1.0", "end")
+            log_text.config(state="disabled")
+        except Exception as e:
+            messagebox.showerror("清空失败", f"无法清空日志文件：\n{e}")
+
 
     def auto_refresh():
         refresh()
