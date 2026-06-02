@@ -80,6 +80,18 @@ class WeComUIEngine:
             pass
 
     # === public API ===
+    def send_test_message(self, chat_name: str) -> bool:
+        """同步发送测试消息（不经队列）"""
+        if not self._ensure_window():
+            return False
+        try:
+            self._find_chat(chat_name)
+            self._send_text("QQMsgForward UI通道测试消息")
+            return True
+        except Exception as e:
+            logger.error(f"[WECOM_UI] test send failed: {e}")
+            return False
+
     def enqueue(self, msg: dict, fallback_cb=None):
         self._queue.put((msg, fallback_cb))
 

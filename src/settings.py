@@ -457,6 +457,32 @@ def create_wecom_frame(parent, cfg=None):
         if not sel:
             messagebox.showwarning("提示", "请先选择一个机器人")
             return
+        bot = bots[sel[0]]
+        is_ui = bool(int(ui_cb.getvar(ui_cb["variable"])))
+
+        if is_ui:
+            chat_name = bot.get("name", "")
+            if not chat_name:
+                messagebox.showwarning("提示", "UI模式需要配置群名称")
+                return
+            from wecom import test_ui
+            ok, msg = test_ui(chat_name)
+        else:
+            key = bot.get("key", "")
+            if not key:
+                messagebox.showwarning("提示", "该机器人没有 Key")
+                return
+            from wecom import test_bot
+            ok, msg = test_bot(key)
+
+        if ok:
+            messagebox.showinfo("测试成功", msg)
+        else:
+            messagebox.showerror("测试失败", msg)
+        sel = bot_list.curselection()
+        if not sel:
+            messagebox.showwarning("提示", "请先选择一个机器人")
+            return
         key = bots[sel[0]].get("key", "")
         if not key:
             messagebox.showwarning("提示", "该机器人没有 Key")

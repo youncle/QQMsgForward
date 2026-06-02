@@ -248,3 +248,12 @@ def test_bot(key: str) -> tuple:
         return True, "测试消息已发送，请在企微群中确认。"
     return False, "发送失败，请检查 Key 是否正确。"
 
+def test_ui(chat_name: str) -> tuple:
+    """通过 UI 引擎发送测试消息"""
+    engine = get_ui_engine()
+    if not engine.is_available():
+        return False, "企微窗口不可用，请先打开企业微信"
+    ok = engine.send_test_message(chat_name)
+    if ok:
+        return True, "测试消息已通过UI发送，请在企微群中确认。"
+    return False, "UI发送失败，请检查企微窗口和群名是否正确。"
