@@ -1,4 +1,4 @@
-"""QQ Forward — 系统托盘管理程序"""
+"""QQ Message Forward — 系统托盘管理程序"""
 import subprocess
 import sys
 import os
@@ -391,13 +391,13 @@ def monitor_loop(icon, root):
 
         if not any_ok:
             icon.icon = create_icon_image('red')
-            icon.title = 'QQ Forward - 服务异常'
+            icon.title = 'QQ Message Forward - 服务异常'
         elif not all_ok:
             icon.icon = create_icon_image('yellow')
-            icon.title = 'QQ Forward - 部分异常'
+            icon.title = 'QQ Message Forward - 部分异常'
         elif all_ok and not was_ok:
             icon.icon = create_icon_image('green')
-            icon.title = 'QQ Forward - 运行中'
+            icon.title = 'QQ Message Forward - 运行中'
 
         was_ok = all_ok
 
@@ -410,7 +410,7 @@ def setup_tray(root, on_open):
     icon = pystray.Icon(
         'qq_forward',
         create_icon_image('green'),
-        'QQ Forward - 运行中',
+        'QQ Message Forward - 运行中',
         menu=pystray.Menu(
             pystray.MenuItem('打开主面板', lambda: root.after(0, lambda: on_open(root)), default=True),
             pystray.MenuItem('关闭服务', lambda: root.after(0, do_shutdown)),
@@ -430,7 +430,7 @@ def create_desktop_shortcut():
     """在桌面创建快捷方式（PyInstaller 下指向 exe，开发模式下指向 start.vbs）"""
     try:
         desktop = os.path.join(os.environ['USERPROFILE'], 'Desktop')
-        lnk_path = os.path.join(desktop, 'QQ Forward.lnk')
+        lnk_path = os.path.join(desktop, 'QQ Message Forward.lnk')
 
         # PyInstaller 下 exe 目录 ≠ __file__ 目录，需用 get_base_dir()
         if getattr(sys, 'frozen', False):
@@ -453,7 +453,7 @@ def create_desktop_shortcut():
             f'Set sc = ws.CreateShortcut("{lnk_path}")\r\n'
             f'sc.TargetPath = "{target_path}"\r\n'
             f'sc.WorkingDirectory = "{app_dir}"\r\n'
-            f'sc.Description = "QQ Forward - 一键启动"\r\n'
+            f'sc.Description = "QQ Message Forward - 一键启动"\r\n'
             f'sc.IconLocation = "{ico_path}"\r\n'
             f'sc.Save()\r\n'
         )
@@ -852,7 +852,7 @@ def main():
     # 创建 tk 主窗口
     root = tk.Tk()
     root.withdraw()
-    root.title('QQ Forward')
+    root.title('QQ Message Forward')
     root.resizable(True, True)
 
     # 设置窗口图标

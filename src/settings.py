@@ -352,7 +352,7 @@ def create_wecom_frame(parent, cfg=None):
         enabled_cb.deselect()
 
     ui_mode = cfg.get("wecom_mode", "api") == "ui"
-    ui_cb = tk.Checkbutton(frm_top, text="启用UI转发 (操控企业微信)")
+    ui_cb = tk.Checkbutton(frm_top, text="强制UI转发 (操控企业微信)")
     ui_cb.pack(side="left")
     if ui_mode:
         ui_cb.select()
@@ -475,20 +475,6 @@ def create_wecom_frame(parent, cfg=None):
             from wecom import test_bot
             ok, msg = test_bot(key)
 
-        if ok:
-            messagebox.showinfo("测试成功", msg)
-        else:
-            messagebox.showerror("测试失败", msg)
-        sel = bot_list.curselection()
-        if not sel:
-            messagebox.showwarning("提示", "请先选择一个机器人")
-            return
-        key = bots[sel[0]].get("key", "")
-        if not key:
-            messagebox.showwarning("提示", "该机器人没有 Key")
-            return
-        from wecom import test_bot
-        ok, msg = test_bot(key)
         if ok:
             messagebox.showinfo("测试成功", msg)
         else:
