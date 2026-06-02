@@ -11,7 +11,8 @@
 2. **修改 `src/wecom.py`** — 替换 `_forward_ui` 桩为实际调用
 3. **修改 `src/tray.py`** — 启动时初始化 UI 引擎
 4. **修改 `requirements.txt`** — 添加 `uiautomation` 依赖
-5. **零 API 模式影响** — 不勾 UI 开关则行为与第一阶段完全一致
+5. **修改 `scripts/build.bat`** — 打包时包含 `uiautomation` 模块
+6. **零 API 模式影响** — 不勾 UI 开关则行为与第一阶段完全一致
 
 ---
 
@@ -23,6 +24,7 @@
 | `src/wecom.py` | 修改 | ~+10 行（替换桩实现 + 生命周期管理） |
 | `src/tray.py` | 修改 | ~+8 行（导入 + init 调用） |
 | `requirements.txt` | 修改 | +1 行 |
+| `scripts/build.bat` | 修改 | +1 行（hidden-import） |
 | `docs/CONFIG_REFERENCE.md` | 修改 | +5 行（wecom_mode 文档） |
 
 ---
@@ -101,9 +103,9 @@ WeComUIEngine
 │   ├── self._thread = None
 │   ├── self._running = False
 │   ├── self._window = None        # 缓存企微窗口
-│   ├── self._last_chat = ""        # 缓存上次群名
-│   ├── self._search_box = None     # 缓存搜索框控件
-│   └── self._input_box = None      # 缓存输入框控件
+│   ├── self._last_chat = ""       # 缓存上次群名
+│   ├── self._search_box = None    # 缓存搜索框控件
+│   └── self._input_box = None     # 缓存输入框控件
 │
 ├── start()                → 启动消费者线程
 ├── stop()                 → 停止线程
@@ -121,9 +123,7 @@ WeComUIEngine
 └── status()               → 返回引擎运行状态
 ```
 
-#### 关键技术点
-
-**① 窗口定位**
+#### 窗口定位
 
 ```python
 def _ensure_window(self):
@@ -137,7 +137,7 @@ def _ensure_window(self):
             return True
     except Exception:
         pass
-    
+
     # 2. fallback: 按进程名找（win32gui）
     import win32gui
     hwnd = win32gui.FindWindow("WeChatWorkMainFrameForPC", None)
@@ -149,19 +149,18 @@ def _ensure_window(self):
         time.sleep(0.5)
         self._window = auto.WindowControl(hwnd)  # 从句柄创建
         return True
-    
+
     return False
 ```
 
-**② 搜索群聊**
+#### 搜索群聊
 
 ```python
 def _find_chat(self, chat_name: str):
     """搜索群名并进入聊天"""
-    # 跳过上次已进入的群
     if chat_name == self._last_chat:
         return True
-    
+
     # 1. UIA 方式：找搜索框 EditControl
     search_box = self._window.EditControl(foundIndex=1)
     if search_box.Exists():
@@ -170,27 +169,27 @@ def _find_chat(self, chat_name: str):
         time.sleep(0.2)
         search_box.SendKeys(chat_name)
         time.sleep(0.8)
-        
+
         # 2. 点击搜索结果
         result = self._window.ListItemControl(Name=chat_name)
         if result.Exists():
             result.Click()
             time.sleep(0.5)
             return True
-    
+
     # 3. fallback: 快捷键搜索
-    self._window.SendKeys("{Ctrl}L")  # 或 Ctrl+Alt+F
+    self._window.SendKeys("{Ctrl}L")
     time.sleep(0.3)
     self._window.SendKeys(chat_name)
     time.sleep(0.8)
     self._window.SendKeys("{Enter}")
     time.sleep(0.5)
-    
+
     self._last_chat = chat_name
     return True
 ```
 
-**③ 发送文本**
+#### 发送文本
 
 ```python
 def _send_text(self, text: str):
@@ -199,11 +198,10 @@ def _send_text(self, text: str):
     if not input_box.Exists():
         input_box = self._window.RichEditControl()
     if not input_box.Exists():
-        # fallback: 直接键盘输入
         self._window.SendKeys(text[:2000])
         self._window.SendKeys("{Enter}")
         return
-    
+
     input_box.Click()
     input_box.SendKeys(text[:2000])
     time.sleep(0.3)
@@ -211,7 +209,7 @@ def _send_text(self, text: str):
     time.sleep(0.5)
 ```
 
-**④ 发送图片**
+#### 发送图片
 
 ```python
 def _send_image(self, img_data: bytes):
@@ -219,19 +217,19 @@ def _send_image(self, img_data: bytes):
     tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
     tmp.write(img_data)
     tmp.close()
-    
+
     auto.SetClipboardFile(tmp.name)
     time.sleep(0.2)
-    
+
     self._window.SendKeys("{Ctrl}V")
     time.sleep(0.5)
     self._window.SendKeys("{Enter}")
     time.sleep(0.5)
-    
+
     os.unlink(tmp.name)
 ```
 
-**⑤ 消费者批量循环**
+#### 消费者批量循环
 
 ```python
 def _consumer(self):
@@ -240,7 +238,7 @@ def _consumer(self):
             item = self._queue.get(timeout=0.5)
         except queue.Empty:
             continue
-        
+
         # 收集同群消息（0.3 秒窗口）
         batch = [item]
         try:
@@ -249,12 +247,11 @@ def _consumer(self):
                 if next_item[0]["chat_name"] == item[0]["chat_name"]:
                     batch.append(next_item)
                 else:
-                    # 不同群的放回队列
                     self._queue.put(next_item)
                     break
         except queue.Empty:
             pass
-        
+
         self._send_batch(batch)
 ```
 
@@ -305,7 +302,7 @@ def _forward_ui(bot: dict, text: str, image_urls: list, group_id: str) -> None:
         _forward_api(bot, text, image_urls, group_id)
         return
 
-    nm = bot.get("name", "") or extract_key(bot.get("key", ""))[:8]
+    nm = bot.get("name", "") or _extract_key(bot.get("key", ""))[:8]
     logger.info(f"[WECOM_UI] 入队: 群{group_id} → {nm} ({chat_name})")
 
     engine.enqueue({
@@ -331,11 +328,23 @@ get_ui_engine()
 
 ---
 
-### 4.4 修改 `requirements.txt`
+### 4.4 修改依赖 & 打包
+
+#### `requirements.txt` +1 行
 
 ```
 uiautomation>=2.0.17
 ```
+
+#### `scripts/build.bat` PyInstaller 命令 +1 参数
+
+```diff
+ pyinstaller --onefile --windowed --icon=resources\app.ico --name %NAME% --clean ^
+-    --hidden-import pystray --hidden-import PIL --hidden-import flask --hidden-import requests --paths src main.py
++    --hidden-import pystray --hidden-import PIL --hidden-import flask --hidden-import requests --hidden-import uiautomation --paths src main.py
+```
+
+> 说明：`uiautomation` 是纯 Python 包，底层调用 Windows 内置 `UIAutomationCore.dll`，**无需额外 DLL**。打包后所有功能包含在单文件 exe 内，用户安装流程不变。
 
 ---
 
@@ -350,7 +359,7 @@ Step 3 → 修改 wecom.py（贴改动段 → 你确认 → 应用）
        ↓ 你确认
 Step 4 → 修改 tray.py（贴改动段 → 你确认 → 应用）
        ↓ 你确认
-Step 5 → 修改 requirements.txt（你确认 → 应用）
+Step 5 → 修改 requirements.txt + build.bat（你确认 → 应用）
 Step 6 → 安装依赖 & 验证
 ```
 
@@ -379,3 +388,4 @@ Step 6 → 安装依赖 & 验证
 | 4 | 图片发送正常 | 发包含图片的消息 → 企微收到图片 |
 | 5 | API 模式不受影响 | 取消 UI 开关 → 消息仍走 API 正常发送 |
 | 6 | 引擎不阻塞 webhook | 批量发送多条消息 → webhook 响应时间正常 |
+| 7 | 打包后 ui 模式可用 | 运行打包的 exe → UI 模式正常发送 |

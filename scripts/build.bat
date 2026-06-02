@@ -40,7 +40,7 @@ if not exist resources\app.ico (
 :: [3/5] PyInstaller
 echo [3/5] PyInstaller ...
 pyinstaller --onefile --windowed --icon=resources\app.ico --name %NAME% --clean ^
-    --hidden-import pystray --hidden-import PIL --hidden-import flask --hidden-import requests --paths src main.py
+    --hidden-import pystray --hidden-import PIL --hidden-import flask --hidden-import requests --hidden-import win32clipboard --hidden-import win32com --hidden-import uiautomation --paths src main.py
 if %errorlevel% neq 0 (echo [ERROR] PyInstaller failed & timeout /t 3 >nul & exit /b 1)
 echo     OK: dist\%NAME%.exe
 

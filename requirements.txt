@@ -3,3 +3,5 @@ requests>=2.31
 pystray>=0.19
 pillow>=10.0
 pyzbar>=0.1.9
+uiautomation>=2.0.17
+pywin32>=306

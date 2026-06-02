@@ -9,6 +9,21 @@ from filter import should_filter
 
 logger = logging.getLogger(__name__)
 
+from wecom_ui import WeComUIEngine
+
+# 全局单例（惰性初始化）
+_ui_engine: WeComUIEngine | None = None
+
+
+def get_ui_engine() -> WeComUIEngine:
+    global _ui_engine
+    if _ui_engine is None:
+        _ui_engine = WeComUIEngine()
+        _ui_engine.start()
+        logger.info("[WECOM_UI] 引擎已初始化")
+    return _ui_engine
+
+
 WECOM_API = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send"
 
 import hashlib
@@ -191,9 +206,35 @@ def _forward_api(bot: dict, text: str, image_urls: list, group_id: str) -> None:
             send_to_bot(key, {"msgtype": "text", "text": {"content": "[图片]"}})
 
 
+
 def _forward_ui(bot: dict, text: str, image_urls: list, group_id: str) -> None:
-    """UI 模式发送 — 下一阶段实现"""
-    raise NotImplementedError("UI 模式将在下一阶段实现")
+    """UI 模式发送 — 入队后立即返回"""
+    chat_name = bot.get("name", "")
+    if not chat_name:
+        logger.warning(f"[WECOM_UI] bot 缺少 name 字段，跳过")
+        return
+
+    engine = get_ui_engine()
+    if not engine.is_available():
+        logger.warning(f"[WECOM_UI] 企微窗口不可用，降级API: {chat_name}")
+        _forward_api(bot, text, image_urls, group_id)
+        return
+
+    nm = bot.get("name", "") or _extract_key(bot.get("key", ""))[:8]
+    logger.info(f"[WECOM_UI] 入队: 群{group_id} → {nm} ({chat_name})")
+
+    # 预下载图片
+    images = []
+    for url in image_urls[:3]:
+        data = _download_image(url)
+        if data:
+            images.append(data)
+
+    engine.enqueue({
+        "chat_name": chat_name,
+        "text": text,
+        "images": images,
+    }, lambda: _forward_api(bot, text, image_urls, group_id))
 
 
 def test_bot(key: str) -> tuple:
@@ -206,3 +247,4 @@ def test_bot(key: str) -> tuple:
     if ok:
         return True, "测试消息已发送，请在企微群中确认。"
     return False, "发送失败，请检查 Key 是否正确。"
+

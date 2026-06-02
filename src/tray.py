@@ -837,6 +837,10 @@ def main():
 
     splash.update(75, '正在加载界面...')
 
+    # 初始化企微 UI 引擎（仅在 UI 模式下使用）
+    from wecom import get_ui_engine
+    get_ui_engine()
+
     # 声明应用身份
     try:
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
