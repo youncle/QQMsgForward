@@ -262,7 +262,7 @@ class WeComUIEngine:
             self._rand_sleep(0.12, 0.08)
             self._set_clipboard_text(name)
             send_keys("^v")
-            self._rand_sleep(0.5, 0.2)
+            self._rand_sleep(0.8, 0.5)  # random delay after paste (0.3~1.3s)
             send_keys("{ENTER}")
             self._rand_sleep(0.5, 0.2)
             self._rand_sleep(0.3, 0.15)
