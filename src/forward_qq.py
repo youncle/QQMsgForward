@@ -11,6 +11,7 @@ import os
 from typing import Dict, List
 
 from filter import should_filter
+from wecom import try_forward as try_forward_wecom
 
 # 配置文件路径
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'config', 'config.json')
@@ -208,6 +209,7 @@ def webhook():
             logger.debug(f"跳过自身消息: {raw_text[:30]}")
             return "ok"
 
+        try_forward_wecom(data, cfg)
         # 4. 不在转发规则的群，跳过
         if group_id not in forward_rules:
             return "ok"
@@ -233,7 +235,7 @@ def webhook():
         # 7. 执行转发
         rule = forward_rules[group_id]
         target_groups = rule['targets'] if isinstance(rule, dict) else rule
-        time.sleep(1)  # 每条消息转发前延时1秒
+        time.sleep(0.5)  # 每条消息转发前延时0.5秒
         for to_group in target_groups:
             _sent = False
             for _api in llbot_apis:

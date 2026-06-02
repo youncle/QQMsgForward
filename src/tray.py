@@ -838,11 +838,14 @@ def main():
     notebook.add(tab2, text='     转发     ')
     tab3 = settings_mod.create_filter_frame(notebook, shared_cfg)
     notebook.add(tab3, text='     过滤     ')
+    tab4 = settings_mod.create_wecom_frame(notebook, shared_cfg)
+    notebook.add(tab4, text='     微信     ')
 
     # 内容区域保留 8px 垂直间距，水平由 Frame padding 控制
     notebook.tab(tab1, padding=(0, 8))
     notebook.tab(tab2, padding=(0, 8))
     notebook.tab(tab3, padding=(0, 8))
+    notebook.tab(tab4, padding=(0, 8))
 
     def _geometry_on_screen(geo: str) -> bool:
         """检查窗口位置是否在任意显示器范围内"""
