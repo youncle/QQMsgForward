@@ -309,6 +309,20 @@ class WeComUIEngine:
         if not self._verify_clipboard(text):
             logger.error("[WECOM_UI] 剪贴板校验失败，跳过发送")
             return
+        # 30% 模拟“打字”开头，然后粘贴
+        if random.random() < 0.3:
+            for ch in text[:random.randint(2, 4)]:
+                send_keys(ch)
+                time.sleep(random.uniform(0.05, 0.15))
+            send_keys("^a")
+            self._rand_sleep(0.15, 0.1)
+            send_keys("{DELETE}")
+            self._rand_sleep(0.12, 0.08)
+        else:
+            send_keys("^a")
+            self._rand_sleep(0.15, 0.1)
+            send_keys("{DELETE}")
+            self._rand_sleep(0.12, 0.08)
         send_keys("^v")
         self._rand_sleep(0.3, 0.15)
         send_keys("{ENTER}")
