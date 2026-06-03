@@ -1,5 +1,6 @@
 # Python
 src/__pycache__/
+src/settings/__pycache__/
 *.pyc
 *.pyo
 *.spec
