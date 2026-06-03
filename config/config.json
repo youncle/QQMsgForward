@@ -90,8 +90,8 @@
     "send_interval": 1.0
   },
   "llbot_apis": {
-    "2776992588": "http://127.0.0.1:3000",
-    "85039678": "http://127.0.0.1:3001"
+    "85039678": "http://127.0.0.1:3000",
+    "2776992588": "http://127.0.0.1:3001"
   },
   "wecom_bots": [
     {
@@ -119,6 +119,6 @@
       "source_groups": []
     }
   ],
-  "wecom_enabled": true,
-  "wecom_mode": "ui"
+  "wecom_enabled": false,
+  "wecom_mode": "api"
 }
