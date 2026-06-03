@@ -46,7 +46,7 @@ def send_keys(keys: str):
 
 
 class WeComUIEngine:
-    WECHAT_WORK_CLASS = "WeChatWorkMainFrameForPC"
+    WECHAT_WORK_CLASS = "WeWorkWindow"
     WECHAT_WORK_TITLE = "\u4f01\u4e1a\u5fae\u4fe1"
     TEMP_DIR = None
     TEMP_MAX_AGE = 600  # seconds

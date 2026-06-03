@@ -244,10 +244,12 @@ def create_status_tab(parent):
                     wecom_status.config(text=f"API 模式 ({len(_wc_bots)} 个机器人)", foreground="green")
                 else:
                     try:
-                        import ctypes
-                        _hwnd = ctypes.windll.user32.FindWindowW(
-                            "WeChatWorkMainFrameForPC", None)
-                        if _hwnd:
+                        import subprocess
+                        _r = subprocess.run(
+                            ["tasklist", "/fi", "IMAGENAME eq WXWork.exe"],
+                            capture_output=True, text=True, creationflags=0x08000000
+                        )
+                        if "WXWork.exe" in _r.stdout:
                             wecom_status.config(text="UI 模式 (企微运行中)", foreground="green")
                         else:
                             wecom_status.config(text="UI 模式 (企微未启动)", foreground="orange")

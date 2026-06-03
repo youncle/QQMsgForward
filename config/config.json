@@ -97,10 +97,7 @@
     {
       "key": "8b561d39-04d1-4968-96e7-f32815b4a042",
       "name": "朝暮说-测试群",
-      "source_groups": [
-        "1079264158",
-        "329868809"
-      ]
+      "source_groups": []
     },
     {
       "key": "4788c7ad-600e-4ffa-9c0e-3fa51ad3d37b",
@@ -117,6 +114,6 @@
       ]
     }
   ],
-  "wecom_enabled": false,
-  "wecom_mode": "api"
+  "wecom_enabled": true,
+  "wecom_mode": "ui"
 }
