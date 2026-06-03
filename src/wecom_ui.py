@@ -39,10 +39,10 @@ SW_RESTORE = 9
 
 
 def send_keys(keys: str):
-    """统一的 SendKeys 封装"""
+    """统一的 SendKeys 封装，内部随机延迟以模拟人类打字节奏"""
     if _shell:
         _shell.SendKeys(keys)
-        time.sleep(0.05)
+        time.sleep(random.uniform(0.03, 0.15))
 
 
 class WeComUIEngine:
