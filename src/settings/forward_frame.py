@@ -120,15 +120,29 @@ def create_forward_frame(parent, cfg=None):
     btn_frame.pack(fill='x', **pad)
 
     def on_save():
+        # 记录旧值，判断 robot_qq 是否有变动
+        _old_qq = cfg.get('robot_qq', [])
+        if isinstance(_old_qq, int):
+            _old_qq = [_old_qq]
+        _old_qq_set = set(str(q) for q in _old_qq)
+
         cfg['forward_rules'] = rules
         # 保存机器人QQ
         _raw = qq_entry.get().strip()
         _parts = [v.strip() for v in _raw.replace('，', ',').split(',') if v.strip()]
         cfg['robot_qq'] = [int(p) for p in _parts if p.isdigit()]
+        _new_qq_set = set(str(p) for p in cfg['robot_qq'])
+
+        _qq_changed = _old_qq_set != _new_qq_set
+
         try:
             save_config(cfg)
-            status_var.set('配置已保存，立即生效。')
-            messagebox.showinfo('保存成功', '配置已保存，立即生效。')
+            if _qq_changed:
+                _msg = '配置已保存，机器人QQ号改动需重启服务后生效。'
+            else:
+                _msg = '配置已保存，立即生效。'
+            status_var.set(_msg)
+            messagebox.showinfo('保存成功', _msg)
         except Exception as e:
             status_var.set(f'保存失败: {e}')
             messagebox.showerror('保存失败', str(e))
