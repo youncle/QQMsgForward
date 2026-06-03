@@ -266,8 +266,8 @@ class WeComUIEngine:
             send_keys("{ENTER}")
             self._rand_sleep(0.5, 0.2)
             self._rand_sleep(0.3, 0.15)
-            return True
             self._clear_clipboard()  # clear name residue after search
+            return True
         except Exception as e:
             logger.error(f"[WECOM_UI] search failed: {e}")
             return False
@@ -276,6 +276,9 @@ class WeComUIEngine:
         if not HAS_SENDKEYS:
             return
         self._set_clipboard_text(text)
+        send_keys("^a")
+        send_keys("{DELETE}")   # clear input box residue
+        self._rand_sleep(0.12, 0.08)
         send_keys("^v")
         self._rand_sleep(0.3, 0.15)
         send_keys("{ENTER}")
@@ -289,6 +292,9 @@ class WeComUIEngine:
             self._clear_clipboard()  # clear residue from _find_chat
             WeComUIEngine._set_clipboard_files([path])
             self._rand_sleep(0.3, 0.15)
+            send_keys("^a")
+            send_keys("{DELETE}")   # clear input box residue
+            self._rand_sleep(0.12, 0.08)
             send_keys("^v")
             self._rand_sleep(0.5, 0.25)
             send_keys("{ENTER}")
