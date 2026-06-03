@@ -254,6 +254,65 @@ Authorization: Bearer {llbot_token}
 
 ---
 
+---
+
+## 企业微信转发配置
+
+### `wecom_enabled`
+
+```json
+"wecom_enabled": true
+```
+
+| 项目 | 说明 |
+|------|------|
+| 类型 | bool |
+| 默认 | `true` |
+| 作用 | 启用/禁用企业微信转发功能 |
+
+---
+
+### `wecom_mode`
+
+```json
+"wecom_mode": "ui"
+```
+
+| 项目 | 说明 |
+|------|------|
+| 类型 | string |
+| 默认 | `"api"` |
+| 可选值 | `"api"` — 通过 Webhook Key 发送；`"ui"` — 操控企微桌面端发送 |
+
+模式对比：
+
+| 模式 | 发送方式 | 必填字段 | 依赖 |
+|------|---------|---------|------|
+| API | 企微 Webhook API | key | 网络连接 |
+| UI | 键盘模拟发送 | name | 企微桌面端 + pywin32 |
+
+---
+
+### `wecom_bots`
+
+```json
+"wecom_bots": [
+  {
+    "key": "xxxxxxxx",
+    "name": "群名称",
+    "source_groups": ["111111"]
+  }
+]
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| key | string | 仅 API 模式 | 企微机器人 Webhook Key，支持全链接或裸 key |
+| name | string | 仅 UI 模式 | 企微群名称，用于 UI 模式下搜索群聊天 |
+| source_groups | string[] | 否 | 来源 QQ 群 ID 列表，空列表表示全部转发 |
+
+注意：API 模式下 key 为必填，UI 模式下 name 为必填。另一字段可为空。
+
 ## 完整示例
 
 ```json
@@ -292,6 +351,15 @@ Authorization: Bearer {llbot_token}
   "forward": {
     "duplicate_window": 5,
     "send_interval": 1.0
-  }
+  },
+  "wecom_enabled": true,
+  "wecom_mode": "api",
+  "wecom_bots": [
+    {
+      "key": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "name": "群名称",
+      "source_groups": ["111111"]
+    }
+  ]
 }
 ```

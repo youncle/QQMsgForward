@@ -34,7 +34,7 @@ scripts\build.bat
 
 ```bat
 pyinstaller --onefile --windowed --icon=resources\app.ico --name QQMsgForward --clean ^
-    --hidden-import pystray --hidden-import PIL --hidden-import flask --hidden-import requests ^
+    --hidden-import pystray --hidden-import PIL --hidden-import flask --hidden-import requests --hidden-import win32com --hidden-import win32clipboard --hidden-import win32con ^
     --paths src main.py
 ```
 
@@ -92,6 +92,20 @@ copy /b 7z.sfx + sfx_config.txt + QQMsgForward.7z output\QQMsgForward_Setup.exe
 | `msvcr120.dll` | Visual C++ 2013 运行时 | Visual C++ Redistributable |
 
 若环境中已经安装了这些 DLL，`pyzbar` 仍可正常工作。打包时显式复制是为了保证隔离性。
+
+### 企微 UI 模式依赖
+
+企业微信 UI 模式（`wecom_mode: "ui"`）需要以下额外依赖：
+
+| 包 | 用途 |
+|---|---|
+| pywin32>=306 | 企微窗口激活、SendKeys 键盘模拟、剪贴板操作 |
+
+```bat
+pip install pywin32
+```
+
+如果不安装，UI 模式将无法发送消息（`HAS_SENDKEYS = False`），建议切换到 API 模式。
 
 ---
 

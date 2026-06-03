@@ -99,34 +99,24 @@ start.vbs
       ├── 初始化系统托盘（绿色=正常 / 黄色=部分异常 / 红色=离线）
       │
       └── 关闭 Splash → mainloop
+      │
+      │
+      ├── 初始化企微 UI 引擎
+      │    └── WeComUIEngine() 惰性初始化，start() 后启动 consumer 线程
+      │
 ```
 
 ### 3.2 转发流水线
 
 ```
 LLBot 接收群消息 → POST /webhook
- │
  ├── 1. 过滤非群聊
- │    └── post_type != "message" 或 message_type != "group" → 丢弃
- │
  ├── 2. 解析消息元数据
- │    └── group_id, sender.user_id, message_id, raw_message, message[]
- │
  ├── 3. 跳过自身消息（防止循环转发）
- │    └── sender_qq in robot_qq → 丢弃
- │
  ├── 4. 匹配转发规则
- │    └── group_id not in forward_rules → 丢弃
- │
  ├── 5. 去重
- │    └── 按 (group_id, raw_text) 判重，窗口期可配置（默认 5 秒）
- │        同时清理 10 倍窗口期外的过期缓存
- │
  ├── 6. 消息过滤（三层）
- │    └── should_filter() → 拦截则丢弃（log_only 模式仅记录）
- │
  ├── 7. 固定延迟 1 秒
- │
  └── 8. 转发到目标群
       ├── 优先使用接收消息的机器人（API 轮询排序）
       ├── 目标群级限流（send_interval，默认 1 秒）
@@ -136,7 +126,65 @@ LLBot 接收群消息 → POST /webhook
       └── 所有 API 失败 → 记录错误日志
 ```
 
----
+### 3.3 企业微信转发通道
+
+从 QQ 群消息到企微群的转发路径，支持 API 和 UI 双模式：
+
+```
+try_forward_wecom(data, cfg)
+ │
+ ├── wecom_enabled? → false → 跳过
+ │
+ ├── 解析 wecom_bots 列表
+ │
+ ├── 按 source_groups 过滤
+ │    ├── 空列表 → 匹配所有消息
+ │    └── 非空 → group_id in sources 才匹配
+ │
+ ├── 过滤检查（复用 QQ 通道 filter 规则）
+ │
+ ├── 解析消息段（文本 + 图片 URL + 文件转图片）
+ │
+ └── 按 mode 路由
+      ├── ui  → _forward_ui()
+      │    ├── 校验 name 非空
+      │    ├── 调用 WeComUIEngine.enqueue() 入队
+      │    └── consumer 线程批量发送（合并同群消息）
+      │
+      └── api → _forward_api()
+           ├── 校验 key 非空
+           ├── 发送文本（content[:2000]）
+           ├── 发送图片（最多 3 张，base64+md5）
+           └── 图片失败 → 降级发送 [图片]
+```
+
+### 3.4 UI 操控引擎（WeComUIEngine）
+
+通过键盘模拟 + 剪贴板操控企业微信桌面端发送消息：
+
+```
+WeComUIEngine
+ │
+ ├── 生命周期
+ │    ├── get_ui_engine() → 全局单例
+ │    ├── start() → 启动 consumer 线程
+ │    └── stop() → 停止 consumer
+ │
+ ├── 窗口管理
+ │    ├── is_available() → FindWindowW(类名/标题)
+ │    ├── _ensure_window() → 激活企微窗口（绕过前台锁定）
+ │    └── _find_chat() → Ctrl+F 搜索群名 → Enter
+ │
+ ├── 消息发送
+ │    ├── _send_text() → 剪贴板 → Ctrl+V → Enter
+ │    ├── _send_image() → 保存临时 PNG → 剪贴板 CF_HDROP → Ctrl+V → Enter
+ │    └── 随机延迟（防风控）：base ± jitter
+ │
+ └── 队列机制
+      ├── enqueue() → 入队
+      ├── consumer 批量拉取（同群合并）
+      └── 失败 → fallback 回调
+```
 
 ## 四、多实例管理
 
@@ -157,49 +205,15 @@ LLBot 接收群消息 → POST /webhook
 
 ```
 should_filter(message, config)
-     │
-     │ log_only=True → 仅记录不拦截
      ▼
  ┌─────────────────────────┐
- │ 第 1 关：QR 码解码       │
- │ pyzbar 真解码二维码内容  │
- │ 延迟导入，DLL 缺失降级    │
- │ LRU 缓存（默认 86400 秒）│
- │                         │
- │ 检测顺序：               │
- │ ① 可疑域名（域名黑名单）  │
- │ ② 联系方式（手机/QQ...） │
- │ ③ 广告关键词             │
  └─────────┬───────────────┘
-           │ 未命中
            ▼
  ┌─────────────────────────┐
- │ 第 2 关：图片规则         │
- │ check_qrcode_ad()        │
- │                         │
- │ 三模式：                 │
- │ image_with_keyword(默认) │
- │   → 图片 + 关键词        │
- │ block_pure_image        │
- │   → + 纯图片无文字       │
- │ block_all_images        │
- │   → + 所有含图片消息     │
  └─────────┬───────────────┘
-           │ 未命中
            ▼
  ┌─────────────────────────┐
- │ 第 3 关：联系方式检测     │
- │ _check_contact_detail()  │
- │                         │
- │ 正则匹配：               │
- │ • phone: 1[3-9]\d{9}    │
- │ • qq: [1-9]\d{8,9}      │
- │   (群号白名单豁免≥8位)    │
- │ • wechat: wxid_[a-z0-9]+│
- │ • email: RFC 5322       │
- │ + 关键词黑名单            │
  └─────────┬───────────────┘
-           │ 未命中
            ▼
          ✅ 放行
 ```
@@ -245,6 +259,10 @@ os.replace(tmp, CONFIG_PATH)  # 原子操作，防写入中断损坏
 |---|---|
 | 端口被占用（3000-3010） | 启动前查杀 |—any →
 | 配置缺失 | 向导自动创建 |
+| 企微窗口不可用（UI 模式） | 跳过该 bot 的转发，不影响其他 bot |
+| 企微 Webhook 发送失败 | API 模式记录 ERROR 日志，不重试 |
+| 企微窗口不可用（UI 模式） | 跳过该 bot 的转发，不影响其他 bot |
+| 企微 Webhook 发送失败 | API 模式记录 ERROR 日志，不重试 |
 | 配置损坏（JSON 解析失败） | 弹窗 → 重建配置 |
 | LLBot 目录缺失 | 弹窗错误 → 退出 |
 | 机器人未登录（无 /get_login_info 响应） | 弹窗提醒，服务继续运行 |
@@ -288,6 +306,9 @@ adapter = HTTPAdapter(max_retries=retry_strategy)
 | `src/settings.py` | ~261 | 配置面板：转发规则 CRUD、过滤规则编辑、保存/热重载 |
 | `src/wizard.py` | ~234 | 配置向导：4 步引导、默认配置模板、居中布局 |
 | `src/splash.py` | ~67 | 启动动画：无边框进度浮窗、平滑动画更新 |
+| `src/wecom.py` | ~280 | 企业微信转发引擎：API/UI 双模式路由、消息解析、过滤、图片下载 |
+| `src/wecom_ui.py` | ~411 | 企微 UI 操控引擎：SendKeys + 剪贴板自动化、窗口管理、队列批量发送 |
+| `src/nt_utils.py` | ~66 | NT 工具函数：通过 WebUI ntcall API 获取群文件下载链接 |
 
 ---
 

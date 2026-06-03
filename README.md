@@ -15,11 +15,15 @@
 - **转发延迟** — 每条消息转发前固定 1 秒延迟
 - **配置热重载** — `get_config()` 每次从文件读取，修改配置无需重启（除 `robot_qq` 外）
 - **优雅关闭** — `.shutdown.flag` 文件触发，1 秒轮询检测，自动终止 LLBot 进程
-- **可视化配置面板** — tkinter 三标签页（状态 / 转发 / 过滤），系统托盘常驻
+- **可视化配置面板** — tkinter 四标签页（状态 / 转发 / 过滤 / 微信），系统托盘常驻
 - **一键构建** — PyInstaller + 7-Zip SFX 单文件安装包
 - **自动创建桌面快捷方式** — 首次运行自动创建
 
 ---
+
+- **企业微信转发** — 支持 Webhook API 和桌面端 UI 操控两种模式，将 QQ 群消息实时转发到企业微信群
+- **多模式企微通道** — API 模式通过 Webhook Key 发送，UI 模式模拟键盘剪贴板操控企业微信桌面端
+- **文件消息转图片** — 自动识别文件消息中的图片文件，转换后转发（支持 ntcall API 下载）
 
 ## 环境要求
 
@@ -44,6 +48,8 @@ pip install -r requirements.txt
 | pystray>=0.19 | 系统托盘图标 |
 | pillow>=10.0 | 托盘图标生成 + 图片处理 |
 | pyzbar>=0.1.9 | QR 码解码（可选，DLL 缺失时自动降级） |
+| uiautomation>=2.0.17 | 企业微信 UI 自动化（预留） |
+| pywin32>=306 | 企业微信桌面端操控（SendKeys + 剪贴板） |
 
 ---
 
@@ -106,6 +112,23 @@ start.vbs ───→ pythonw tray.py ───→ Splash 启动画面
            ▼     ▼     ▼
         目标群1 目标群2 目标群N
 ```
+`
+**企业微信转发通道（新增）**：
+`
+QQ 群消息 → LLBot POST /webhook
+                │
+          try_forward_wecom()
+                │
+          ┌──────┴──────┐
+          ▼              ▼
+     API 模式         UI 模式
+   Webhook Key    企微桌面端操控
+   发送到企微群    SendKeys+剪贴板
+`
+  - **API 模式**：通过企业微信机器人 Webhook API (qyapi.weixin.qq.com) 发送消息
+  - **UI 模式**：通过 win32com SendKeys + 剪贴板模拟人工操作企业微信桌面客户端
+
+`
 
 ---
 
@@ -116,6 +139,7 @@ start.vbs ───→ pythonw tray.py ───→ Splash 启动画面
 | 第 1 关 | QR 码解码（pyzbar） | 真解码二维码内容，检测 URL/域名/联系方式/广告关键词 |
 | 第 2 关 | 图片规则 | 三模式：`image_with_keyword` / `block_pure_image` / `block_all_images` |
 | 第 3 关 | 联系方式检测 | 正则匹配手机号 / QQ 号（群号白名单豁免）/ 微信号 / 邮箱 + 关键词 |
+| 第 3.5 关 | 文件→图片转换 | _convert_file_to_image() 将 type=file 中的图片转为 type=image，非图片移除 |
 
 ---
 
@@ -134,6 +158,9 @@ QQMsgForward/
 │   ├── wizard.py        (~234行)  # 配置向导：4 步引导 + 居中布局 + 默认配置生成
 │   ├── splash.py         (~67行)  # 启动进度条浮窗（无边框 + 平滑动画）
 │   └── __init__.py               # 空文件，标识包
+│   ├── wecom.py          (~280行)  # 企业微信转发引擎：API/UI 双模式路由
+│   ├── wecom_ui.py       (~411行)  # 企微 UI 操控引擎：SendKeys + 剪贴板自动化
+│   ├── nt_utils.py        (~66行)  # NT 工具函数：通过 WebUI ntcall API 获取文件
 ├── config/
 │   ├── config.json              # 运行配置（首次启动向导自动生成）
 │   └── .window_state.json       # 窗口几何信息（自动保存/恢复）

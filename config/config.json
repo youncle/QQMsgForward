@@ -90,15 +90,10 @@
     "send_interval": 1.0
   },
   "llbot_apis": {
-    "85039678": "http://127.0.0.1:3000",
-    "2776992588": "http://127.0.0.1:3001"
+    "2776992588": "http://127.0.0.1:3000",
+    "85039678": "http://127.0.0.1:3001"
   },
   "wecom_bots": [
-    {
-      "key": "8b561d39-04d1-4968-96e7-f32815b4a042",
-      "name": "朝暮说-测试群",
-      "source_groups": []
-    },
     {
       "key": "4788c7ad-600e-4ffa-9c0e-3fa51ad3d37b",
       "name": "朝暮说-拼夕夕",
@@ -114,11 +109,16 @@
       ]
     },
     {
+      "key": "8b561d39-04d1-4968-96e7-f32815b4a042",
+      "name": "朝暮说-低测群",
+      "source_groups": []
+    },
+    {
       "key": "",
-      "name": "朝暮说-高级群",
+      "name": "朝暮说-高测群",
       "source_groups": []
     }
   ],
   "wecom_enabled": true,
-  "wecom_mode": "api"
+  "wecom_mode": "ui"
 }
