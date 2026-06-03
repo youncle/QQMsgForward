@@ -239,7 +239,20 @@ def create_status_tab(parent):
             elif not _wc_enabled:
                 wecom_status.config(text="未启用", foreground="gray")
             else:
-                wecom_status.config(text=f"已配置 {len(_wc_bots)} 个机器人", foreground="green")
+                _mode = _wc_cfg.get("wecom_mode", "api")
+                if _mode == "api":
+                    wecom_status.config(text=f"API 模式 ({len(_wc_bots)} 个机器人)", foreground="green")
+                else:
+                    try:
+                        import ctypes
+                        _hwnd = ctypes.windll.user32.FindWindowW(
+                            "WeChatWorkMainFrameForPC", None)
+                        if _hwnd:
+                            wecom_status.config(text="UI 模式 (企微运行中)", foreground="green")
+                        else:
+                            wecom_status.config(text="UI 模式 (企微未启动)", foreground="orange")
+                    except Exception:
+                        wecom_status.config(text="UI 模式 (状态未知)", foreground="gray")
         except Exception:
             wecom_status.config(text="读取失败", foreground="red")
         load_logs()
