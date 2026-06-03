@@ -404,7 +404,12 @@ def create_wecom_frame(parent, cfg=None):
             key = bot.get("key", "")
             sources = bot.get("source_groups", [])
             src_str = ", ".join(sources) if sources else "全部"
-            label = name + " (" + src_str + ")" if name else key[:16] + "... (" + src_str + ")"
+            if name:
+                label = name + " (" + src_str + ")"
+            elif key:
+                label = key[:16] + "... (" + src_str + ")"
+            else:
+                label = "未命名 (" + src_str + ")"
             bot_list.insert("end", label)
 
     def on_list_select(event):
@@ -429,11 +434,24 @@ def create_wecom_frame(parent, cfg=None):
         name = name_entry.get().strip()
         raw = sources_entry.get().replace("，", ",")
         srcs = [s.strip() for s in raw.split(",") if s.strip()]
-        if not key:
-            messagebox.showwarning("提示", "请输入 Webhook Key")
-            return
+        is_ui = bool(int(ui_cb.getvar(ui_cb["variable"])))
+        if is_ui:
+            if not name:
+                messagebox.showwarning("提示", "UI 模式需要填写群名称")
+                return
+        else:
+            if not key:
+                messagebox.showwarning("提示", "API 模式需要填写 Webhook Key")
+                return
         for i, bot in enumerate(bots):
-            if bot["key"] == key:
+            if bot.get("key", "") == key and key:
+                bots[i] = {"key": key, "name": name, "source_groups": srcs}
+                refresh_list()
+                key_entry.delete(0, "end")
+                name_entry.delete(0, "end")
+                sources_entry.delete(0, "end")
+                return
+            if bot.get("name", "") == name and name:
                 bots[i] = {"key": key, "name": name, "source_groups": srcs}
                 refresh_list()
                 key_entry.delete(0, "end")

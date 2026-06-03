@@ -112,8 +112,13 @@
       "source_groups": [
         "107054156"
       ]
+    },
+    {
+      "key": "",
+      "name": "朝暮说-高级群",
+      "source_groups": []
     }
   ],
   "wecom_enabled": true,
-  "wecom_mode": "ui"
+  "wecom_mode": "api"
 }
