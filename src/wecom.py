@@ -5,7 +5,8 @@ import json
 import logging
 from typing import List, Dict, Optional
 
-from filter import should_filter
+from nt_utils import get_file_bytes_via_ntcall
+from filter import should_filter, _is_image_filename
 
 logger = logging.getLogger(__name__)
 
@@ -150,6 +151,7 @@ def try_forward(data: dict, cfg: dict) -> None:
 
     # 解析消息段：分离文本、图片URL
     text_chunks = []
+    image_data_list = []
     image_urls = []
 
     if isinstance(message_content, list):
@@ -165,18 +167,32 @@ def try_forward(data: dict, cfg: dict) -> None:
                 if u:
                     image_urls.append(u)
 
+            elif t == "file":
+                fname = d.get("name", "") or d.get("file", "")
+                if _is_image_filename(fname):
+                    u = d.get("url", "")
+                    if u:
+                        image_urls.append(u)
+                        logger.debug(f"[WECOM] file->image url: {fname}")
+                    else:
+                        data = get_file_bytes_via_ntcall(fname, d.get("file_id", ""), group_id)
+                        if data:
+                            image_data_list.append(data)
+                            logger.info(f"[WECOM] file->image ntcall: {fname}")
+                        else:
+                            logger.info(f"[WECOM] 文件图片无法下载，跳过: {fname}")
     display_text = "".join(text_chunks)
 
     # 按 mode 路由到不同发送通道
     mode = cfg.get("wecom_mode", "api")
     for bot in matched:
         if mode == "ui":
-            _forward_ui(bot, display_text, image_urls, group_id)
+            _forward_ui(bot, display_text, image_urls, image_data_list, group_id)
         else:
-            _forward_api(bot, display_text, image_urls, group_id)
+            _forward_api(bot, display_text, image_urls, image_data_list, group_id)
 
 
-def _forward_api(bot: dict, text: str, image_urls: list, group_id: str) -> None:
+def _forward_api(bot: dict, text: str, image_urls: list, image_data_list: list, group_id: str) -> None:
     """API 模式发送 — 通过企微 Webhook API"""
     key = _extract_key(bot.get("key", ""))
     if not key:
@@ -192,22 +208,30 @@ def _forward_api(bot: dict, text: str, image_urls: list, group_id: str) -> None:
             logger.warning(f"[WECOM] ❌ 文本失败: 群{group_id} → {nm}")
 
     # 2. 发送图片（最多3张）
-    for i, url in enumerate(image_urls[:3]):
-        img_data = _download_image(url)
-        if img_data:
-            img_ok = _send_image(key, img_data)
-            if img_ok:
-                logger.info(f"[WECOM] ✅ 图片转发({i+1}): 群{group_id} → {nm}")
+    all_items = []
+    for url in image_urls[:3]:
+        all_items.append(("url", url))
+    for data in image_data_list[:3]:
+        all_items.append(("data", data))
+    for idx, (typ, val) in enumerate(all_items[:3]):
+        try:
+            if typ == "data":
+                img_data = val
             else:
-                logger.warning(f"[WECOM] ❌ 图片失败({i+1}): 群{group_id} → {nm}")
+                img_data = _download_image(val) if val else None
+            if img_data:
+                img_ok = _send_image(key, img_data)
+                if img_ok:
+                    logger.info(f"[WECOM] ✅ 图片转发({idx+1}): 群{group_id} → {nm}")
+                else:
+                    logger.warning(f"[WECOM] ❌ 图片失败({idx+1}): 群{group_id} → {nm}")
+                    send_to_bot(key, {"msgtype": "text", "text": {"content": "[图片]"}})
+            else:
+                logger.warning(f"[WECOM] ⚠️ 图片下载失败({idx+1}): 群{group_id}")
                 send_to_bot(key, {"msgtype": "text", "text": {"content": "[图片]"}})
-        else:
-            logger.warning(f"[WECOM] ⚠️ 图片下载失败({i+1}): 群{group_id}")
-            send_to_bot(key, {"msgtype": "text", "text": {"content": "[图片]"}})
-
-
-
-def _forward_ui(bot: dict, text: str, image_urls: list, group_id: str) -> None:
+        except Exception:
+            pass
+def _forward_ui(bot: dict, text: str, image_urls: list, image_data_list: list, group_id: str) -> None:
     """UI 模式发送 — 入队后立即返回"""
     chat_name = bot.get("name", "")
     if not chat_name:
@@ -224,7 +248,8 @@ def _forward_ui(bot: dict, text: str, image_urls: list, group_id: str) -> None:
     logger.info(f"[WECOM_UI] 入队: 群{group_id} → {nm} ({chat_name})")
 
     # 预下载图片
-    images = []
+    images = list(image_data_list)
+    images = list(image_data_list)
     for url in image_urls[:3]:
         data = _download_image(url)
         if data:

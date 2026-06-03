@@ -8,9 +8,11 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import json
 import os
+import base64
 from typing import Dict, List
 
 from filter import should_filter
+from nt_utils import get_file_base64_via_ntcall
 from wecom import try_forward as try_forward_wecom
 
 # 配置文件路径
@@ -148,6 +150,53 @@ def rate_limit(target_group: str) -> None:
     last_send_time[target_group] = time.time()
 
 
+def _download_via_ntcall(filename: str, file_id: str = "", group_id: str = "") -> str | None:
+    """包装 nt_utils.get_file_base64_via_ntcall"""
+    return get_file_base64_via_ntcall(filename, file_id, group_id)
+def _convert_file_to_image(segments: list, group_id: str = "") -> list:
+    """将 type=file 中图片文件转为 type=image 段，非图片文件移除"""
+    from filter import _is_image_filename
+    result = []
+    for seg in segments:
+        if not isinstance(seg, dict):
+            result.append(seg)
+            continue
+        if seg.get("type") != "file":
+            result.append(seg)
+            continue
+        data = seg.get("data", {}) or {}
+        fname = data.get("name", "") or data.get("file", "")
+        fid = data.get("file_id", "")
+        if not _is_image_filename(fname):
+            logger.debug(f"[CONVERT] skip non-image: {fname}")
+            continue
+        # 方式一：有 URL -> HTTP 下载
+        url = data.get("url", "")
+        if url:
+            try:
+                r = requests.get(url, timeout=5)
+                r.raise_for_status()
+                b64 = base64.b64encode(r.content).decode("ascii")
+                result.append({
+                    "type": "image",
+                    "data": {"file": f"base64://{b64}"}
+                })
+                logger.info(f"[CONVERT] file->image OK(url): {fname}")
+                continue
+            except Exception as e:
+                logger.warning(f"[CONVERT] URL下载失败: {e}")
+        # 方式二：SQLite + QQ CDN 下载
+        b64 = _download_via_ntcall(fname, fid, group_id)
+        if b64:
+            result.append({
+                "type": "image",
+                "data": {"file": f"base64://{b64}"}
+            })
+            logger.info(f"[CONVERT] file->image OK(ntcall): {fname}")
+        else:
+            # 方式三：全部失败 -> 跳过
+            logger.info(f"[CONVERT] 文件图片无法下载，跳过: {fname}")
+    return result
 @app.post("/webhook")
 def webhook():
     try:
@@ -232,6 +281,12 @@ def webhook():
                 logger.debug(f"[FILTER] 放行: 群{group_id} | 类型={type(message_content).__name__} "
                             f"| 文本={raw_text[:50]}")
 
+
+        # 6.5 文件消息 -> 图片消息转换
+        message_content = _convert_file_to_image(message_content, group_id)
+        if not message_content:
+            logger.info(f"文件消息无可用转发内容，跳过: 群{group_id}")
+            return "ok"
         # 7. 执行转发
         rule = forward_rules[group_id]
         target_groups = rule['targets'] if isinstance(rule, dict) else rule
