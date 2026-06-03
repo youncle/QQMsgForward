@@ -117,6 +117,6 @@
       ]
     }
   ],
-  "wecom_enabled": true,
-  "wecom_mode": "ui"
+  "wecom_enabled": false,
+  "wecom_mode": "api"
 }

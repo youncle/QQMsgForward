@@ -240,15 +240,13 @@ def _forward_ui(bot: dict, text: str, image_urls: list, image_data_list: list, g
 
     engine = get_ui_engine()
     if not engine.is_available():
-        logger.warning(f"[WECOM_UI] 企微窗口不可用，降级API: {chat_name}")
-        _forward_api(bot, text, image_urls, group_id)
+        logger.warning(f"[WECOM_UI] 企微窗口不可用，跳过: {chat_name}")
         return
 
     nm = bot.get("name", "") or _extract_key(bot.get("key", ""))[:8]
     logger.info(f"[WECOM_UI] 入队: 群{group_id} → {nm} ({chat_name})")
 
     # 预下载图片
-    images = list(image_data_list)
     images = list(image_data_list)
     for url in image_urls[:3]:
         data = _download_image(url)
@@ -259,9 +257,7 @@ def _forward_ui(bot: dict, text: str, image_urls: list, image_data_list: list, g
         "chat_name": chat_name,
         "text": text,
         "images": images,
-    }, lambda: _forward_api(bot, text, image_urls, group_id))
-
-
+    }, None)
 def test_bot(key: str) -> tuple:
     """测试企微机器人连通性"""
     payload = {
