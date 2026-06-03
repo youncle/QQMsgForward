@@ -67,6 +67,33 @@ class WeComUIEngine:
         time.sleep(max(0.05, base + random.uniform(-jitter, jitter)))
 
 
+    def _verify_clipboard(self, expected: str, max_retries: int = 2) -> bool:
+        """设置剪贴板后读回校验，失败重试"""
+        for attempt in range(max_retries):
+            self._set_clipboard_text(expected)
+            self._rand_sleep(0.05, 0.03)
+            try:
+                win32clipboard.OpenClipboard()
+                actual = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
+                win32clipboard.CloseClipboard()
+                if actual == expected:
+                    return True
+            except Exception:
+                try:
+                    win32clipboard.CloseClipboard()
+                except Exception:
+                    pass
+            self._rand_sleep(0.1, 0.05)
+        logger.warning(f"[WECOM_UI] 剪贴板校验失败: expected={expected[:30]!r}")
+        return False
+
+    def _ensure_focus(self) -> bool:
+        """确保企微窗口在前台，丢失则重新激活"""
+        if user32.GetForegroundWindow() != self._hwnd:
+            logger.warning("[WECOM_UI] 窗口焦点丢失，重新激活")
+            return self._ensure_window()
+        return True
+
     # === lifecycle ===
     def start(self):
         if self._thread and self._thread.is_alive():
@@ -260,7 +287,9 @@ class WeComUIEngine:
             self._rand_sleep(0.08, 0.05)
             send_keys("{DELETE}") # clear
             self._rand_sleep(0.12, 0.08)
-            self._set_clipboard_text(name)
+            if not self._verify_clipboard(name):
+                logger.error("[WECOM_UI] 搜索名剪贴板写入失败")
+                return False
             send_keys("^v")
             self._rand_sleep(0.8, 0.5)  # random delay after paste (0.3~1.3s)
             send_keys("{ENTER}")
@@ -275,12 +304,18 @@ class WeComUIEngine:
     def _send_text(self, text):
         if not HAS_SENDKEYS:
             return
-        self._set_clipboard_text(text)
+        if not self._ensure_focus():
+            return
+        if not self._verify_clipboard(text):
+            logger.error("[WECOM_UI] 剪贴板校验失败，跳过发送")
+            return
         send_keys("^v")
         self._rand_sleep(0.3, 0.15)
         send_keys("{ENTER}")
     # === send image ===
     def _send_image(self, data):
+        if not self._ensure_focus():
+            return
         if not HAS_SENDKEYS:
             return
         path = None
