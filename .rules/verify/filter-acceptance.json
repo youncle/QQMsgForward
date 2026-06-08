@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "target_module": "filter.py",
+  "description": "filter 模块的验收标准，任何修改必须通过以下所有测试用例",
+  "created_at": "2026-06-08",
+  "test_cases": [
+    {
+      "id": "TC-001",
+      "description": "无图片的普通文本消息不应被 QR 码过滤器拦截",
+      "input": {
+        "message": [{"type": "text", "data": {"text": "今天天气不错"}}],
+        "config": {
+          "qrcode": { "enabled": true, "keywords": ["微信", "扫码"], "mode": "image_with_keyword" }
+        }
+      },
+      "expected": false,
+      "check": "should_filter"
+    },
+    {
+      "id": "TC-002",
+      "description": "图片+关键词的消息应被 QR 码过滤器拦截",
+      "input": {
+        "message": [{"type": "image", "data": {"file": "test.jpg"}}, {"type": "text", "data": {"text": "加微信"}}],
+        "config": {
+          "qrcode": { "enabled": true, "keywords": ["微信"], "mode": "image_with_keyword" }
+        }
+      },
+      "expected": true,
+      "check": "should_filter"
+    },
+    {
+      "id": "TC-003",
+      "description": "纯图片在 block_pure_image 模式下应被拦截",
+      "input": {
+        "message": [{"type": "image", "data": {"file": "test.jpg"}}],
+        "config": {
+          "qrcode": { "enabled": true, "keywords": [], "mode": "block_pure_image" }
+        }
+      },
+      "expected": true,
+      "check": "should_filter"
+    },
+    {
+      "id": "TC-004",
+      "description": "包含群号上下文的长数字不应触发 QQ 拦截",
+      "input": {
+        "message": [{"type": "text", "data": {"text": "欢迎加群 123456789"}}],
+        "config": {
+          "contact": {
+            "enabled": true,
+            "patterns": {"qq": "(?<!\\d)[1-9]\\d{7,9}(?!\\d)"},
+            "keywords": []
+          }
+        }
+      },
+      "expected": false,
+      "check": "should_filter"
+    },
+    {
+      "id": "TC-005",
+      "description": "CQ 码格式消息在 block_all_images 模式下应拦截",
+      "input": {
+        "message": "[CQ:image,file=test.jpg]\u6765\u626b\u7801",
+        "config": {
+          "qrcode": { "enabled": true, "keywords": ["\u626b\u7801"], "mode": "block_all_images" }
+        }
+      },
+      "expected": true,
+      "check": "should_filter"
+    }
+  ]
+}

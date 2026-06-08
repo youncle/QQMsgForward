@@ -34,7 +34,13 @@ INFO = "ℹ️"
 
 
 def log(status: str, msg: str):
-    print(f"  {status}  {msg}")
+    """打印日志，自动处理 GBK 编码环境"""
+    try:
+        print(f"  {status}  {msg}")
+    except UnicodeEncodeError:
+        m = {"✅": "PASS", "⚠️": "WARN", "❌": "FAIL", "ℹ️": "INFO"}
+        fallback = m.get(status, "??")
+        print(f"  [{fallback}]  {msg}")
 
 
 # ── 检查 1：模块导入检查 ──
@@ -215,6 +221,89 @@ def check_safety_rules() -> list[str]:
     return errors
 
 
+
+# ── 检查 7：Filter 验收检查（JSON 物理锁）──
+def check_filter_acceptance() -> list[str]:
+    """读取 filter 验收 JSON，逐条运行测试用例验证"""
+    errors = []
+    acceptance_path = os.path.join(PROJECT_ROOT, ".rules", "verify", "filter-acceptance.json")
+    if not os.path.exists(acceptance_path):
+        log(INFO, ".rules/verify/filter-acceptance.json: 不存在，跳过")
+        return errors
+
+    import filter
+    import json
+    with open(acceptance_path, "r", encoding="utf-8") as f:
+        suite = json.load(f)
+
+    for tc in suite.get("test_cases", []):
+        tc_id = tc["id"]
+        msg = tc["input"]["message"]
+        cfg = tc["input"]["config"]
+        expected = tc["expected"]
+        try:
+            result, _ = filter.should_filter(msg, cfg)
+            if result == expected:
+                log(PASS, f"{tc_id}: {tc["description"]}")
+            else:
+                log(FAIL, f"{tc_id}: 失败—期望={expected}, 实际={result}")
+                errors.append(f"{tc_id}: 期望={expected}, 实际={result}")
+        except Exception as e:
+            log(FAIL, f"{tc_id}: 异常—{e}")
+            errors.append(f"{tc_id}: {e}")
+    return errors
+
+
+# ── 检查 8：Safety 红线违规检查（沙盒隔离）──
+def check_safety_violations() -> list[str]:
+    """检查当前 git diff 是否触碰 safety.md 中的 Level 1 红线"""
+    errors = []
+    import subprocess
+
+    # 暂存区变更
+    r1 = subprocess.run(["git", "diff", "--name-only", "--cached"], capture_output=True, text=True, cwd=PROJECT_ROOT)
+    # 未暂存变更
+    r2 = subprocess.run(["git", "diff", "--name-only"], capture_output=True, text=True, cwd=PROJECT_ROOT)
+    r3 = subprocess.run(["git", "diff", "--name-only", "HEAD"], capture_output=True, text=True, cwd=PROJECT_ROOT)
+
+    all_changed = set(r1.stdout.splitlines() + r2.stdout.splitlines())
+
+    forbidden_paths = ["runtime/", "config/config.json", "main.py"]
+    found = False
+    for f in sorted(all_changed):
+        if not f.strip():
+            continue
+        for forbidden in forbidden_paths:
+            if f.startswith(forbidden):
+                msg = f"Safety 违规: {f} — 触碰 Level 1 红线（禁止修改）"
+                errors.append(msg)
+                log(FAIL, msg)
+                found = True
+
+    if not found:
+        log(PASS, "无 Safety 红线违规")
+    return errors
+
+
+# ── 检查 9：记忆健康检查 ──
+def check_memory_health() -> list[str]:
+    """检查 CLAUDE.md 是否超限"""
+    errors = []
+    claude_path = os.path.join(PROJECT_ROOT, "CLAUDE.md")
+    if not os.path.exists(claude_path):
+        log(INFO, "CLAUDE.md: 不存在，跳过")
+        return errors
+
+    with open(claude_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    line_count = len(lines)
+    if line_count > 200:
+        log(WARN, f"CLAUDE.md: {line_count} 行（超过 200 行，运行 scripts/compress-memory.py）")
+    else:
+        log(PASS, f"CLAUDE.md: {line_count} 行（正常）")
+    return errors
+
 # ── 主流程 ──
 def main():
     print("=" * 56)
@@ -228,9 +317,12 @@ def main():
         ("模块导入检查", lambda: check_imports()),
         ("配置一致性检查", lambda: check_config_consistency()),
         ("Filter 逻辑检查", lambda: check_filter_logic()),
+        ("Filter 验收检查", lambda: check_filter_acceptance()),
         ("目录完整性检查", lambda: check_directory_integrity()),
         ("构建链检查", lambda: check_build_chain()),
         ("安全规则检查", lambda: check_safety_rules()),
+        ("Safety 红线违规检查", lambda: check_safety_violations()),
+        ("记忆健康检查", lambda: check_memory_health()),
     ]
 
     for section_name, check_fn in sections:

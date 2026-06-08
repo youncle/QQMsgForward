@@ -1,0 +1,35 @@
+#!/bin/sh
+export PYTHONIOENCODING=utf-8
+ROOT=$(dirname "$(dirname "$0")")
+VERIFY="$ROOT/scripts/verify.py"
+
+changed=$(git diff --cached --name-only)
+for f in $changed; do
+    case "$f" in
+        runtime/*)
+            echo "[BLOCKED] $f - Safety Level 1: runtime/不可修改"
+            exit 1
+            ;;
+        config/config.json)
+            echo "[BLOCKED] $f - Safety Level 1: config.json不可修改"
+            exit 1
+            ;;
+        main.py)
+            echo "[BLOCKED] $f - Safety Level 1: main.py不可修改"
+            exit 1
+            ;;
+    esac
+done
+echo "[OK] Safety check passed"
+
+if [ ! -f "$VERIFY" ]; then
+    echo "[WARN] verify.py not found, skipping"
+    exit 0
+fi
+python "$VERIFY"
+if [ $? -ne 0 ]; then
+    echo "[BLOCKED] Harness verification failed. Bypass: git commit --no-verify"
+    exit 1
+fi
+echo "[OK] Harness passed"
+exit 0

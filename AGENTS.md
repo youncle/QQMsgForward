@@ -103,10 +103,10 @@ settings.py:  def load_config() → 读取 CONFIG_PATH（同路径）
 每次修改必须遵守以下步骤：
 
 ```
-Step 1：读 Context
-  ├── 读 AGENTS.md（全景认知）
-  ├── 读目标模块代码（理解现有逻辑）
-  └── 读 docs/architecture.md（如涉及核心流程）
+Step 1：三步唤醒
+  ├── ① pwd                          — 确认工作目录
+  ├── ② git log --oneline -5         — 查看最近变更
+  └── ③ cat CLAUDE.md                — 加载决策记忆
 
 Step 2：制定方案
   ├── 给出多个可选方案（含理由和对比）
