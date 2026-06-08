@@ -353,6 +353,74 @@ def check_qr_decoder_acceptance() -> list[str]:
 
     return errors
 
+
+# ── 检查 12：文档同步检查 ──
+def check_doc_sync() -> list[str]:
+    """检查项目文档之间的引用一致性和内容同步状态"""
+    errors = []
+    warnings = []
+
+    # 1. AGENTS.md 引用的文件是否存在
+    agents_path = os.path.join(PROJECT_ROOT, "AGENTS.md")
+    if os.path.exists(agents_path):
+        with open(agents_path, "r", encoding="utf-8") as f:
+            agents_content = f.read()
+
+        refs = set(re.findall(r"[`]?([a-zA-Z0-9_./-]+\\.(?:md|py|json|bat|vbs))[`]?", agents_content))
+        for ref in sorted(refs):
+            if ref.startswith("docs/") or ref.startswith(".rules/") or ref.startswith("scripts/"):
+                ref_path = os.path.join(PROJECT_ROOT, ref)
+                if not os.path.exists(ref_path):
+                    msg = f"AGENTS.md 引用了不存在的文件: {ref}"
+                    warnings.append(msg)
+                    log(WARN, msg)
+                else:
+                    log(PASS, f"AGENTS.md → {ref}")
+
+    # 2. src 模块在 architecture.md 中是否都有记录
+    arch_path = os.path.join(PROJECT_ROOT, "docs", "architecture.md")
+    src_modules = [f.replace(".py", "") for f in os.listdir(SRC_DIR) if f.endswith(".py") and f != "__init__.py"]
+
+    if os.path.exists(arch_path):
+        with open(arch_path, "r", encoding="utf-8") as f:
+            arch_content = f.read()
+        for mod in sorted(src_modules):
+            if mod in arch_content:
+                log(PASS, f"docs/architecture.md → src/{mod}.py")
+            else:
+                msg = f"src/{mod}.py 在 docs/architecture.md 中未提及"
+                warnings.append(msg)
+                log(WARN, msg)
+
+    # 3. config_reference.md 字段 vs config.json 实际字段
+    config_ref_path = os.path.join(PROJECT_ROOT, "docs", "config_reference.md")
+    config_json_path = os.path.join(PROJECT_ROOT, "config", "config.json")
+
+    if os.path.exists(config_ref_path) and os.path.exists(config_json_path):
+        import json
+        with open(config_json_path, "r", encoding="utf-8") as f:
+            cfg = json.load(f)
+
+        with open(config_ref_path, "r", encoding="utf-8") as f:
+            ref_content = f.read()
+
+        for key in sorted(cfg.keys()):
+            if key == "llbot_apis":
+                continue  # 动态写入，不需要文档
+            pattern = rf"[`]{{0,1}}{key}[`]{{0,1}}"
+            if re.search(pattern, ref_content):
+                log(PASS, f"config_reference.md → config.json.{key}")
+            else:
+                msg = f"config.json.{key} 在 docs/config_reference.md 中未记录"
+                warnings.append(msg)
+                log(WARN, msg)
+
+    if warnings:
+        for w in warnings:
+            errors.append(w)
+
+    return errors
+
 # ── 主流程 ──
 def main():
     print("=" * 56)
@@ -374,6 +442,7 @@ def main():
         ("记忆健康检查", lambda: check_memory_health()),
         ("进度追踪检查", lambda: check_progress()),
         ("qr_decoder 验收检查", lambda: check_qr_decoder_acceptance()),
+        ("文档同步检查", lambda: check_doc_sync()),
     ]
 
     for section_name, check_fn in sections:
