@@ -304,6 +304,55 @@ def check_memory_health() -> list[str]:
         log(PASS, f"CLAUDE.md: {line_count} 行（正常）")
     return errors
 
+
+# ── 检查 10：进度追踪检查 ──
+def check_progress() -> list[str]:
+    """检查 progress.json 是否存在且格式正确"""
+    errors = []
+    progress_path = os.path.join(PROJECT_ROOT, ".rules", "verify", "progress.json")
+    if not os.path.exists(progress_path):
+        log(WARN, ".rules/verify/progress.json: 不存在")
+        return errors
+
+    import json
+    with open(progress_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    ms = data.get("milestones", [])
+    total = len(ms)
+    done = sum(1 for m in ms if m.get("status") == "completed")
+    log(INFO, f"进度: {done}/{total} milestones 已完成")
+    return errors
+
+
+# ── 检查 11：qr_decoder 验收检查 ──
+def check_qr_decoder_acceptance() -> list[str]:
+    """检查 qr_decoder 验收 JSON 中的模块健康状况"""
+    errors = []
+    accept_path = os.path.join(PROJECT_ROOT, ".rules", "verify", "qr-decoder-acceptance.json")
+    if not os.path.exists(accept_path):
+        log(INFO, ".rules/verify/qr-decoder-acceptance.json: 不存在，跳过")
+        return errors
+
+    import json
+    with open(accept_path, "r", encoding="utf-8") as f:
+        suite = json.load(f)
+
+    for tc in suite.get("test_cases", []):
+        log(INFO, f"{tc["id"]}: {tc["description"]}")
+
+    try:
+        import qr_decoder
+        has_pyzbar = getattr(qr_decoder, "PYZBAR_AVAILABLE", False)
+        log(PASS if has_pyzbar else WARN, f"PYZBAR_AVAILABLE = {has_pyzbar}")
+        if not has_pyzbar:
+            errors.append("qr_decoder: pyzbar 不可用，解码功能受限")
+    except Exception as e:
+        errors.append(f"qr_decoder: 导入失败 — {e}")
+        log(FAIL, f"qr_decoder: 导入失败")
+
+    return errors
+
 # ── 主流程 ──
 def main():
     print("=" * 56)
@@ -323,6 +372,8 @@ def main():
         ("安全规则检查", lambda: check_safety_rules()),
         ("Safety 红线违规检查", lambda: check_safety_violations()),
         ("记忆健康检查", lambda: check_memory_health()),
+        ("进度追踪检查", lambda: check_progress()),
+        ("qr_decoder 验收检查", lambda: check_qr_decoder_acceptance()),
     ]
 
     for section_name, check_fn in sections:

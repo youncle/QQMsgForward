@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "target_module": "qr_decoder.py",
+  "description": "QR 码解码模块的验收标准",
+  "created_at": "2026-06-08",
+  "test_cases": [
+    {
+      "id": "QR-TC-001",
+      "description": "pyzbar 不可用时优雅降级（PYZBAR_AVAILABLE = False）",
+      "expected": "模块导入不崩溃，process_message_images 返回空字符串"
+    },
+    {
+      "id": "QR-TC-002",
+      "description": "解码超时配置被正确读取",
+      "expected": "decode_timeout 默认 2 秒，可从 config 覆盖"
+    },
+    {
+      "id": "QR-TC-003",
+      "description": "解码缓存按 cache_seconds 过期",
+      "expected": "相同图片在缓存期内不重复解码"
+    },
+    {
+      "id": "QR-TC-004",
+      "description": "无可解码内容时返回空字符串",
+      "expected": "普通文本消息不触发解码流程"
+    }
+  ]
+}

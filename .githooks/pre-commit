@@ -31,5 +31,11 @@ if [ $? -ne 0 ]; then
     echo "[BLOCKED] Harness verification failed. Bypass: git commit --no-verify"
     exit 1
 fi
+# Auto-compress CLAUDE.md if over 150 lines
+CLAUDE_COUNT=$(wc -l < "$ROOT/CLAUDE.md" 2>/dev/null || echo 0)
+if [ "$CLAUDE_COUNT" -gt 150 ] 2>/dev/null; then
+    python "$ROOT/scripts/compress-memory.py"
+fi
+
 echo "[OK] Harness passed"
 exit 0

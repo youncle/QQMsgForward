@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-06-08",
+  "milestones": [
+    {
+      "id": "harness-foundation",
+      "title": "Harness 基础：约定级（Context/Tool/Safety/Memory/Evaluation/Feedback）",
+      "status": "completed",
+      "completed_at": "2026-06-08"
+    },
+    {
+      "id": "harness-executable",
+      "title": "Harness 升级：可执行级（三步唤醒/Hooks/JSON锁/沙盒隔离/记忆压缩）",
+      "status": "completed",
+      "completed_at": "2026-06-08"
+    },
+    {
+      "id": "harness-enhance-precommit",
+      "title": "Harness 完善：pre-commit 增强",
+      "status": "completed",
+      "completed_at": "2026-06-08"
+    },
+    {
+      "id": "harness-enhance-progress",
+      "title": "Harness 完善：进度追踪 JSON",
+      "status": "completed",
+      "completed_at": "2026-06-08"
+    },
+    {
+      "id": "harness-enhance-qrlock",
+      "title": "Harness 完善：qr_decoder JSON 锁",
+      "status": "completed",
+      "completed_at": "2026-06-08"
+    },
+    {
+      "id": "harness-enhance-autocompress",
+      "title": "Harness 完善：自动记忆压缩",
+      "status": "completed",
+      "completed_at": "2026-06-08"
+    }
+  ]
+}
