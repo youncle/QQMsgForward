@@ -106,23 +106,28 @@ settings.py:  def load_config() → 读取 CONFIG_PATH（同路径）
 Step 1：读 Context
   ├── 读 AGENTS.md（全景认知）
   ├── 读目标模块代码（理解现有逻辑）
-  └── 读 ARCHITECTURE.md（如涉及核心流程）
+  └── 读 docs/architecture.md（如涉及核心流程）
 
-Step 2：Safety 自检
+Step 2：制定方案
+  ├── 给出多个可选方案（含理由和对比）
+  ├── 等你选择确认
+  └── 方案文档保存到 docs/plans/mmdd-序号-简述.md
+
+Step 3：Safety 自检
   ├── 修改是否触碰 .rules/safety.md 中的红线？
   ├── 如果改了 config 结构 → 同步两处 load_config？
   └── 如果改了 settings.py → 本地运行验证 GUI？
 
-Step 3：遵守 Tool 规范
+Step 4：遵守 Tool 规范
   └── 代码风格遵守 .rules/coding.md
 
-Step 4：跑 Evaluation
+Step 5：跑 Evaluation
   └── python scripts/verify.py（必须通过）
 
-Step 5：更新 Memory
+Step 6：更新 Memory
   └── 重要决策写入 CLAUDE.md
 
-Step 6：Commit
+Step 7：Commit
   └── 信息包含：修改了什么 + 为什么 + 影响范围
 ```
 
