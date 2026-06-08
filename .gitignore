@@ -33,3 +33,7 @@ runtime/LLBot-CLI-Win-x64-5
 # 系统
 Thumbs.db
 .DS_Store
+
+# 运行时状态
+config/.window_state.json
+

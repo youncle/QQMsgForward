@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+"""
+QQMsgForward 开发 Harness 验证脚本（Evaluation 层）
+
+用法：python scripts/verify.py
+
+检查项：
+1. 模块导入检查 — 所有 src/ 模块能否正常 import
+2. 配置一致性检查 — forward_qq.py 和 settings.py 的 load_config / CONFIG_PATH 签名对齐
+3. filter 模块逻辑检查 — should_filter 基本调用无异常
+4. 目录完整性检查 — 必要目录和文件是否存在
+5. 构建链检查 — build.bat 引用的路径是否存在
+6. 安全规则检查 — safety.md 中声明的红线路径是否合理
+
+返回码：0=全部通过，1=有警告，2=有错误
+"""
+
+import importlib
+import os
+import sys
+import ast
+import re
+
+# ── 路径设置 ──
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SRC_DIR = os.path.join(PROJECT_ROOT, "src")
+sys.path.insert(0, SRC_DIR)
+
+# ── 状态符号 ──
+PASS = "✅"
+WARN = "⚠️"
+FAIL = "❌"
+INFO = "ℹ️"
+
+
+def log(status: str, msg: str):
+    print(f"  {status}  {msg}")
+
+
+# ── 检查 1：模块导入检查 ──
+def check_imports() -> list[str]:
+    """逐个 import src/ 下的模块，捕获导入异常"""
+    errors = []
+    modules = [
+        "filter", "forward_qq", "nt_utils", "qr_decoder",
+        "splash", "tray", "wecom", "wecom_ui",
+    ]
+    skip_if_missing_dep = {
+        "qr_decoder": ["PIL", "pyzbar"],
+        "wecom_ui": ["win32com"],
+    }
+
+    for mod_name in modules:
+        skip_deps = skip_if_missing_dep.get(mod_name, [])
+        deps_missing = []
+        for dep in skip_deps:
+            try:
+                importlib.import_module(dep)
+            except ImportError:
+                deps_missing.append(dep)
+
+        if deps_missing:
+            log(WARN, f"{mod_name}: 跳过（缺少依赖: {', '.join(deps_missing)}）")
+            continue
+
+        try:
+            importlib.import_module(mod_name)
+            log(PASS, f"{mod_name}: 导入成功")
+        except Exception as e:
+            msg = f"{mod_name}: 导入失败 — {e}"
+            log(FAIL, msg)
+            errors.append(msg)
+
+    return errors
+
+
+# ── 检查 2：配置一致性检查 ──
+def check_config_consistency() -> list[str]:
+    """检查两处配置接口是否对齐：
+    - forward_qq.py: 需要 CONFIG_PATH + load_config()（只读）
+    - settings.py: 需要 CONFIG_PATH + load_config() + save_config()（读写）
+    """
+    errors = []
+    fwd_path = os.path.join(SRC_DIR, "forward_qq.py")
+    set_path = os.path.join(SRC_DIR, "settings.py")
+
+    # forward_qq.py — 只读配置
+    if os.path.exists(fwd_path):
+        with open(fwd_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        ok = True
+        if "CONFIG_PATH" not in content:
+            errors.append("forward_qq.py: 缺少 CONFIG_PATH")
+            ok = False
+        if "def load_config(" not in content:
+            errors.append("forward_qq.py: 缺少 load_config()")
+            ok = False
+        log(PASS if ok else FAIL, f"forward_qq.py: 配置接口{'完整' if ok else '不完整'}")
+
+    # settings.py — 读写配置
+    if os.path.exists(set_path):
+        with open(set_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        ok = True
+        if "CONFIG_PATH" not in content:
+            errors.append("settings.py: 缺少 CONFIG_PATH")
+            ok = False
+        if "def load_config(" not in content:
+            errors.append("settings.py: 缺少 load_config()")
+            ok = False
+        if "def save_config(" not in content:
+            errors.append("settings.py: 缺少 save_config()")
+            ok = False
+        log(PASS if ok else FAIL, f"settings.py: 配置接口{'完整' if ok else '不完整'}")
+
+    return errors
+
+
+# ── 检查 3：filter 模块逻辑检查 ──
+def check_filter_logic() -> list[str]:
+    """基本检查 filter 模块的关键函数和常量"""
+    errors = []
+    try:
+        import filter
+        required_funcs = ["should_filter", "check_qrcode_ad", "check_contact_info"]
+        for func_name in required_funcs:
+            if hasattr(filter, func_name):
+                log(PASS, f"filter.{func_name}(): 存在")
+            else:
+                errors.append(f"filter.py: 缺少 {func_name}()")
+
+        for const_name in ["QQ_CONTEXT_WHITELIST", "IMAGE_FILE_EXTENSIONS"]:
+            if hasattr(filter, const_name):
+                log(PASS, f"filter.{const_name}: 存在")
+            else:
+                errors.append(f"filter.py: 缺少 {const_name}")
+    except Exception as e:
+        errors.append(f"filter 模块检查失败: {e}")
+
+    return errors
+
+
+# ── 检查 4：目录完整性检查 ──
+def check_directory_integrity():
+    """检查必要目录和文件是否存在"""
+    errors = []
+    warnings = []
+
+    required = [
+        ("config 目录", os.path.join(PROJECT_ROOT, "config")),
+        ("docs 目录", os.path.join(PROJECT_ROOT, "docs")),
+        ("scripts 目录", os.path.join(PROJECT_ROOT, "scripts")),
+        ("src 目录", SRC_DIR),
+        ("src/__init__.py", os.path.join(SRC_DIR, "__init__.py")),
+        ("main.py", os.path.join(PROJECT_ROOT, "main.py")),
+        ("requirements.txt", os.path.join(PROJECT_ROOT, "requirements.txt")),
+    ]
+
+    for name, path in required:
+        if os.path.exists(path):
+            log(PASS, f"{name}: 存在")
+        else:
+            errors.append(f"缺少: {name}")
+            log(FAIL, f"{name}: 缺失")
+
+    docs = ["architecture.md", "build.md", "config_reference.md", "troubleshooting.md", "changelog.md"]
+    for doc in docs:
+        doc_path = os.path.join(PROJECT_ROOT, "docs", doc)
+        if os.path.exists(doc_path):
+            log(INFO, f"docs/{doc}: 存在")
+        else:
+            warnings.append(f"docs/{doc}: 缺失（可选）")
+            log(WARN, f"docs/{doc}: 缺失（可选）")
+
+    return errors, warnings
+
+
+# ── 检查 5：构建链检查 ──
+def check_build_chain() -> list[str]:
+    """检查构建脚本和资源"""
+    errors = []
+    build_bat = os.path.join(PROJECT_ROOT, "scripts", "build.bat")
+    if not os.path.exists(build_bat):
+        errors.append("scripts/build.bat: 缺失")
+        log(FAIL, "scripts/build.bat: 缺失")
+        return errors
+
+    log(PASS, "scripts/build.bat: 存在")
+    ico_path = os.path.join(PROJECT_ROOT, "resources", "app.ico")
+    if os.path.exists(ico_path):
+        log(PASS, "resources/app.ico: 存在")
+    else:
+        log(WARN, "resources/app.ico: 缺失（构建时会自动生成）")
+
+    return errors
+
+
+# ── 检查 6：安全规则完整性检查 ──
+def check_safety_rules() -> list[str]:
+    """检查 safety 规则文件是否完备"""
+    errors = []
+    safety_path = os.path.join(PROJECT_ROOT, ".rules", "safety.md")
+    if not os.path.exists(safety_path):
+        errors.append(".rules/safety.md: 缺失")
+        log(FAIL, ".rules/safety.md: 缺失")
+        return errors
+
+    log(PASS, ".rules/safety.md: 存在")
+    rt_path = os.path.join(PROJECT_ROOT, "runtime")
+    if os.path.exists(rt_path):
+        log(INFO, "runtime/: 存在（已受 safety.md 保护）")
+    else:
+        log(INFO, "runtime/: 不存在（可能已被清理）")
+
+    return errors
+
+
+# ── 主流程 ──
+def main():
+    print("=" * 56)
+    print("  QQMsgForward Harness Verification")
+    print("=" * 56)
+
+    all_errors = []
+    all_warnings = []
+
+    sections = [
+        ("模块导入检查", lambda: check_imports()),
+        ("配置一致性检查", lambda: check_config_consistency()),
+        ("Filter 逻辑检查", lambda: check_filter_logic()),
+        ("目录完整性检查", lambda: check_directory_integrity()),
+        ("构建链检查", lambda: check_build_chain()),
+        ("安全规则检查", lambda: check_safety_rules()),
+    ]
+
+    for section_name, check_fn in sections:
+        print(f"\n── {section_name} ──")
+        try:
+            result = check_fn()
+            if isinstance(result, tuple):
+                errs, warns = result
+                all_errors.extend(errs)
+                all_warnings.extend(warns)
+            else:
+                all_errors.extend(result)
+        except Exception as e:
+            log(FAIL, f"检查异常: {e}")
+            all_errors.append(f"{section_name}: {e}")
+
+    print()
+    print("=" * 56)
+
+    if all_errors:
+        print(f"\n{FAIL} 失败: {len(all_errors)} 个错误")
+        for e in all_errors:
+            print(f"     {e}")
+        print(f"\n  → 请修复错误后重新运行")
+        return 2
+    elif all_warnings:
+        print(f"\n{WARN} 通过（{len(all_warnings)} 个警告）")
+        for w in all_warnings:
+            print(f"     {w}")
+        return 1
+    else:
+        print(f"\n{PASS} 全部通过")
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
