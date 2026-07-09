@@ -155,11 +155,17 @@ def create_forward_frame(parent, cfg=None):
         # 保存机器人QQ
         _raw = qq_entry.get().strip()
         _parts = [v.strip() for v in _raw.replace('，', ',').split(',') if v.strip()]
-        cfg['robot_qq'] = [int(p) for p in _parts if p.isdigit()]
+        _new_qq = [int(p) for p in _parts if p.isdigit()]
+        has_robot_change = _new_qq != cfg.get('robot_qq', [])
+        cfg['robot_qq'] = _new_qq
         try:
             save_config(cfg)
-            status_var.set('配置已保存，立即生效。')
-            messagebox.showinfo('保存成功', '配置已保存，立即生效。')
+            if has_robot_change:
+                msg = '配置已保存，机器人QQ修改需重启服务后生效。'
+            else:
+                msg = '配置已保存，转发规则立即生效。'
+            status_var.set(msg)
+            messagebox.showinfo('保存成功', msg)
         except Exception as e:
             status_var.set(f'保存失败: {e}')
             messagebox.showerror('保存失败', str(e))
