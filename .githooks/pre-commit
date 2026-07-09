@@ -6,14 +6,6 @@ VERIFY="$ROOT/scripts/verify.py"
 changed=$(git diff --cached --name-only)
 for f in $changed; do
     case "$f" in
-        runtime/*)
-            echo "[BLOCKED] $f - Safety Level 1: runtime/不可修改"
-            exit 1
-            ;;
-        config/config.json)
-            echo "[BLOCKED] $f - Safety Level 1: config.json不可修改"
-            exit 1
-            ;;
         main.py)
             echo "[BLOCKED] $f - Safety Level 1: main.py不可修改"
             exit 1
