@@ -783,6 +783,15 @@ def main():
             '请在 WebUI 中完成登录后重新刷新。')
         root_tmp.destroy()
 
+    # ====== 清理多余的多实例目录（用户减少了 robot_qq 数量时） ======
+    _base_dir = llbot_dir
+    _keep = max(1, len(_rq_list))
+    for _del_idx in range(_keep, 20):
+        _del_dir = _base_dir.rstrip('\\') + f'-{_del_idx + 1}'
+        if _del_dir != _base_dir and os.path.isdir(_del_dir):
+            import shutil
+            shutil.rmtree(_del_dir, ignore_errors=True)
+
     splash.update(50, f'启动完成 {len(_rq_list)} 个 LLBot 实例')
     if splash.canceled:
         _abort_startup(splash)
