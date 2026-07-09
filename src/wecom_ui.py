@@ -8,6 +8,8 @@ import uuid
 import io
 import random
 from typing import Callable
+import io
+import uuid
 
 
 logger = logging.getLogger(__name__)
@@ -343,7 +345,7 @@ class WeComUIEngine:
             send_keys("{ENTER}")
             self._clear_clipboard()
         except Exception as e:
-            __import__("logging").getLogger(__name__).error(f"[WECOM_UI] _send_image error: {e}")
+            logger.error(f"[WECOM_UI] _send_image error: {e}")
 
     @staticmethod
     def _set_clipboard_text(text: str):
@@ -387,18 +389,18 @@ class WeComUIEngine:
     def _save_temp_image(data) -> str:
         """save image bytes to temp PNG file"""
         from PIL import Image
-        img = Image.open(__import__("io").BytesIO(data))
+        img = Image.open(io.BytesIO(data))
         name = __import__("uuid").uuid4().hex + ".png"
         path = os.path.join(WeComUIEngine._get_temp_dir(), name)
         img.save(path, "PNG")
-        __import__("logging").getLogger(__name__).debug(f"[WECOM_UI] temp image saved: {path}")
+        logger.debug(f"[WECOM_UI] temp image saved: {path}")
         return path
 
     @staticmethod
     def _cleanup_temp_files():
         """clean old temp files"""
         d = WeComUIEngine._get_temp_dir()
-        now = __import__("time").time()
+        now = time.time()
         age = WeComUIEngine.TEMP_MAX_AGE
         for fname in os.listdir(d):
             fpath = os.path.join(d, fname)
@@ -448,7 +450,7 @@ class WeComUIEngine:
                     user32.SetClipboardData(15, hMem)
                     user32.CloseClipboard()
         except Exception as e:
-            __import__("logging").getLogger(__name__).error(f"[WECOM_UI] clipboard CF_HDROP fallback failed: {e}")
+            logger.error(f"[WECOM_UI] clipboard CF_HDROP fallback failed: {e}")
 
     @staticmethod
     def _clear_clipboard():

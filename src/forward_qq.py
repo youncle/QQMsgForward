@@ -228,9 +228,6 @@ def webhook():
         if _pref and _pref in llbot_apis:
             llbot_apis = [_pref] + [a for a in llbot_apis if a != _pref]
         filter_config = cfg.get('filter', {})
-        if not data:
-            logger.warning("收到空的WebHook请求")
-            return "ok"
         gid = data.get("group_id", "?")
         uid = data.get("sender", {}).get("user_id", "?")
         mt = data.get("message_type", "?")

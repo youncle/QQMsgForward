@@ -19,7 +19,7 @@ import requests
 import settings as settings_mod
 
 import splash as splash_mod
-
+import forward_qq as forward_mod
 # 路径
 if getattr(sys, 'frozen', False):
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -137,8 +137,7 @@ def create_status_tab(parent):
     # 读取 llbot_apis 获取真实 QQ→端口映射（探测后已写入）
     _llbot_entries = []  # [(port, qq)]
     try:
-        import forward_qq as _fwd
-        _cfg = _fwd.get_config()
+        _cfg = forward_mod.get_config()
         _apis = _cfg.get('llbot_apis', {})
         for _qq, _url in _apis.items():
             try:
@@ -154,8 +153,7 @@ def create_status_tab(parent):
     _llbot_labels = []
     if not _llbot_entries:
         try:
-            import forward_qq as _fwd
-            _cfg = _fwd.get_config()
+            _cfg = forward_mod.get_config()
             _rqt = _cfg.get('robot_qq', [])
             if isinstance(_rqt, int):
                 _rqt = [_rqt]
@@ -230,8 +228,7 @@ def create_status_tab(parent):
 
         # 企业微信状态
         try:
-            import forward_qq as _fwd
-            _wc_cfg = _fwd.get_config()
+            _wc_cfg = forward_mod.get_config()
             _wc_enabled = _wc_cfg.get("wecom_enabled", True)
             _wc_bots = _wc_cfg.get("wecom_bots", [])
             if not _wc_bots:
@@ -347,8 +344,7 @@ def shutdown_service(icon):
     _llbot_pids.clear()
 
     try:
-        import forward_qq as _fwd
-        _cfg = _fwd.get_config()
+        _cfg = forward_mod.get_config()
         _rq_list = _cfg.get('robot_qq', [])
         if isinstance(_rq_list, int):
             _rq_list = [_rq_list]

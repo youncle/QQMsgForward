@@ -298,7 +298,7 @@ def create_filter_frame(parent, cfg=None):
         return bool(int(cb.getvar(cb['variable'])))
 
     def on_save():
-        cfg['wecom_enabled'] = bool(int(enabled_cb.getvar(enabled_cb['variable'])))
+        cfg['filter']['qrcode']['enabled'] = _cb_checked(qr_enabled_cb)
         cfg['filter']['qrcode']['enabled'] = _cb_checked(qr_enabled_cb)
         cfg['filter']['qrcode']['mode'] = MODE_REVERSE.get(mode_combo.get(), 'image_with_keyword')
         cfg['filter']['qrcode']['keywords'] = [

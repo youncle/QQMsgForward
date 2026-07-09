@@ -73,7 +73,7 @@ class SplashScreen:
 
     def _on_close(self):
         self._canceled = True
-        self._label.config(text="\u6b63\u5728\u5173\u95ed...", fg="#ff6b6b")
+        self._label.config(text="正在关闭...", fg="#ff6b6b")
         self._root.update()
         if self._on_cancel_cb:
             self._on_cancel_cb()
