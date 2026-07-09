@@ -1,0 +1,14 @@
+[2026/07/09 周四 15:24:48.47] ====== 开始更新 ====== 
+[2026/07/09 周四 15:24:48.47] PID=6824 
+[2026/07/09 周四 15:24:48.47] CURRENT_EXE=D:\DevGitee\agent-space\QQMsgForward\runtime\LLBot-Desktop-win-x64\llbot.exe 
+[2026/07/09 周四 15:24:48.47] NEW_EXE=C:\Users\Smile Uncle\AppData\Local\Temp\app_update_57599ed3511441bdb3ee9df150fcdb95\lucky-lillia-desktop.exe 
+[2026/07/09 周四 15:24:48.47] TEMP_DIR=C:\Users\Smile Uncle\AppData\Local\Temp\app_update_57599ed3511441bdb3ee9df150fcdb95 
+[2026/07/09 周四 15:24:48.53] 新版本文件存在，大小: 
+[2026/07/09 周四 15:24:48.53]   49862144 bytes 
+[2026/07/09 周四 15:24:48.79] 程序已退出，开始更新 
+[2026/07/09 周四 15:24:48.80] 备份完成 
+[2026/07/09 周四 15:24:48.85] copy 成功 
+[2026/07/09 周四 15:24:48.85] 新文件大小: 49862144 bytes 
+[2026/07/09 周四 15:24:51.11] 启动: llbot.exe 
+[2026/07/09 周四 15:24:53.17] 启动命令已执行 
+[2026/07/09 周四 15:24:53.17] ====== 更新完成 ====== 

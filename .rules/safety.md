@@ -6,7 +6,7 @@
 
 | 路径 | 原因 |
 |------|------|
-| `runtime/LLBot-CLI-Win-x64/` | Node.js 第三方二进制，修改会导致 LLBot 不可用 |
+| `runtime/LLBot-Desktop-win-x64/` | Node.js 第三方二进制，修改会导致 LLBot 不可用 |
 | `config/config.json` | 用户产品配置，AI 修改可能破坏热重载或丢失用户数据 |
 | `.shutdown.flag` | 优雅关闭协议信号文件，格式和时机不可变更 |
 | `main.py` | 项目入口，修改可能破坏打包或启动链路 |

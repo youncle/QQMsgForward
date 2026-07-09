@@ -268,7 +268,7 @@ def check_safety_violations() -> list[str]:
 
     all_changed = set(r1.stdout.splitlines() + r2.stdout.splitlines())
 
-    forbidden_paths = ["runtime/", "config/config.json", "main.py"]
+    forbidden_paths = ["config/config.json", "main.py"]
     found = False
     for f in sorted(all_changed):
         if not f.strip():

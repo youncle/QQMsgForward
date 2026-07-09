@@ -11,7 +11,7 @@ def get_file_bytes_via_ntcall(filename: str, file_id: str = "", group_id: str = 
     # 从数据库补充 fileUuid
     try:
         import sqlite3
-        for inst in ["LLBot-CLI-Win-x64", "LLBot-CLI-Win-x64-2"]:
+        for inst in ["LLBot-Desktop-win-x64", "LLBot-Desktop-win-x64-2"]:
             db_dir = _BASE / "runtime" / inst / "bin" / "llbot" / "data" / "database"
             if not db_dir.exists():
                 continue
@@ -32,7 +32,7 @@ def get_file_bytes_via_ntcall(filename: str, file_id: str = "", group_id: str = 
     candidates = list(dict.fromkeys(c for c in candidates if c))
     group_num = int(group_id) if group_id.isdigit() else 0
     import requests as _req
-    for inst, port in [("LLBot-CLI-Win-x64", 3080), ("LLBot-CLI-Win-x64-2", 3081)]:
+    for inst, port in [("LLBot-Desktop-win-x64", 3080), ("LLBot-Desktop-win-x64-2", 3081)]:
         token_path = _BASE / "runtime" / inst / "bin" / "llbot" / "data" / "webui_token.txt"
         if not token_path.exists():
             continue

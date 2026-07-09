@@ -73,12 +73,12 @@ start.vbs
       │    ├── 存在 → 加载配置
       │    └── 不存在/损坏 → 弹出向导 → 生成配置
       │
-      ├── 校验 runtime/LLBot-CLI-Win-x64/
+      ├── 校验 runtime/LLBot-Desktop-win-x64/
       │    └── 不存在 → 弹窗错误，退出
       │
       ├── 启动 LLBot 实例（N 个）
-      │    ├── 主实例：runtime/LLBot-CLI-Win-x64/，端口 3000
-      │    ├── 多实例：复制到 LLBot-CLI-Win-x64-2/3/...，端口 3001/3002/...
+      │    ├── 主实例：runtime/LLBot-Desktop-win-x64/，端口 3000
+      │    ├── 多实例：复制到 LLBot-Desktop-win-x64-2/3/...，端口 3001/3002/...
       │    └── 每实例轮询等待端口就绪（最多 60 秒，2 秒间隔）
       │
       ├── 探测登录状态
@@ -190,10 +190,10 @@ WeComUIEngine
 
 | 实例 | 运行目录 | API 端口 | WebUI 端口 |
 |------|---------|---------|-----------|
-| 0 | `runtime/LLBot-CLI-Win-x64/` | 3000 | 3080 |
-| 1 | `runtime/LLBot-CLI-Win-x64-2/` | 3001 | 3081 |
-| 2 | `runtime/LLBot-CLI-Win-x64-3/` | 3002 | 3082 |
-| N | `runtime/LLBot-CLI-Win-x64-(N+1)/` | 3000+N | 3080+N |
+| 0 | `runtime/LLBot-Desktop-win-x64/` | 3000 | 3080 |
+| 1 | `runtime/LLBot-Desktop-win-x64-2/` | 3001 | 3081 |
+| 2 | `runtime/LLBot-Desktop-win-x64-3/` | 3002 | 3082 |
+| N | `runtime/LLBot-Desktop-win-x64-(N+1)/` | 3000+N | 3080+N |
 
 - 多实例目录由 `tray.py` 自动复制（排除 `logs/`），启动时清空该实例的 `logs/`
 - 每个实例使用 `--port` 和 `--webui-port` 参数区分

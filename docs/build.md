@@ -53,7 +53,7 @@ pyinstaller --onefile --windowed --icon=resources\app.ico --name QQMsgForward --
 QQMsgForward/              ← 7z 包内结构（单层前缀）
 ├── QQMsgForward.exe       ← PyInstaller 产物
 ├── runtime/
-│   ├── LLBot-CLI-Win-x64/ ← LLBot 运行时（排除 logs/）
+│   ├── LLBot-Desktop-win-x64/ ← LLBot 运行时（排除 logs/）
 │   ├── libiconv.dll       ← pyzbar 依赖
 │   ├── libzbar-64.dll     ← pyzbar 依赖
 │   └── msvcr120.dll       ← pyzbar 依赖
@@ -115,7 +115,7 @@ pip install pywin32
 QQMsgForward/
 ├── QQMsgForward.exe         # 主程序
 ├── runtime/
-│   ├── LLBot-CLI-Win-x64/   # LLBot 运行时
+│   ├── LLBot-Desktop-win-x64/   # LLBot 运行时
 │   ├── libiconv.dll
 │   ├── libzbar-64.dll
 │   └── msvcr120.dll
@@ -132,8 +132,8 @@ QQMsgForward/
 ├── logs/
 │   └── forward.log          # 运行日志
 └── runtime/
-    ├── LLBot-CLI-Win-x64-2/ # 多实例（按需复制）
-    ├── LLBot-CLI-Win-x64-3/
+    ├── LLBot-Desktop-win-x64-2/ # 多实例（按需复制）
+    ├── LLBot-Desktop-win-x64-3/
     └── ...
 ```
 

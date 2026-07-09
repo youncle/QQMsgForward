@@ -47,9 +47,9 @@ echo     OK: dist\%NAME%.exe
 :: [4/5] Prepare staging (single-level: %NAME%\ prefix for 7z)
 echo [4/5] Preparing staging ...
 mkdir %NAME% 2>nul
-mkdir %NAME%\runtime\LLBot-CLI-Win-x64 %NAME%\resources 2>nul
+mkdir %NAME%\runtime\LLBot-Desktop-win-x64 %NAME%\resources 2>nul
 copy dist\%NAME%.exe %NAME%\ >nul
-robocopy runtime\LLBot-CLI-Win-x64 %NAME%\runtime\LLBot-CLI-Win-x64 /E /XD logs /NFL /NDL /NJH /NJS >nul 2>&1
+robocopy runtime\LLBot-Desktop-win-x64 %NAME%\runtime\LLBot-Desktop-win-x64 /E /XD logs /NFL /NDL /NJH /NJS >nul 2>&1
 if exist runtime\libiconv.dll copy runtime\libiconv.dll %NAME%\runtime\ >nul
 if exist runtime\libzbar-64.dll copy runtime\libzbar-64.dll %NAME%\runtime\ >nul
 if exist runtime\msvcr120.dll copy runtime\msvcr120.dll %NAME%\runtime\ >nul

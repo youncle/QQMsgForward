@@ -8,7 +8,7 @@
 
 ```
 LLBot（Node.js 二进制）← → Python 胶水层（本仓库）
-runtime/LLBot-CLI-Win-x64/     src/ + main.py
+runtime/LLBot-Desktop-win-x64/     src/ + main.py
 不可修改、不可 pip install      这是你可以修改的部分
 ```
 

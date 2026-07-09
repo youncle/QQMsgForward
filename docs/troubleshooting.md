@@ -10,7 +10,7 @@
 
 1. 打开命令行，手动运行 `python main.py` 观察控制台输出
 2. 检查 `logs/forward.log` 中是否有错误信息
-3. 确认 `runtime/LLBot-CLI-Win-x64/` 目录存在且完整
+3. 确认 `runtime/LLBot-Desktop-win-x64/` 目录存在且完整
 4. 确认 Python 版本 >= 3.9
 5. 确认所有依赖已安装：`pip install -r requirements.txt`
 6. 检查 3000/9090 端口是否被其他程序占用：
@@ -108,7 +108,7 @@
 1. **QQ 未登录**：启动探测时部分机器人 QQ 未登录
    - 检查日志中登录探测结果
    - 启动后手动在 QQNT 中登录，然后重启服务
-2. **多实例目录缺失**：`runtime/LLBot-CLI-Win-x64-2/` 可能被手动删除
+2. **多实例目录缺失**：`runtime/LLBot-Desktop-win-x64-2/` 可能被手动删除
    - 系统会自动复制，但如果手动干预过可能不一致
 3. **端口冲突**：3001/3002 等端口被其他程序占用
    - 使用 `netstat -ano | findstr :3001` 检查

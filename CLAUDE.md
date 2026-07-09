@@ -30,7 +30,7 @@
 
 **决策**：
 - Python 部分（src/ + main.py）是主要的开发对象
-- Node.js 部分（runtime/LLBot-CLI-Win-x64/）是第三方二进制，不可修改
+- Node.js 部分（runtime/LLBot-Desktop-win-x64/）是第三方二进制，不可修改
 - LLBot 的配置通过 `config.json` 间接控制，不直接操作 runtime 目录
 
 **影响范围**：AGENTS.md 中标注双运行时警告。.rules/safety.md Level 1 禁止修改 runtime/。

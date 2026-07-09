@@ -384,7 +384,7 @@ def shutdown_service(icon):
         _keep = max(1, len(_rq))
     except Exception:
         _keep = 1
-    _base = os.path.join(BASE_DIR, 'runtime', 'LLBot-CLI-Win-x64')
+    _base = os.path.join(BASE_DIR, 'runtime', 'LLBot-Desktop-win-x64')
     for _idx_dir in range(_keep, 20):
         _dir = _base + (f'-{_idx_dir + 1}' if _idx_dir > 0 else '')
         if _dir != _base and os.path.isdir(_dir):
@@ -556,11 +556,11 @@ def main():
     # 设置 forward 模块的日志文件路径（PyInstaller 下与 exe 同目录）
     forward_mod.set_log_path(os.path.join(BASE_DIR, 'logs', 'forward.log'))
 
-    # 检查 runtime/LLBot-CLI-Win-x64 目录是否存在
-    llbot_dir = os.path.join(base_dir, 'runtime/LLBot-CLI-Win-x64')
+    # 检查 runtime/LLBot-Desktop-win-x64 目录是否存在
+    llbot_dir = os.path.join(base_dir, 'runtime/LLBot-Desktop-win-x64')
     if not os.path.isdir(llbot_dir):
         # 尝试在开发模式下查找
-        llbot_dir = os.path.join(BASE_DIR, 'runtime', 'LLBot-CLI-Win-x64')
+        llbot_dir = os.path.join(BASE_DIR, 'runtime', 'LLBot-Desktop-win-x64')
 
     if not os.path.isdir(llbot_dir):
         from tkinter import messagebox
