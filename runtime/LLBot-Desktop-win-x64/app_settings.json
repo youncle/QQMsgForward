@@ -16,9 +16,9 @@
   "log_retention_seconds": 604800,
   "close_to_tray": true,
   "theme_mode": "system",
-  "window_width": 1007,
-  "window_height": 638,
-  "window_left": 216,
-  "window_top": 136,
+  "window_width": 1062,
+  "window_height": 752,
+  "window_left": 124,
+  "window_top": 36,
   "auto_login": true
 }
