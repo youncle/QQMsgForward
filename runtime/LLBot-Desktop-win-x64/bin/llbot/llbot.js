@@ -1,12 +1,12 @@
 import { createRequire } from "node:module";
 import * as path$4 from "node:path";
 import path, { dirname, join } from "node:path";
-import fs, { access, copyFile, mkdir, readFile, stat, unlink, writeFile } from "node:fs/promises";
-import fs$1, { existsSync } from "fs";
 import * as fs$6 from "node:fs";
-import fs$2, { appendFile, appendFileSync, copyFileSync, createReadStream, existsSync as existsSync$1, mkdirSync, promises, readFileSync, renameSync, stat as stat$1, statSync, watch, writeFileSync } from "node:fs";
+import fs, { appendFile, appendFileSync, copyFileSync, createReadStream, existsSync, mkdirSync, promises, readFileSync, readdirSync, renameSync, stat, statSync, watch, watchFile, writeFileSync } from "node:fs";
 import os, { tmpdir } from "node:os";
+import fs$1, { existsSync as existsSync$1 } from "fs";
 import { inspect, isDeepStrictEqual } from "node:util";
+import fsPromise, { access, copyFile, mkdir, readFile, stat as stat$1, unlink, writeFile } from "node:fs/promises";
 import path$1 from "path";
 import { networkInterfaces } from "os";
 import { deflateSync, gunzipSync, gzipSync, inflateSync, unzipSync } from "node:zlib";
@@ -20,7 +20,7 @@ import { constants } from "node:buffer";
 import http, { STATUS_CODES, createServer, request } from "node:http";
 import { Http2ServerRequest, constants as constants$1 } from "node:http2";
 import { Readable } from "node:stream";
-import fsPromise, { stat as stat$2, unlink as unlink$1 } from "fs/promises";
+import fsPromise$1, { stat as stat$2, unlink as unlink$1 } from "fs/promises";
 import https from "node:https";
 import net, { Socket } from "node:net";
 import { versions } from "node:process";
@@ -34,7 +34,14 @@ var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames$2 = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __esmMin = (fn, res) => () => (fn && (res = fn(fn = 0)), res);
+var __esmMin = (fn, res, err) => () => {
+	if (err) throw err[0];
+	try {
+		return fn && (res = fn(fn = 0)), res;
+	} catch (e) {
+		throw err = [e], e;
+	}
+};
 var __commonJSMin = (cb, mod) => () => (mod || (cb((mod = { exports: {} }).exports, mod), cb = null), mod.exports);
 var __exportAll = (all, no_symbols) => {
 	let target = {};
@@ -60,4359 +67,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create$1(__
 	enumerable: true
 }) : target, mod));
 var __toCommonJS = (mod) => __hasOwnProp.call(mod, "module.exports") ? mod["module.exports"] : __copyProps(__defProp$8({}, "__esModule", { value: true }), mod);
-var __require = /* @__PURE__ */ createRequire(import.meta.url);
-//#endregion
-//#region node_modules/qrcode/lib/can-promise.js
-var require_can_promise = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	module.exports = function() {
-		return typeof Promise === "function" && Promise.prototype && Promise.prototype.then;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/utils.js
-var require_utils$2 = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var toSJISFunction;
-	var CODEWORDS_COUNT = [
-		0,
-		26,
-		44,
-		70,
-		100,
-		134,
-		172,
-		196,
-		242,
-		292,
-		346,
-		404,
-		466,
-		532,
-		581,
-		655,
-		733,
-		815,
-		901,
-		991,
-		1085,
-		1156,
-		1258,
-		1364,
-		1474,
-		1588,
-		1706,
-		1828,
-		1921,
-		2051,
-		2185,
-		2323,
-		2465,
-		2611,
-		2761,
-		2876,
-		3034,
-		3196,
-		3362,
-		3532,
-		3706
-	];
-	/**
-	* Returns the QR Code size for the specified version
-	*
-	* @param  {Number} version QR Code version
-	* @return {Number}         size of QR code
-	*/
-	exports.getSymbolSize = function getSymbolSize(version) {
-		if (!version) throw new Error("\"version\" cannot be null or undefined");
-		if (version < 1 || version > 40) throw new Error("\"version\" should be in range from 1 to 40");
-		return version * 4 + 17;
-	};
-	/**
-	* Returns the total number of codewords used to store data and EC information.
-	*
-	* @param  {Number} version QR Code version
-	* @return {Number}         Data length in bits
-	*/
-	exports.getSymbolTotalCodewords = function getSymbolTotalCodewords(version) {
-		return CODEWORDS_COUNT[version];
-	};
-	/**
-	* Encode data with Bose-Chaudhuri-Hocquenghem
-	*
-	* @param  {Number} data Value to encode
-	* @return {Number}      Encoded value
-	*/
-	exports.getBCHDigit = function(data) {
-		let digit = 0;
-		while (data !== 0) {
-			digit++;
-			data >>>= 1;
-		}
-		return digit;
-	};
-	exports.setToSJISFunction = function setToSJISFunction(f) {
-		if (typeof f !== "function") throw new Error("\"toSJISFunc\" is not a valid function.");
-		toSJISFunction = f;
-	};
-	exports.isKanjiModeEnabled = function() {
-		return typeof toSJISFunction !== "undefined";
-	};
-	exports.toSJIS = function toSJIS(kanji) {
-		return toSJISFunction(kanji);
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/error-correction-level.js
-var require_error_correction_level = /* @__PURE__ */ __commonJSMin(((exports) => {
-	exports.L = { bit: 1 };
-	exports.M = { bit: 0 };
-	exports.Q = { bit: 3 };
-	exports.H = { bit: 2 };
-	function fromString(string) {
-		if (typeof string !== "string") throw new Error("Param is not a string");
-		switch (string.toLowerCase()) {
-			case "l":
-			case "low": return exports.L;
-			case "m":
-			case "medium": return exports.M;
-			case "q":
-			case "quartile": return exports.Q;
-			case "h":
-			case "high": return exports.H;
-			default: throw new Error("Unknown EC Level: " + string);
-		}
-	}
-	exports.isValid = function isValid(level) {
-		return level && typeof level.bit !== "undefined" && level.bit >= 0 && level.bit < 4;
-	};
-	exports.from = function from(value, defaultValue) {
-		if (exports.isValid(value)) return value;
-		try {
-			return fromString(value);
-		} catch (e) {
-			return defaultValue;
-		}
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/bit-buffer.js
-var require_bit_buffer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	function BitBuffer() {
-		this.buffer = [];
-		this.length = 0;
-	}
-	BitBuffer.prototype = {
-		get: function(index) {
-			const bufIndex = Math.floor(index / 8);
-			return (this.buffer[bufIndex] >>> 7 - index % 8 & 1) === 1;
-		},
-		put: function(num, length) {
-			for (let i = 0; i < length; i++) this.putBit((num >>> length - i - 1 & 1) === 1);
-		},
-		getLengthInBits: function() {
-			return this.length;
-		},
-		putBit: function(bit) {
-			const bufIndex = Math.floor(this.length / 8);
-			if (this.buffer.length <= bufIndex) this.buffer.push(0);
-			if (bit) this.buffer[bufIndex] |= 128 >>> this.length % 8;
-			this.length++;
-		}
-	};
-	module.exports = BitBuffer;
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/bit-matrix.js
-var require_bit_matrix = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	/**
-	* Helper class to handle QR Code symbol modules
-	*
-	* @param {Number} size Symbol size
-	*/
-	function BitMatrix(size) {
-		if (!size || size < 1) throw new Error("BitMatrix size must be defined and greater than 0");
-		this.size = size;
-		this.data = new Uint8Array(size * size);
-		this.reservedBit = new Uint8Array(size * size);
-	}
-	/**
-	* Set bit value at specified location
-	* If reserved flag is set, this bit will be ignored during masking process
-	*
-	* @param {Number}  row
-	* @param {Number}  col
-	* @param {Boolean} value
-	* @param {Boolean} reserved
-	*/
-	BitMatrix.prototype.set = function(row, col, value, reserved) {
-		const index = row * this.size + col;
-		this.data[index] = value;
-		if (reserved) this.reservedBit[index] = true;
-	};
-	/**
-	* Returns bit value at specified location
-	*
-	* @param  {Number}  row
-	* @param  {Number}  col
-	* @return {Boolean}
-	*/
-	BitMatrix.prototype.get = function(row, col) {
-		return this.data[row * this.size + col];
-	};
-	/**
-	* Applies xor operator at specified location
-	* (used during masking process)
-	*
-	* @param {Number}  row
-	* @param {Number}  col
-	* @param {Boolean} value
-	*/
-	BitMatrix.prototype.xor = function(row, col, value) {
-		this.data[row * this.size + col] ^= value;
-	};
-	/**
-	* Check if bit at specified location is reserved
-	*
-	* @param {Number}   row
-	* @param {Number}   col
-	* @return {Boolean}
-	*/
-	BitMatrix.prototype.isReserved = function(row, col) {
-		return this.reservedBit[row * this.size + col];
-	};
-	module.exports = BitMatrix;
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/alignment-pattern.js
-var require_alignment_pattern = /* @__PURE__ */ __commonJSMin(((exports) => {
-	/**
-	* Alignment pattern are fixed reference pattern in defined positions
-	* in a matrix symbology, which enables the decode software to re-synchronise
-	* the coordinate mapping of the image modules in the event of moderate amounts
-	* of distortion of the image.
-	*
-	* Alignment patterns are present only in QR Code symbols of version 2 or larger
-	* and their number depends on the symbol version.
-	*/
-	var getSymbolSize = require_utils$2().getSymbolSize;
-	/**
-	* Calculate the row/column coordinates of the center module of each alignment pattern
-	* for the specified QR Code version.
-	*
-	* The alignment patterns are positioned symmetrically on either side of the diagonal
-	* running from the top left corner of the symbol to the bottom right corner.
-	*
-	* Since positions are simmetrical only half of the coordinates are returned.
-	* Each item of the array will represent in turn the x and y coordinate.
-	* @see {@link getPositions}
-	*
-	* @param  {Number} version QR Code version
-	* @return {Array}          Array of coordinate
-	*/
-	exports.getRowColCoords = function getRowColCoords(version) {
-		if (version === 1) return [];
-		const posCount = Math.floor(version / 7) + 2;
-		const size = getSymbolSize(version);
-		const intervals = size === 145 ? 26 : Math.ceil((size - 13) / (2 * posCount - 2)) * 2;
-		const positions = [size - 7];
-		for (let i = 1; i < posCount - 1; i++) positions[i] = positions[i - 1] - intervals;
-		positions.push(6);
-		return positions.reverse();
-	};
-	/**
-	* Returns an array containing the positions of each alignment pattern.
-	* Each array's element represent the center point of the pattern as (x, y) coordinates
-	*
-	* Coordinates are calculated expanding the row/column coordinates returned by {@link getRowColCoords}
-	* and filtering out the items that overlaps with finder pattern
-	*
-	* @example
-	* For a Version 7 symbol {@link getRowColCoords} returns values 6, 22 and 38.
-	* The alignment patterns, therefore, are to be centered on (row, column)
-	* positions (6,22), (22,6), (22,22), (22,38), (38,22), (38,38).
-	* Note that the coordinates (6,6), (6,38), (38,6) are occupied by finder patterns
-	* and are not therefore used for alignment patterns.
-	*
-	* let pos = getPositions(7)
-	* // [[6,22], [22,6], [22,22], [22,38], [38,22], [38,38]]
-	*
-	* @param  {Number} version QR Code version
-	* @return {Array}          Array of coordinates
-	*/
-	exports.getPositions = function getPositions(version) {
-		const coords = [];
-		const pos = exports.getRowColCoords(version);
-		const posLength = pos.length;
-		for (let i = 0; i < posLength; i++) for (let j = 0; j < posLength; j++) {
-			if (i === 0 && j === 0 || i === 0 && j === posLength - 1 || i === posLength - 1 && j === 0) continue;
-			coords.push([pos[i], pos[j]]);
-		}
-		return coords;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/finder-pattern.js
-var require_finder_pattern = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var getSymbolSize = require_utils$2().getSymbolSize;
-	var FINDER_PATTERN_SIZE = 7;
-	/**
-	* Returns an array containing the positions of each finder pattern.
-	* Each array's element represent the top-left point of the pattern as (x, y) coordinates
-	*
-	* @param  {Number} version QR Code version
-	* @return {Array}          Array of coordinates
-	*/
-	exports.getPositions = function getPositions(version) {
-		const size = getSymbolSize(version);
-		return [
-			[0, 0],
-			[size - FINDER_PATTERN_SIZE, 0],
-			[0, size - FINDER_PATTERN_SIZE]
-		];
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/mask-pattern.js
-var require_mask_pattern = /* @__PURE__ */ __commonJSMin(((exports) => {
-	/**
-	* Data mask pattern reference
-	* @type {Object}
-	*/
-	exports.Patterns = {
-		PATTERN000: 0,
-		PATTERN001: 1,
-		PATTERN010: 2,
-		PATTERN011: 3,
-		PATTERN100: 4,
-		PATTERN101: 5,
-		PATTERN110: 6,
-		PATTERN111: 7
-	};
-	/**
-	* Weighted penalty scores for the undesirable features
-	* @type {Object}
-	*/
-	var PenaltyScores = {
-		N1: 3,
-		N2: 3,
-		N3: 40,
-		N4: 10
-	};
-	/**
-	* Check if mask pattern value is valid
-	*
-	* @param  {Number}  mask    Mask pattern
-	* @return {Boolean}         true if valid, false otherwise
-	*/
-	exports.isValid = function isValid(mask) {
-		return mask != null && mask !== "" && !isNaN(mask) && mask >= 0 && mask <= 7;
-	};
-	/**
-	* Returns mask pattern from a value.
-	* If value is not valid, returns undefined
-	*
-	* @param  {Number|String} value        Mask pattern value
-	* @return {Number}                     Valid mask pattern or undefined
-	*/
-	exports.from = function from(value) {
-		return exports.isValid(value) ? parseInt(value, 10) : void 0;
-	};
-	/**
-	* Find adjacent modules in row/column with the same color
-	* and assign a penalty value.
-	*
-	* Points: N1 + i
-	* i is the amount by which the number of adjacent modules of the same color exceeds 5
-	*/
-	exports.getPenaltyN1 = function getPenaltyN1(data) {
-		const size = data.size;
-		let points = 0;
-		let sameCountCol = 0;
-		let sameCountRow = 0;
-		let lastCol = null;
-		let lastRow = null;
-		for (let row = 0; row < size; row++) {
-			sameCountCol = sameCountRow = 0;
-			lastCol = lastRow = null;
-			for (let col = 0; col < size; col++) {
-				let module$7 = data.get(row, col);
-				if (module$7 === lastCol) sameCountCol++;
-				else {
-					if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5);
-					lastCol = module$7;
-					sameCountCol = 1;
-				}
-				module$7 = data.get(col, row);
-				if (module$7 === lastRow) sameCountRow++;
-				else {
-					if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5);
-					lastRow = module$7;
-					sameCountRow = 1;
-				}
-			}
-			if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5);
-			if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5);
-		}
-		return points;
-	};
-	/**
-	* Find 2x2 blocks with the same color and assign a penalty value
-	*
-	* Points: N2 * (m - 1) * (n - 1)
-	*/
-	exports.getPenaltyN2 = function getPenaltyN2(data) {
-		const size = data.size;
-		let points = 0;
-		for (let row = 0; row < size - 1; row++) for (let col = 0; col < size - 1; col++) {
-			const last = data.get(row, col) + data.get(row, col + 1) + data.get(row + 1, col) + data.get(row + 1, col + 1);
-			if (last === 4 || last === 0) points++;
-		}
-		return points * PenaltyScores.N2;
-	};
-	/**
-	* Find 1:1:3:1:1 ratio (dark:light:dark:light:dark) pattern in row/column,
-	* preceded or followed by light area 4 modules wide
-	*
-	* Points: N3 * number of pattern found
-	*/
-	exports.getPenaltyN3 = function getPenaltyN3(data) {
-		const size = data.size;
-		let points = 0;
-		let bitsCol = 0;
-		let bitsRow = 0;
-		for (let row = 0; row < size; row++) {
-			bitsCol = bitsRow = 0;
-			for (let col = 0; col < size; col++) {
-				bitsCol = bitsCol << 1 & 2047 | data.get(row, col);
-				if (col >= 10 && (bitsCol === 1488 || bitsCol === 93)) points++;
-				bitsRow = bitsRow << 1 & 2047 | data.get(col, row);
-				if (col >= 10 && (bitsRow === 1488 || bitsRow === 93)) points++;
-			}
-		}
-		return points * PenaltyScores.N3;
-	};
-	/**
-	* Calculate proportion of dark modules in entire symbol
-	*
-	* Points: N4 * k
-	*
-	* k is the rating of the deviation of the proportion of dark modules
-	* in the symbol from 50% in steps of 5%
-	*/
-	exports.getPenaltyN4 = function getPenaltyN4(data) {
-		let darkCount = 0;
-		const modulesCount = data.data.length;
-		for (let i = 0; i < modulesCount; i++) darkCount += data.data[i];
-		return Math.abs(Math.ceil(darkCount * 100 / modulesCount / 5) - 10) * PenaltyScores.N4;
-	};
-	/**
-	* Return mask value at given position
-	*
-	* @param  {Number} maskPattern Pattern reference value
-	* @param  {Number} i           Row
-	* @param  {Number} j           Column
-	* @return {Boolean}            Mask value
-	*/
-	function getMaskAt(maskPattern, i, j) {
-		switch (maskPattern) {
-			case exports.Patterns.PATTERN000: return (i + j) % 2 === 0;
-			case exports.Patterns.PATTERN001: return i % 2 === 0;
-			case exports.Patterns.PATTERN010: return j % 3 === 0;
-			case exports.Patterns.PATTERN011: return (i + j) % 3 === 0;
-			case exports.Patterns.PATTERN100: return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0;
-			case exports.Patterns.PATTERN101: return i * j % 2 + i * j % 3 === 0;
-			case exports.Patterns.PATTERN110: return (i * j % 2 + i * j % 3) % 2 === 0;
-			case exports.Patterns.PATTERN111: return (i * j % 3 + (i + j) % 2) % 2 === 0;
-			default: throw new Error("bad maskPattern:" + maskPattern);
-		}
-	}
-	/**
-	* Apply a mask pattern to a BitMatrix
-	*
-	* @param  {Number}    pattern Pattern reference number
-	* @param  {BitMatrix} data    BitMatrix data
-	*/
-	exports.applyMask = function applyMask(pattern, data) {
-		const size = data.size;
-		for (let col = 0; col < size; col++) for (let row = 0; row < size; row++) {
-			if (data.isReserved(row, col)) continue;
-			data.xor(row, col, getMaskAt(pattern, row, col));
-		}
-	};
-	/**
-	* Returns the best mask pattern for data
-	*
-	* @param  {BitMatrix} data
-	* @return {Number} Mask pattern reference number
-	*/
-	exports.getBestMask = function getBestMask(data, setupFormatFunc) {
-		const numPatterns = Object.keys(exports.Patterns).length;
-		let bestPattern = 0;
-		let lowerPenalty = Infinity;
-		for (let p = 0; p < numPatterns; p++) {
-			setupFormatFunc(p);
-			exports.applyMask(p, data);
-			const penalty = exports.getPenaltyN1(data) + exports.getPenaltyN2(data) + exports.getPenaltyN3(data) + exports.getPenaltyN4(data);
-			exports.applyMask(p, data);
-			if (penalty < lowerPenalty) {
-				lowerPenalty = penalty;
-				bestPattern = p;
-			}
-		}
-		return bestPattern;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/error-correction-code.js
-var require_error_correction_code = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var ECLevel = require_error_correction_level();
-	var EC_BLOCKS_TABLE = [
-		1,
-		1,
-		1,
-		1,
-		1,
-		1,
-		1,
-		1,
-		1,
-		1,
-		2,
-		2,
-		1,
-		2,
-		2,
-		4,
-		1,
-		2,
-		4,
-		4,
-		2,
-		4,
-		4,
-		4,
-		2,
-		4,
-		6,
-		5,
-		2,
-		4,
-		6,
-		6,
-		2,
-		5,
-		8,
-		8,
-		4,
-		5,
-		8,
-		8,
-		4,
-		5,
-		8,
-		11,
-		4,
-		8,
-		10,
-		11,
-		4,
-		9,
-		12,
-		16,
-		4,
-		9,
-		16,
-		16,
-		6,
-		10,
-		12,
-		18,
-		6,
-		10,
-		17,
-		16,
-		6,
-		11,
-		16,
-		19,
-		6,
-		13,
-		18,
-		21,
-		7,
-		14,
-		21,
-		25,
-		8,
-		16,
-		20,
-		25,
-		8,
-		17,
-		23,
-		25,
-		9,
-		17,
-		23,
-		34,
-		9,
-		18,
-		25,
-		30,
-		10,
-		20,
-		27,
-		32,
-		12,
-		21,
-		29,
-		35,
-		12,
-		23,
-		34,
-		37,
-		12,
-		25,
-		34,
-		40,
-		13,
-		26,
-		35,
-		42,
-		14,
-		28,
-		38,
-		45,
-		15,
-		29,
-		40,
-		48,
-		16,
-		31,
-		43,
-		51,
-		17,
-		33,
-		45,
-		54,
-		18,
-		35,
-		48,
-		57,
-		19,
-		37,
-		51,
-		60,
-		19,
-		38,
-		53,
-		63,
-		20,
-		40,
-		56,
-		66,
-		21,
-		43,
-		59,
-		70,
-		22,
-		45,
-		62,
-		74,
-		24,
-		47,
-		65,
-		77,
-		25,
-		49,
-		68,
-		81
-	];
-	var EC_CODEWORDS_TABLE = [
-		7,
-		10,
-		13,
-		17,
-		10,
-		16,
-		22,
-		28,
-		15,
-		26,
-		36,
-		44,
-		20,
-		36,
-		52,
-		64,
-		26,
-		48,
-		72,
-		88,
-		36,
-		64,
-		96,
-		112,
-		40,
-		72,
-		108,
-		130,
-		48,
-		88,
-		132,
-		156,
-		60,
-		110,
-		160,
-		192,
-		72,
-		130,
-		192,
-		224,
-		80,
-		150,
-		224,
-		264,
-		96,
-		176,
-		260,
-		308,
-		104,
-		198,
-		288,
-		352,
-		120,
-		216,
-		320,
-		384,
-		132,
-		240,
-		360,
-		432,
-		144,
-		280,
-		408,
-		480,
-		168,
-		308,
-		448,
-		532,
-		180,
-		338,
-		504,
-		588,
-		196,
-		364,
-		546,
-		650,
-		224,
-		416,
-		600,
-		700,
-		224,
-		442,
-		644,
-		750,
-		252,
-		476,
-		690,
-		816,
-		270,
-		504,
-		750,
-		900,
-		300,
-		560,
-		810,
-		960,
-		312,
-		588,
-		870,
-		1050,
-		336,
-		644,
-		952,
-		1110,
-		360,
-		700,
-		1020,
-		1200,
-		390,
-		728,
-		1050,
-		1260,
-		420,
-		784,
-		1140,
-		1350,
-		450,
-		812,
-		1200,
-		1440,
-		480,
-		868,
-		1290,
-		1530,
-		510,
-		924,
-		1350,
-		1620,
-		540,
-		980,
-		1440,
-		1710,
-		570,
-		1036,
-		1530,
-		1800,
-		570,
-		1064,
-		1590,
-		1890,
-		600,
-		1120,
-		1680,
-		1980,
-		630,
-		1204,
-		1770,
-		2100,
-		660,
-		1260,
-		1860,
-		2220,
-		720,
-		1316,
-		1950,
-		2310,
-		750,
-		1372,
-		2040,
-		2430
-	];
-	/**
-	* Returns the number of error correction block that the QR Code should contain
-	* for the specified version and error correction level.
-	*
-	* @param  {Number} version              QR Code version
-	* @param  {Number} errorCorrectionLevel Error correction level
-	* @return {Number}                      Number of error correction blocks
-	*/
-	exports.getBlocksCount = function getBlocksCount(version, errorCorrectionLevel) {
-		switch (errorCorrectionLevel) {
-			case ECLevel.L: return EC_BLOCKS_TABLE[(version - 1) * 4 + 0];
-			case ECLevel.M: return EC_BLOCKS_TABLE[(version - 1) * 4 + 1];
-			case ECLevel.Q: return EC_BLOCKS_TABLE[(version - 1) * 4 + 2];
-			case ECLevel.H: return EC_BLOCKS_TABLE[(version - 1) * 4 + 3];
-			default: return;
-		}
-	};
-	/**
-	* Returns the number of error correction codewords to use for the specified
-	* version and error correction level.
-	*
-	* @param  {Number} version              QR Code version
-	* @param  {Number} errorCorrectionLevel Error correction level
-	* @return {Number}                      Number of error correction codewords
-	*/
-	exports.getTotalCodewordsCount = function getTotalCodewordsCount(version, errorCorrectionLevel) {
-		switch (errorCorrectionLevel) {
-			case ECLevel.L: return EC_CODEWORDS_TABLE[(version - 1) * 4 + 0];
-			case ECLevel.M: return EC_CODEWORDS_TABLE[(version - 1) * 4 + 1];
-			case ECLevel.Q: return EC_CODEWORDS_TABLE[(version - 1) * 4 + 2];
-			case ECLevel.H: return EC_CODEWORDS_TABLE[(version - 1) * 4 + 3];
-			default: return;
-		}
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/galois-field.js
-var require_galois_field = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var EXP_TABLE = new Uint8Array(512);
-	var LOG_TABLE = new Uint8Array(256);
-	(function initTables() {
-		let x = 1;
-		for (let i = 0; i < 255; i++) {
-			EXP_TABLE[i] = x;
-			LOG_TABLE[x] = i;
-			x <<= 1;
-			if (x & 256) x ^= 285;
-		}
-		for (let i = 255; i < 512; i++) EXP_TABLE[i] = EXP_TABLE[i - 255];
-	})();
-	/**
-	* Returns log value of n inside Galois Field
-	*
-	* @param  {Number} n
-	* @return {Number}
-	*/
-	exports.log = function log(n) {
-		if (n < 1) throw new Error("log(" + n + ")");
-		return LOG_TABLE[n];
-	};
-	/**
-	* Returns anti-log value of n inside Galois Field
-	*
-	* @param  {Number} n
-	* @return {Number}
-	*/
-	exports.exp = function exp(n) {
-		return EXP_TABLE[n];
-	};
-	/**
-	* Multiplies two number inside Galois Field
-	*
-	* @param  {Number} x
-	* @param  {Number} y
-	* @return {Number}
-	*/
-	exports.mul = function mul(x, y) {
-		if (x === 0 || y === 0) return 0;
-		return EXP_TABLE[LOG_TABLE[x] + LOG_TABLE[y]];
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/polynomial.js
-var require_polynomial = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var GF = require_galois_field();
-	/**
-	* Multiplies two polynomials inside Galois Field
-	*
-	* @param  {Uint8Array} p1 Polynomial
-	* @param  {Uint8Array} p2 Polynomial
-	* @return {Uint8Array}    Product of p1 and p2
-	*/
-	exports.mul = function mul(p1, p2) {
-		const coeff = new Uint8Array(p1.length + p2.length - 1);
-		for (let i = 0; i < p1.length; i++) for (let j = 0; j < p2.length; j++) coeff[i + j] ^= GF.mul(p1[i], p2[j]);
-		return coeff;
-	};
-	/**
-	* Calculate the remainder of polynomials division
-	*
-	* @param  {Uint8Array} divident Polynomial
-	* @param  {Uint8Array} divisor  Polynomial
-	* @return {Uint8Array}          Remainder
-	*/
-	exports.mod = function mod(divident, divisor) {
-		let result = new Uint8Array(divident);
-		while (result.length - divisor.length >= 0) {
-			const coeff = result[0];
-			for (let i = 0; i < divisor.length; i++) result[i] ^= GF.mul(divisor[i], coeff);
-			let offset = 0;
-			while (offset < result.length && result[offset] === 0) offset++;
-			result = result.slice(offset);
-		}
-		return result;
-	};
-	/**
-	* Generate an irreducible generator polynomial of specified degree
-	* (used by Reed-Solomon encoder)
-	*
-	* @param  {Number} degree Degree of the generator polynomial
-	* @return {Uint8Array}    Buffer containing polynomial coefficients
-	*/
-	exports.generateECPolynomial = function generateECPolynomial(degree) {
-		let poly = new Uint8Array([1]);
-		for (let i = 0; i < degree; i++) poly = exports.mul(poly, new Uint8Array([1, GF.exp(i)]));
-		return poly;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/reed-solomon-encoder.js
-var require_reed_solomon_encoder = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var Polynomial = require_polynomial();
-	function ReedSolomonEncoder(degree) {
-		this.genPoly = void 0;
-		this.degree = degree;
-		if (this.degree) this.initialize(this.degree);
-	}
-	/**
-	* Initialize the encoder.
-	* The input param should correspond to the number of error correction codewords.
-	*
-	* @param  {Number} degree
-	*/
-	ReedSolomonEncoder.prototype.initialize = function initialize(degree) {
-		this.degree = degree;
-		this.genPoly = Polynomial.generateECPolynomial(this.degree);
-	};
-	/**
-	* Encodes a chunk of data
-	*
-	* @param  {Uint8Array} data Buffer containing input data
-	* @return {Uint8Array}      Buffer containing encoded data
-	*/
-	ReedSolomonEncoder.prototype.encode = function encode(data) {
-		if (!this.genPoly) throw new Error("Encoder not initialized");
-		const paddedData = new Uint8Array(data.length + this.degree);
-		paddedData.set(data);
-		const remainder = Polynomial.mod(paddedData, this.genPoly);
-		const start = this.degree - remainder.length;
-		if (start > 0) {
-			const buff = new Uint8Array(this.degree);
-			buff.set(remainder, start);
-			return buff;
-		}
-		return remainder;
-	};
-	module.exports = ReedSolomonEncoder;
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/version-check.js
-var require_version_check = /* @__PURE__ */ __commonJSMin(((exports) => {
-	/**
-	* Check if QR Code version is valid
-	*
-	* @param  {Number}  version QR Code version
-	* @return {Boolean}         true if valid version, false otherwise
-	*/
-	exports.isValid = function isValid(version) {
-		return !isNaN(version) && version >= 1 && version <= 40;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/regex.js
-var require_regex = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var numeric = "[0-9]+";
-	var alphanumeric = "[A-Z $%*+\\-./:]+";
-	var kanji = "(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";
-	kanji = kanji.replace(/u/g, "\\u");
-	var byte = "(?:(?![A-Z0-9 $%*+\\-./:]|" + kanji + ")(?:.|[\r\n]))+";
-	exports.KANJI = new RegExp(kanji, "g");
-	exports.BYTE_KANJI = /* @__PURE__ */ new RegExp("[^A-Z0-9 $%*+\\-./:]+", "g");
-	exports.BYTE = new RegExp(byte, "g");
-	exports.NUMERIC = new RegExp(numeric, "g");
-	exports.ALPHANUMERIC = new RegExp(alphanumeric, "g");
-	var TEST_KANJI = new RegExp("^" + kanji + "$");
-	var TEST_NUMERIC = /* @__PURE__ */ new RegExp("^[0-9]+$");
-	var TEST_ALPHANUMERIC = /* @__PURE__ */ new RegExp("^[A-Z0-9 $%*+\\-./:]+$");
-	exports.testKanji = function testKanji(str) {
-		return TEST_KANJI.test(str);
-	};
-	exports.testNumeric = function testNumeric(str) {
-		return TEST_NUMERIC.test(str);
-	};
-	exports.testAlphanumeric = function testAlphanumeric(str) {
-		return TEST_ALPHANUMERIC.test(str);
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/mode.js
-var require_mode$1 = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var VersionCheck = require_version_check();
-	var Regex = require_regex();
-	/**
-	* Numeric mode encodes data from the decimal digit set (0 - 9)
-	* (byte values 30HEX to 39HEX).
-	* Normally, 3 data characters are represented by 10 bits.
-	*
-	* @type {Object}
-	*/
-	exports.NUMERIC = {
-		id: "Numeric",
-		bit: 1,
-		ccBits: [
-			10,
-			12,
-			14
-		]
-	};
-	/**
-	* Alphanumeric mode encodes data from a set of 45 characters,
-	* i.e. 10 numeric digits (0 - 9),
-	*      26 alphabetic characters (A - Z),
-	*   and 9 symbols (SP, $, %, *, +, -, ., /, :).
-	* Normally, two input characters are represented by 11 bits.
-	*
-	* @type {Object}
-	*/
-	exports.ALPHANUMERIC = {
-		id: "Alphanumeric",
-		bit: 2,
-		ccBits: [
-			9,
-			11,
-			13
-		]
-	};
-	/**
-	* In byte mode, data is encoded at 8 bits per character.
-	*
-	* @type {Object}
-	*/
-	exports.BYTE = {
-		id: "Byte",
-		bit: 4,
-		ccBits: [
-			8,
-			16,
-			16
-		]
-	};
-	/**
-	* The Kanji mode efficiently encodes Kanji characters in accordance with
-	* the Shift JIS system based on JIS X 0208.
-	* The Shift JIS values are shifted from the JIS X 0208 values.
-	* JIS X 0208 gives details of the shift coded representation.
-	* Each two-byte character value is compacted to a 13-bit binary codeword.
-	*
-	* @type {Object}
-	*/
-	exports.KANJI = {
-		id: "Kanji",
-		bit: 8,
-		ccBits: [
-			8,
-			10,
-			12
-		]
-	};
-	/**
-	* Mixed mode will contain a sequences of data in a combination of any of
-	* the modes described above
-	*
-	* @type {Object}
-	*/
-	exports.MIXED = { bit: -1 };
-	/**
-	* Returns the number of bits needed to store the data length
-	* according to QR Code specifications.
-	*
-	* @param  {Mode}   mode    Data mode
-	* @param  {Number} version QR Code version
-	* @return {Number}         Number of bits
-	*/
-	exports.getCharCountIndicator = function getCharCountIndicator(mode, version) {
-		if (!mode.ccBits) throw new Error("Invalid mode: " + mode);
-		if (!VersionCheck.isValid(version)) throw new Error("Invalid version: " + version);
-		if (version >= 1 && version < 10) return mode.ccBits[0];
-		else if (version < 27) return mode.ccBits[1];
-		return mode.ccBits[2];
-	};
-	/**
-	* Returns the most efficient mode to store the specified data
-	*
-	* @param  {String} dataStr Input data string
-	* @return {Mode}           Best mode
-	*/
-	exports.getBestModeForData = function getBestModeForData(dataStr) {
-		if (Regex.testNumeric(dataStr)) return exports.NUMERIC;
-		else if (Regex.testAlphanumeric(dataStr)) return exports.ALPHANUMERIC;
-		else if (Regex.testKanji(dataStr)) return exports.KANJI;
-		else return exports.BYTE;
-	};
-	/**
-	* Return mode name as string
-	*
-	* @param {Mode} mode Mode object
-	* @returns {String}  Mode name
-	*/
-	exports.toString = function toString(mode) {
-		if (mode && mode.id) return mode.id;
-		throw new Error("Invalid mode");
-	};
-	/**
-	* Check if input param is a valid mode object
-	*
-	* @param   {Mode}    mode Mode object
-	* @returns {Boolean} True if valid mode, false otherwise
-	*/
-	exports.isValid = function isValid(mode) {
-		return mode && mode.bit && mode.ccBits;
-	};
-	/**
-	* Get mode object from its name
-	*
-	* @param   {String} string Mode name
-	* @returns {Mode}          Mode object
-	*/
-	function fromString(string) {
-		if (typeof string !== "string") throw new Error("Param is not a string");
-		switch (string.toLowerCase()) {
-			case "numeric": return exports.NUMERIC;
-			case "alphanumeric": return exports.ALPHANUMERIC;
-			case "kanji": return exports.KANJI;
-			case "byte": return exports.BYTE;
-			default: throw new Error("Unknown mode: " + string);
-		}
-	}
-	/**
-	* Returns mode from a value.
-	* If value is not a valid mode, returns defaultValue
-	*
-	* @param  {Mode|String} value        Encoding mode
-	* @param  {Mode}        defaultValue Fallback value
-	* @return {Mode}                     Encoding mode
-	*/
-	exports.from = function from(value, defaultValue) {
-		if (exports.isValid(value)) return value;
-		try {
-			return fromString(value);
-		} catch (e) {
-			return defaultValue;
-		}
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/version.js
-var require_version = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var Utils = require_utils$2();
-	var ECCode = require_error_correction_code();
-	var ECLevel = require_error_correction_level();
-	var Mode = require_mode$1();
-	var VersionCheck = require_version_check();
-	var G18 = 7973;
-	var G18_BCH = Utils.getBCHDigit(G18);
-	function getBestVersionForDataLength(mode, length, errorCorrectionLevel) {
-		for (let currentVersion = 1; currentVersion <= 40; currentVersion++) if (length <= exports.getCapacity(currentVersion, errorCorrectionLevel, mode)) return currentVersion;
-	}
-	function getReservedBitsCount(mode, version) {
-		return Mode.getCharCountIndicator(mode, version) + 4;
-	}
-	function getTotalBitsFromDataArray(segments, version) {
-		let totalBits = 0;
-		segments.forEach(function(data) {
-			const reservedBits = getReservedBitsCount(data.mode, version);
-			totalBits += reservedBits + data.getBitsLength();
-		});
-		return totalBits;
-	}
-	function getBestVersionForMixedData(segments, errorCorrectionLevel) {
-		for (let currentVersion = 1; currentVersion <= 40; currentVersion++) if (getTotalBitsFromDataArray(segments, currentVersion) <= exports.getCapacity(currentVersion, errorCorrectionLevel, Mode.MIXED)) return currentVersion;
-	}
-	/**
-	* Returns version number from a value.
-	* If value is not a valid version, returns defaultValue
-	*
-	* @param  {Number|String} value        QR Code version
-	* @param  {Number}        defaultValue Fallback value
-	* @return {Number}                     QR Code version number
-	*/
-	exports.from = function from(value, defaultValue) {
-		if (VersionCheck.isValid(value)) return parseInt(value, 10);
-		return defaultValue;
-	};
-	/**
-	* Returns how much data can be stored with the specified QR code version
-	* and error correction level
-	*
-	* @param  {Number} version              QR Code version (1-40)
-	* @param  {Number} errorCorrectionLevel Error correction level
-	* @param  {Mode}   mode                 Data mode
-	* @return {Number}                      Quantity of storable data
-	*/
-	exports.getCapacity = function getCapacity(version, errorCorrectionLevel, mode) {
-		if (!VersionCheck.isValid(version)) throw new Error("Invalid QR Code version");
-		if (typeof mode === "undefined") mode = Mode.BYTE;
-		const dataTotalCodewordsBits = (Utils.getSymbolTotalCodewords(version) - ECCode.getTotalCodewordsCount(version, errorCorrectionLevel)) * 8;
-		if (mode === Mode.MIXED) return dataTotalCodewordsBits;
-		const usableBits = dataTotalCodewordsBits - getReservedBitsCount(mode, version);
-		switch (mode) {
-			case Mode.NUMERIC: return Math.floor(usableBits / 10 * 3);
-			case Mode.ALPHANUMERIC: return Math.floor(usableBits / 11 * 2);
-			case Mode.KANJI: return Math.floor(usableBits / 13);
-			case Mode.BYTE:
-			default: return Math.floor(usableBits / 8);
-		}
-	};
-	/**
-	* Returns the minimum version needed to contain the amount of data
-	*
-	* @param  {Segment} data                    Segment of data
-	* @param  {Number} [errorCorrectionLevel=H] Error correction level
-	* @param  {Mode} mode                       Data mode
-	* @return {Number}                          QR Code version
-	*/
-	exports.getBestVersionForData = function getBestVersionForData(data, errorCorrectionLevel) {
-		let seg;
-		const ecl = ECLevel.from(errorCorrectionLevel, ECLevel.M);
-		if (Array.isArray(data)) {
-			if (data.length > 1) return getBestVersionForMixedData(data, ecl);
-			if (data.length === 0) return 1;
-			seg = data[0];
-		} else seg = data;
-		return getBestVersionForDataLength(seg.mode, seg.getLength(), ecl);
-	};
-	/**
-	* Returns version information with relative error correction bits
-	*
-	* The version information is included in QR Code symbols of version 7 or larger.
-	* It consists of an 18-bit sequence containing 6 data bits,
-	* with 12 error correction bits calculated using the (18, 6) Golay code.
-	*
-	* @param  {Number} version QR Code version
-	* @return {Number}         Encoded version info bits
-	*/
-	exports.getEncodedBits = function getEncodedBits(version) {
-		if (!VersionCheck.isValid(version) || version < 7) throw new Error("Invalid QR Code version");
-		let d = version << 12;
-		while (Utils.getBCHDigit(d) - G18_BCH >= 0) d ^= G18 << Utils.getBCHDigit(d) - G18_BCH;
-		return version << 12 | d;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/format-info.js
-var require_format_info = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var Utils = require_utils$2();
-	var G15 = 1335;
-	var G15_MASK = 21522;
-	var G15_BCH = Utils.getBCHDigit(G15);
-	/**
-	* Returns format information with relative error correction bits
-	*
-	* The format information is a 15-bit sequence containing 5 data bits,
-	* with 10 error correction bits calculated using the (15, 5) BCH code.
-	*
-	* @param  {Number} errorCorrectionLevel Error correction level
-	* @param  {Number} mask                 Mask pattern
-	* @return {Number}                      Encoded format information bits
-	*/
-	exports.getEncodedBits = function getEncodedBits(errorCorrectionLevel, mask) {
-		const data = errorCorrectionLevel.bit << 3 | mask;
-		let d = data << 10;
-		while (Utils.getBCHDigit(d) - G15_BCH >= 0) d ^= G15 << Utils.getBCHDigit(d) - G15_BCH;
-		return (data << 10 | d) ^ G15_MASK;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/numeric-data.js
-var require_numeric_data = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var Mode = require_mode$1();
-	function NumericData(data) {
-		this.mode = Mode.NUMERIC;
-		this.data = data.toString();
-	}
-	NumericData.getBitsLength = function getBitsLength(length) {
-		return 10 * Math.floor(length / 3) + (length % 3 ? length % 3 * 3 + 1 : 0);
-	};
-	NumericData.prototype.getLength = function getLength() {
-		return this.data.length;
-	};
-	NumericData.prototype.getBitsLength = function getBitsLength() {
-		return NumericData.getBitsLength(this.data.length);
-	};
-	NumericData.prototype.write = function write(bitBuffer) {
-		let i, group, value;
-		for (i = 0; i + 3 <= this.data.length; i += 3) {
-			group = this.data.substr(i, 3);
-			value = parseInt(group, 10);
-			bitBuffer.put(value, 10);
-		}
-		const remainingNum = this.data.length - i;
-		if (remainingNum > 0) {
-			group = this.data.substr(i);
-			value = parseInt(group, 10);
-			bitBuffer.put(value, remainingNum * 3 + 1);
-		}
-	};
-	module.exports = NumericData;
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/alphanumeric-data.js
-var require_alphanumeric_data = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var Mode = require_mode$1();
-	/**
-	* Array of characters available in alphanumeric mode
-	*
-	* As per QR Code specification, to each character
-	* is assigned a value from 0 to 44 which in this case coincides
-	* with the array index
-	*
-	* @type {Array}
-	*/
-	var ALPHA_NUM_CHARS = [
-		"0",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
-		"7",
-		"8",
-		"9",
-		"A",
-		"B",
-		"C",
-		"D",
-		"E",
-		"F",
-		"G",
-		"H",
-		"I",
-		"J",
-		"K",
-		"L",
-		"M",
-		"N",
-		"O",
-		"P",
-		"Q",
-		"R",
-		"S",
-		"T",
-		"U",
-		"V",
-		"W",
-		"X",
-		"Y",
-		"Z",
-		" ",
-		"$",
-		"%",
-		"*",
-		"+",
-		"-",
-		".",
-		"/",
-		":"
-	];
-	function AlphanumericData(data) {
-		this.mode = Mode.ALPHANUMERIC;
-		this.data = data;
-	}
-	AlphanumericData.getBitsLength = function getBitsLength(length) {
-		return 11 * Math.floor(length / 2) + 6 * (length % 2);
-	};
-	AlphanumericData.prototype.getLength = function getLength() {
-		return this.data.length;
-	};
-	AlphanumericData.prototype.getBitsLength = function getBitsLength() {
-		return AlphanumericData.getBitsLength(this.data.length);
-	};
-	AlphanumericData.prototype.write = function write(bitBuffer) {
-		let i;
-		for (i = 0; i + 2 <= this.data.length; i += 2) {
-			let value = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
-			value += ALPHA_NUM_CHARS.indexOf(this.data[i + 1]);
-			bitBuffer.put(value, 11);
-		}
-		if (this.data.length % 2) bitBuffer.put(ALPHA_NUM_CHARS.indexOf(this.data[i]), 6);
-	};
-	module.exports = AlphanumericData;
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/byte-data.js
-var require_byte_data = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var Mode = require_mode$1();
-	function ByteData(data) {
-		this.mode = Mode.BYTE;
-		if (typeof data === "string") this.data = new TextEncoder().encode(data);
-		else this.data = new Uint8Array(data);
-	}
-	ByteData.getBitsLength = function getBitsLength(length) {
-		return length * 8;
-	};
-	ByteData.prototype.getLength = function getLength() {
-		return this.data.length;
-	};
-	ByteData.prototype.getBitsLength = function getBitsLength() {
-		return ByteData.getBitsLength(this.data.length);
-	};
-	ByteData.prototype.write = function(bitBuffer) {
-		for (let i = 0, l = this.data.length; i < l; i++) bitBuffer.put(this.data[i], 8);
-	};
-	module.exports = ByteData;
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/kanji-data.js
-var require_kanji_data = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var Mode = require_mode$1();
-	var Utils = require_utils$2();
-	function KanjiData(data) {
-		this.mode = Mode.KANJI;
-		this.data = data;
-	}
-	KanjiData.getBitsLength = function getBitsLength(length) {
-		return length * 13;
-	};
-	KanjiData.prototype.getLength = function getLength() {
-		return this.data.length;
-	};
-	KanjiData.prototype.getBitsLength = function getBitsLength() {
-		return KanjiData.getBitsLength(this.data.length);
-	};
-	KanjiData.prototype.write = function(bitBuffer) {
-		let i;
-		for (i = 0; i < this.data.length; i++) {
-			let value = Utils.toSJIS(this.data[i]);
-			if (value >= 33088 && value <= 40956) value -= 33088;
-			else if (value >= 57408 && value <= 60351) value -= 49472;
-			else throw new Error("Invalid SJIS character: " + this.data[i] + "\nMake sure your charset is UTF-8");
-			value = (value >>> 8 & 255) * 192 + (value & 255);
-			bitBuffer.put(value, 13);
-		}
-	};
-	module.exports = KanjiData;
-}));
-//#endregion
-//#region node_modules/dijkstrajs/dijkstra.js
-var require_dijkstra = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	/******************************************************************************
-	* Created 2008-08-19.
-	*
-	* Dijkstra path-finding functions. Adapted from the Dijkstar Python project.
-	*
-	* Copyright (C) 2008
-	*   Wyatt Baldwin <self@wyattbaldwin.com>
-	*   All rights reserved
-	*
-	* Licensed under the MIT license.
-	*
-	*   http://www.opensource.org/licenses/mit-license.php
-	*
-	* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	* THE SOFTWARE.
-	*****************************************************************************/
-	var dijkstra = {
-		single_source_shortest_paths: function(graph, s, d) {
-			var predecessors = {};
-			var costs = {};
-			costs[s] = 0;
-			var open = dijkstra.PriorityQueue.make();
-			open.push(s, 0);
-			var closest, u, v, cost_of_s_to_u, adjacent_nodes, cost_of_e, cost_of_s_to_u_plus_cost_of_e, cost_of_s_to_v, first_visit;
-			while (!open.empty()) {
-				closest = open.pop();
-				u = closest.value;
-				cost_of_s_to_u = closest.cost;
-				adjacent_nodes = graph[u] || {};
-				for (v in adjacent_nodes) if (adjacent_nodes.hasOwnProperty(v)) {
-					cost_of_e = adjacent_nodes[v];
-					cost_of_s_to_u_plus_cost_of_e = cost_of_s_to_u + cost_of_e;
-					cost_of_s_to_v = costs[v];
-					first_visit = typeof costs[v] === "undefined";
-					if (first_visit || cost_of_s_to_v > cost_of_s_to_u_plus_cost_of_e) {
-						costs[v] = cost_of_s_to_u_plus_cost_of_e;
-						open.push(v, cost_of_s_to_u_plus_cost_of_e);
-						predecessors[v] = u;
-					}
-				}
-			}
-			if (typeof d !== "undefined" && typeof costs[d] === "undefined") {
-				var msg = [
-					"Could not find a path from ",
-					s,
-					" to ",
-					d,
-					"."
-				].join("");
-				throw new Error(msg);
-			}
-			return predecessors;
-		},
-		extract_shortest_path_from_predecessor_list: function(predecessors, d) {
-			var nodes = [];
-			var u = d;
-			while (u) {
-				nodes.push(u);
-				predecessors[u];
-				u = predecessors[u];
-			}
-			nodes.reverse();
-			return nodes;
-		},
-		find_path: function(graph, s, d) {
-			var predecessors = dijkstra.single_source_shortest_paths(graph, s, d);
-			return dijkstra.extract_shortest_path_from_predecessor_list(predecessors, d);
-		},
-		/**
-		* A very naive priority queue implementation.
-		*/
-		PriorityQueue: {
-			make: function(opts) {
-				var T = dijkstra.PriorityQueue, t = {}, key;
-				opts = opts || {};
-				for (key in T) if (T.hasOwnProperty(key)) t[key] = T[key];
-				t.queue = [];
-				t.sorter = opts.sorter || T.default_sorter;
-				return t;
-			},
-			default_sorter: function(a, b) {
-				return a.cost - b.cost;
-			},
-			/**
-			* Add a new item to the queue and ensure the highest priority element
-			* is at the front of the queue.
-			*/
-			push: function(value, cost) {
-				var item = {
-					value,
-					cost
-				};
-				this.queue.push(item);
-				this.queue.sort(this.sorter);
-			},
-			/**
-			* Return the highest priority element in the queue.
-			*/
-			pop: function() {
-				return this.queue.shift();
-			},
-			empty: function() {
-				return this.queue.length === 0;
-			}
-		}
-	};
-	if (typeof module !== "undefined") module.exports = dijkstra;
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/segments.js
-var require_segments = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var Mode = require_mode$1();
-	var NumericData = require_numeric_data();
-	var AlphanumericData = require_alphanumeric_data();
-	var ByteData = require_byte_data();
-	var KanjiData = require_kanji_data();
-	var Regex = require_regex();
-	var Utils = require_utils$2();
-	var dijkstra = require_dijkstra();
-	/**
-	* Returns UTF8 byte length
-	*
-	* @param  {String} str Input string
-	* @return {Number}     Number of byte
-	*/
-	function getStringByteLength(str) {
-		return unescape(encodeURIComponent(str)).length;
-	}
-	/**
-	* Get a list of segments of the specified mode
-	* from a string
-	*
-	* @param  {Mode}   mode Segment mode
-	* @param  {String} str  String to process
-	* @return {Array}       Array of object with segments data
-	*/
-	function getSegments(regex, mode, str) {
-		const segments = [];
-		let result;
-		while ((result = regex.exec(str)) !== null) segments.push({
-			data: result[0],
-			index: result.index,
-			mode,
-			length: result[0].length
-		});
-		return segments;
-	}
-	/**
-	* Extracts a series of segments with the appropriate
-	* modes from a string
-	*
-	* @param  {String} dataStr Input string
-	* @return {Array}          Array of object with segments data
-	*/
-	function getSegmentsFromString(dataStr) {
-		const numSegs = getSegments(Regex.NUMERIC, Mode.NUMERIC, dataStr);
-		const alphaNumSegs = getSegments(Regex.ALPHANUMERIC, Mode.ALPHANUMERIC, dataStr);
-		let byteSegs;
-		let kanjiSegs;
-		if (Utils.isKanjiModeEnabled()) {
-			byteSegs = getSegments(Regex.BYTE, Mode.BYTE, dataStr);
-			kanjiSegs = getSegments(Regex.KANJI, Mode.KANJI, dataStr);
-		} else {
-			byteSegs = getSegments(Regex.BYTE_KANJI, Mode.BYTE, dataStr);
-			kanjiSegs = [];
-		}
-		return numSegs.concat(alphaNumSegs, byteSegs, kanjiSegs).sort(function(s1, s2) {
-			return s1.index - s2.index;
-		}).map(function(obj) {
-			return {
-				data: obj.data,
-				mode: obj.mode,
-				length: obj.length
-			};
-		});
-	}
-	/**
-	* Returns how many bits are needed to encode a string of
-	* specified length with the specified mode
-	*
-	* @param  {Number} length String length
-	* @param  {Mode} mode     Segment mode
-	* @return {Number}        Bit length
-	*/
-	function getSegmentBitsLength(length, mode) {
-		switch (mode) {
-			case Mode.NUMERIC: return NumericData.getBitsLength(length);
-			case Mode.ALPHANUMERIC: return AlphanumericData.getBitsLength(length);
-			case Mode.KANJI: return KanjiData.getBitsLength(length);
-			case Mode.BYTE: return ByteData.getBitsLength(length);
-		}
-	}
-	/**
-	* Merges adjacent segments which have the same mode
-	*
-	* @param  {Array} segs Array of object with segments data
-	* @return {Array}      Array of object with segments data
-	*/
-	function mergeSegments(segs) {
-		return segs.reduce(function(acc, curr) {
-			const prevSeg = acc.length - 1 >= 0 ? acc[acc.length - 1] : null;
-			if (prevSeg && prevSeg.mode === curr.mode) {
-				acc[acc.length - 1].data += curr.data;
-				return acc;
-			}
-			acc.push(curr);
-			return acc;
-		}, []);
-	}
-	/**
-	* Generates a list of all possible nodes combination which
-	* will be used to build a segments graph.
-	*
-	* Nodes are divided by groups. Each group will contain a list of all the modes
-	* in which is possible to encode the given text.
-	*
-	* For example the text '12345' can be encoded as Numeric, Alphanumeric or Byte.
-	* The group for '12345' will contain then 3 objects, one for each
-	* possible encoding mode.
-	*
-	* Each node represents a possible segment.
-	*
-	* @param  {Array} segs Array of object with segments data
-	* @return {Array}      Array of object with segments data
-	*/
-	function buildNodes(segs) {
-		const nodes = [];
-		for (let i = 0; i < segs.length; i++) {
-			const seg = segs[i];
-			switch (seg.mode) {
-				case Mode.NUMERIC:
-					nodes.push([
-						seg,
-						{
-							data: seg.data,
-							mode: Mode.ALPHANUMERIC,
-							length: seg.length
-						},
-						{
-							data: seg.data,
-							mode: Mode.BYTE,
-							length: seg.length
-						}
-					]);
-					break;
-				case Mode.ALPHANUMERIC:
-					nodes.push([seg, {
-						data: seg.data,
-						mode: Mode.BYTE,
-						length: seg.length
-					}]);
-					break;
-				case Mode.KANJI:
-					nodes.push([seg, {
-						data: seg.data,
-						mode: Mode.BYTE,
-						length: getStringByteLength(seg.data)
-					}]);
-					break;
-				case Mode.BYTE: nodes.push([{
-					data: seg.data,
-					mode: Mode.BYTE,
-					length: getStringByteLength(seg.data)
-				}]);
-			}
-		}
-		return nodes;
-	}
-	/**
-	* Builds a graph from a list of nodes.
-	* All segments in each node group will be connected with all the segments of
-	* the next group and so on.
-	*
-	* At each connection will be assigned a weight depending on the
-	* segment's byte length.
-	*
-	* @param  {Array} nodes    Array of object with segments data
-	* @param  {Number} version QR Code version
-	* @return {Object}         Graph of all possible segments
-	*/
-	function buildGraph(nodes, version) {
-		const table = {};
-		const graph = { start: {} };
-		let prevNodeIds = ["start"];
-		for (let i = 0; i < nodes.length; i++) {
-			const nodeGroup = nodes[i];
-			const currentNodeIds = [];
-			for (let j = 0; j < nodeGroup.length; j++) {
-				const node = nodeGroup[j];
-				const key = "" + i + j;
-				currentNodeIds.push(key);
-				table[key] = {
-					node,
-					lastCount: 0
-				};
-				graph[key] = {};
-				for (let n = 0; n < prevNodeIds.length; n++) {
-					const prevNodeId = prevNodeIds[n];
-					if (table[prevNodeId] && table[prevNodeId].node.mode === node.mode) {
-						graph[prevNodeId][key] = getSegmentBitsLength(table[prevNodeId].lastCount + node.length, node.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node.mode);
-						table[prevNodeId].lastCount += node.length;
-					} else {
-						if (table[prevNodeId]) table[prevNodeId].lastCount = node.length;
-						graph[prevNodeId][key] = getSegmentBitsLength(node.length, node.mode) + 4 + Mode.getCharCountIndicator(node.mode, version);
-					}
-				}
-			}
-			prevNodeIds = currentNodeIds;
-		}
-		for (let n = 0; n < prevNodeIds.length; n++) graph[prevNodeIds[n]].end = 0;
-		return {
-			map: graph,
-			table
-		};
-	}
-	/**
-	* Builds a segment from a specified data and mode.
-	* If a mode is not specified, the more suitable will be used.
-	*
-	* @param  {String} data             Input data
-	* @param  {Mode | String} modesHint Data mode
-	* @return {Segment}                 Segment
-	*/
-	function buildSingleSegment(data, modesHint) {
-		let mode;
-		const bestMode = Mode.getBestModeForData(data);
-		mode = Mode.from(modesHint, bestMode);
-		if (mode !== Mode.BYTE && mode.bit < bestMode.bit) throw new Error("\"" + data + "\" cannot be encoded with mode " + Mode.toString(mode) + ".\n Suggested mode is: " + Mode.toString(bestMode));
-		if (mode === Mode.KANJI && !Utils.isKanjiModeEnabled()) mode = Mode.BYTE;
-		switch (mode) {
-			case Mode.NUMERIC: return new NumericData(data);
-			case Mode.ALPHANUMERIC: return new AlphanumericData(data);
-			case Mode.KANJI: return new KanjiData(data);
-			case Mode.BYTE: return new ByteData(data);
-		}
-	}
-	/**
-	* Builds a list of segments from an array.
-	* Array can contain Strings or Objects with segment's info.
-	*
-	* For each item which is a string, will be generated a segment with the given
-	* string and the more appropriate encoding mode.
-	*
-	* For each item which is an object, will be generated a segment with the given
-	* data and mode.
-	* Objects must contain at least the property "data".
-	* If property "mode" is not present, the more suitable mode will be used.
-	*
-	* @param  {Array} array Array of objects with segments data
-	* @return {Array}       Array of Segments
-	*/
-	exports.fromArray = function fromArray(array) {
-		return array.reduce(function(acc, seg) {
-			if (typeof seg === "string") acc.push(buildSingleSegment(seg, null));
-			else if (seg.data) acc.push(buildSingleSegment(seg.data, seg.mode));
-			return acc;
-		}, []);
-	};
-	/**
-	* Builds an optimized sequence of segments from a string,
-	* which will produce the shortest possible bitstream.
-	*
-	* @param  {String} data    Input string
-	* @param  {Number} version QR Code version
-	* @return {Array}          Array of segments
-	*/
-	exports.fromString = function fromString(data, version) {
-		const graph = buildGraph(buildNodes(getSegmentsFromString(data, Utils.isKanjiModeEnabled())), version);
-		const path = dijkstra.find_path(graph.map, "start", "end");
-		const optimizedSegs = [];
-		for (let i = 1; i < path.length - 1; i++) optimizedSegs.push(graph.table[path[i]].node);
-		return exports.fromArray(mergeSegments(optimizedSegs));
-	};
-	/**
-	* Splits a string in various segments with the modes which
-	* best represent their content.
-	* The produced segments are far from being optimized.
-	* The output of this function is only used to estimate a QR Code version
-	* which may contain the data.
-	*
-	* @param  {string} data Input string
-	* @return {Array}       Array of segments
-	*/
-	exports.rawSplit = function rawSplit(data) {
-		return exports.fromArray(getSegmentsFromString(data, Utils.isKanjiModeEnabled()));
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/core/qrcode.js
-var require_qrcode = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var Utils = require_utils$2();
-	var ECLevel = require_error_correction_level();
-	var BitBuffer = require_bit_buffer();
-	var BitMatrix = require_bit_matrix();
-	var AlignmentPattern = require_alignment_pattern();
-	var FinderPattern = require_finder_pattern();
-	var MaskPattern = require_mask_pattern();
-	var ECCode = require_error_correction_code();
-	var ReedSolomonEncoder = require_reed_solomon_encoder();
-	var Version = require_version();
-	var FormatInfo = require_format_info();
-	var Mode = require_mode$1();
-	var Segments = require_segments();
-	/**
-	* QRCode for JavaScript
-	*
-	* modified by Ryan Day for nodejs support
-	* Copyright (c) 2011 Ryan Day
-	*
-	* Licensed under the MIT license:
-	*   http://www.opensource.org/licenses/mit-license.php
-	*
-	//---------------------------------------------------------------------
-	// QRCode for JavaScript
-	//
-	// Copyright (c) 2009 Kazuhiko Arase
-	//
-	// URL: http://www.d-project.com/
-	//
-	// Licensed under the MIT license:
-	//   http://www.opensource.org/licenses/mit-license.php
-	//
-	// The word "QR Code" is registered trademark of
-	// DENSO WAVE INCORPORATED
-	//   http://www.denso-wave.com/qrcode/faqpatent-e.html
-	//
-	//---------------------------------------------------------------------
-	*/
-	/**
-	* Add finder patterns bits to matrix
-	*
-	* @param  {BitMatrix} matrix  Modules matrix
-	* @param  {Number}    version QR Code version
-	*/
-	function setupFinderPattern(matrix, version) {
-		const size = matrix.size;
-		const pos = FinderPattern.getPositions(version);
-		for (let i = 0; i < pos.length; i++) {
-			const row = pos[i][0];
-			const col = pos[i][1];
-			for (let r = -1; r <= 7; r++) {
-				if (row + r <= -1 || size <= row + r) continue;
-				for (let c = -1; c <= 7; c++) {
-					if (col + c <= -1 || size <= col + c) continue;
-					if (r >= 0 && r <= 6 && (c === 0 || c === 6) || c >= 0 && c <= 6 && (r === 0 || r === 6) || r >= 2 && r <= 4 && c >= 2 && c <= 4) matrix.set(row + r, col + c, true, true);
-					else matrix.set(row + r, col + c, false, true);
-				}
-			}
-		}
-	}
-	/**
-	* Add timing pattern bits to matrix
-	*
-	* Note: this function must be called before {@link setupAlignmentPattern}
-	*
-	* @param  {BitMatrix} matrix Modules matrix
-	*/
-	function setupTimingPattern(matrix) {
-		const size = matrix.size;
-		for (let r = 8; r < size - 8; r++) {
-			const value = r % 2 === 0;
-			matrix.set(r, 6, value, true);
-			matrix.set(6, r, value, true);
-		}
-	}
-	/**
-	* Add alignment patterns bits to matrix
-	*
-	* Note: this function must be called after {@link setupTimingPattern}
-	*
-	* @param  {BitMatrix} matrix  Modules matrix
-	* @param  {Number}    version QR Code version
-	*/
-	function setupAlignmentPattern(matrix, version) {
-		const pos = AlignmentPattern.getPositions(version);
-		for (let i = 0; i < pos.length; i++) {
-			const row = pos[i][0];
-			const col = pos[i][1];
-			for (let r = -2; r <= 2; r++) for (let c = -2; c <= 2; c++) if (r === -2 || r === 2 || c === -2 || c === 2 || r === 0 && c === 0) matrix.set(row + r, col + c, true, true);
-			else matrix.set(row + r, col + c, false, true);
-		}
-	}
-	/**
-	* Add version info bits to matrix
-	*
-	* @param  {BitMatrix} matrix  Modules matrix
-	* @param  {Number}    version QR Code version
-	*/
-	function setupVersionInfo(matrix, version) {
-		const size = matrix.size;
-		const bits = Version.getEncodedBits(version);
-		let row, col, mod;
-		for (let i = 0; i < 18; i++) {
-			row = Math.floor(i / 3);
-			col = i % 3 + size - 8 - 3;
-			mod = (bits >> i & 1) === 1;
-			matrix.set(row, col, mod, true);
-			matrix.set(col, row, mod, true);
-		}
-	}
-	/**
-	* Add format info bits to matrix
-	*
-	* @param  {BitMatrix} matrix               Modules matrix
-	* @param  {ErrorCorrectionLevel}    errorCorrectionLevel Error correction level
-	* @param  {Number}    maskPattern          Mask pattern reference value
-	*/
-	function setupFormatInfo(matrix, errorCorrectionLevel, maskPattern) {
-		const size = matrix.size;
-		const bits = FormatInfo.getEncodedBits(errorCorrectionLevel, maskPattern);
-		let i, mod;
-		for (i = 0; i < 15; i++) {
-			mod = (bits >> i & 1) === 1;
-			if (i < 6) matrix.set(i, 8, mod, true);
-			else if (i < 8) matrix.set(i + 1, 8, mod, true);
-			else matrix.set(size - 15 + i, 8, mod, true);
-			if (i < 8) matrix.set(8, size - i - 1, mod, true);
-			else if (i < 9) matrix.set(8, 15 - i - 1 + 1, mod, true);
-			else matrix.set(8, 15 - i - 1, mod, true);
-		}
-		matrix.set(size - 8, 8, 1, true);
-	}
-	/**
-	* Add encoded data bits to matrix
-	*
-	* @param  {BitMatrix}  matrix Modules matrix
-	* @param  {Uint8Array} data   Data codewords
-	*/
-	function setupData(matrix, data) {
-		const size = matrix.size;
-		let inc = -1;
-		let row = size - 1;
-		let bitIndex = 7;
-		let byteIndex = 0;
-		for (let col = size - 1; col > 0; col -= 2) {
-			if (col === 6) col--;
-			while (true) {
-				for (let c = 0; c < 2; c++) if (!matrix.isReserved(row, col - c)) {
-					let dark = false;
-					if (byteIndex < data.length) dark = (data[byteIndex] >>> bitIndex & 1) === 1;
-					matrix.set(row, col - c, dark);
-					bitIndex--;
-					if (bitIndex === -1) {
-						byteIndex++;
-						bitIndex = 7;
-					}
-				}
-				row += inc;
-				if (row < 0 || size <= row) {
-					row -= inc;
-					inc = -inc;
-					break;
-				}
-			}
-		}
-	}
-	/**
-	* Create encoded codewords from data input
-	*
-	* @param  {Number}   version              QR Code version
-	* @param  {ErrorCorrectionLevel}   errorCorrectionLevel Error correction level
-	* @param  {ByteData} data                 Data input
-	* @return {Uint8Array}                    Buffer containing encoded codewords
-	*/
-	function createData(version, errorCorrectionLevel, segments) {
-		const buffer = new BitBuffer();
-		segments.forEach(function(data) {
-			buffer.put(data.mode.bit, 4);
-			buffer.put(data.getLength(), Mode.getCharCountIndicator(data.mode, version));
-			data.write(buffer);
-		});
-		const dataTotalCodewordsBits = (Utils.getSymbolTotalCodewords(version) - ECCode.getTotalCodewordsCount(version, errorCorrectionLevel)) * 8;
-		if (buffer.getLengthInBits() + 4 <= dataTotalCodewordsBits) buffer.put(0, 4);
-		while (buffer.getLengthInBits() % 8 !== 0) buffer.putBit(0);
-		const remainingByte = (dataTotalCodewordsBits - buffer.getLengthInBits()) / 8;
-		for (let i = 0; i < remainingByte; i++) buffer.put(i % 2 ? 17 : 236, 8);
-		return createCodewords(buffer, version, errorCorrectionLevel);
-	}
-	/**
-	* Encode input data with Reed-Solomon and return codewords with
-	* relative error correction bits
-	*
-	* @param  {BitBuffer} bitBuffer            Data to encode
-	* @param  {Number}    version              QR Code version
-	* @param  {ErrorCorrectionLevel} errorCorrectionLevel Error correction level
-	* @return {Uint8Array}                     Buffer containing encoded codewords
-	*/
-	function createCodewords(bitBuffer, version, errorCorrectionLevel) {
-		const totalCodewords = Utils.getSymbolTotalCodewords(version);
-		const dataTotalCodewords = totalCodewords - ECCode.getTotalCodewordsCount(version, errorCorrectionLevel);
-		const ecTotalBlocks = ECCode.getBlocksCount(version, errorCorrectionLevel);
-		const blocksInGroup1 = ecTotalBlocks - totalCodewords % ecTotalBlocks;
-		const totalCodewordsInGroup1 = Math.floor(totalCodewords / ecTotalBlocks);
-		const dataCodewordsInGroup1 = Math.floor(dataTotalCodewords / ecTotalBlocks);
-		const dataCodewordsInGroup2 = dataCodewordsInGroup1 + 1;
-		const ecCount = totalCodewordsInGroup1 - dataCodewordsInGroup1;
-		const rs = new ReedSolomonEncoder(ecCount);
-		let offset = 0;
-		const dcData = new Array(ecTotalBlocks);
-		const ecData = new Array(ecTotalBlocks);
-		let maxDataSize = 0;
-		const buffer = new Uint8Array(bitBuffer.buffer);
-		for (let b = 0; b < ecTotalBlocks; b++) {
-			const dataSize = b < blocksInGroup1 ? dataCodewordsInGroup1 : dataCodewordsInGroup2;
-			dcData[b] = buffer.slice(offset, offset + dataSize);
-			ecData[b] = rs.encode(dcData[b]);
-			offset += dataSize;
-			maxDataSize = Math.max(maxDataSize, dataSize);
-		}
-		const data = new Uint8Array(totalCodewords);
-		let index = 0;
-		let i, r;
-		for (i = 0; i < maxDataSize; i++) for (r = 0; r < ecTotalBlocks; r++) if (i < dcData[r].length) data[index++] = dcData[r][i];
-		for (i = 0; i < ecCount; i++) for (r = 0; r < ecTotalBlocks; r++) data[index++] = ecData[r][i];
-		return data;
-	}
-	/**
-	* Build QR Code symbol
-	*
-	* @param  {String} data                 Input string
-	* @param  {Number} version              QR Code version
-	* @param  {ErrorCorretionLevel} errorCorrectionLevel Error level
-	* @param  {MaskPattern} maskPattern     Mask pattern
-	* @return {Object}                      Object containing symbol data
-	*/
-	function createSymbol(data, version, errorCorrectionLevel, maskPattern) {
-		let segments;
-		if (Array.isArray(data)) segments = Segments.fromArray(data);
-		else if (typeof data === "string") {
-			let estimatedVersion = version;
-			if (!estimatedVersion) {
-				const rawSegments = Segments.rawSplit(data);
-				estimatedVersion = Version.getBestVersionForData(rawSegments, errorCorrectionLevel);
-			}
-			segments = Segments.fromString(data, estimatedVersion || 40);
-		} else throw new Error("Invalid data");
-		const bestVersion = Version.getBestVersionForData(segments, errorCorrectionLevel);
-		if (!bestVersion) throw new Error("The amount of data is too big to be stored in a QR Code");
-		if (!version) version = bestVersion;
-		else if (version < bestVersion) throw new Error("\nThe chosen QR Code version cannot contain this amount of data.\nMinimum version required to store current data is: " + bestVersion + ".\n");
-		const dataBits = createData(version, errorCorrectionLevel, segments);
-		const modules = new BitMatrix(Utils.getSymbolSize(version));
-		setupFinderPattern(modules, version);
-		setupTimingPattern(modules);
-		setupAlignmentPattern(modules, version);
-		setupFormatInfo(modules, errorCorrectionLevel, 0);
-		if (version >= 7) setupVersionInfo(modules, version);
-		setupData(modules, dataBits);
-		if (isNaN(maskPattern)) maskPattern = MaskPattern.getBestMask(modules, setupFormatInfo.bind(null, modules, errorCorrectionLevel));
-		MaskPattern.applyMask(maskPattern, modules);
-		setupFormatInfo(modules, errorCorrectionLevel, maskPattern);
-		return {
-			modules,
-			version,
-			errorCorrectionLevel,
-			maskPattern,
-			segments
-		};
-	}
-	/**
-	* QR Code
-	*
-	* @param {String | Array} data                 Input data
-	* @param {Object} options                      Optional configurations
-	* @param {Number} options.version              QR Code version
-	* @param {String} options.errorCorrectionLevel Error correction level
-	* @param {Function} options.toSJISFunc         Helper func to convert utf8 to sjis
-	*/
-	exports.create = function create(data, options) {
-		if (typeof data === "undefined" || data === "") throw new Error("No input text");
-		let errorCorrectionLevel = ECLevel.M;
-		let version;
-		let mask;
-		if (typeof options !== "undefined") {
-			errorCorrectionLevel = ECLevel.from(options.errorCorrectionLevel, ECLevel.M);
-			version = Version.from(options.version);
-			mask = MaskPattern.from(options.maskPattern);
-			if (options.toSJISFunc) Utils.setToSJISFunction(options.toSJISFunc);
-		}
-		return createSymbol(data, version, errorCorrectionLevel, mask);
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/chunkstream.js
-var require_chunkstream = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var util$8 = __require("util");
-	var Stream$3 = __require("stream");
-	var ChunkStream = module.exports = function() {
-		Stream$3.call(this);
-		this._buffers = [];
-		this._buffered = 0;
-		this._reads = [];
-		this._paused = false;
-		this._encoding = "utf8";
-		this.writable = true;
-	};
-	util$8.inherits(ChunkStream, Stream$3);
-	ChunkStream.prototype.read = function(length, callback) {
-		this._reads.push({
-			length: Math.abs(length),
-			allowLess: length < 0,
-			func: callback
-		});
-		process.nextTick(function() {
-			this._process();
-			if (this._paused && this._reads && this._reads.length > 0) {
-				this._paused = false;
-				this.emit("drain");
-			}
-		}.bind(this));
-	};
-	ChunkStream.prototype.write = function(data, encoding) {
-		if (!this.writable) {
-			this.emit("error", /* @__PURE__ */ new Error("Stream not writable"));
-			return false;
-		}
-		let dataBuffer;
-		if (Buffer.isBuffer(data)) dataBuffer = data;
-		else dataBuffer = Buffer.from(data, encoding || this._encoding);
-		this._buffers.push(dataBuffer);
-		this._buffered += dataBuffer.length;
-		this._process();
-		if (this._reads && this._reads.length === 0) this._paused = true;
-		return this.writable && !this._paused;
-	};
-	ChunkStream.prototype.end = function(data, encoding) {
-		if (data) this.write(data, encoding);
-		this.writable = false;
-		if (!this._buffers) return;
-		if (this._buffers.length === 0) this._end();
-		else {
-			this._buffers.push(null);
-			this._process();
-		}
-	};
-	ChunkStream.prototype.destroySoon = ChunkStream.prototype.end;
-	ChunkStream.prototype._end = function() {
-		if (this._reads.length > 0) this.emit("error", /* @__PURE__ */ new Error("Unexpected end of input"));
-		this.destroy();
-	};
-	ChunkStream.prototype.destroy = function() {
-		if (!this._buffers) return;
-		this.writable = false;
-		this._reads = null;
-		this._buffers = null;
-		this.emit("close");
-	};
-	ChunkStream.prototype._processReadAllowingLess = function(read) {
-		this._reads.shift();
-		let smallerBuf = this._buffers[0];
-		if (smallerBuf.length > read.length) {
-			this._buffered -= read.length;
-			this._buffers[0] = smallerBuf.slice(read.length);
-			read.func.call(this, smallerBuf.slice(0, read.length));
-		} else {
-			this._buffered -= smallerBuf.length;
-			this._buffers.shift();
-			read.func.call(this, smallerBuf);
-		}
-	};
-	ChunkStream.prototype._processRead = function(read) {
-		this._reads.shift();
-		let pos = 0;
-		let count = 0;
-		let data = Buffer.alloc(read.length);
-		while (pos < read.length) {
-			let buf = this._buffers[count++];
-			let len = Math.min(buf.length, read.length - pos);
-			buf.copy(data, pos, 0, len);
-			pos += len;
-			if (len !== buf.length) this._buffers[--count] = buf.slice(len);
-		}
-		if (count > 0) this._buffers.splice(0, count);
-		this._buffered -= read.length;
-		read.func.call(this, data);
-	};
-	ChunkStream.prototype._process = function() {
-		try {
-			while (this._buffered > 0 && this._reads && this._reads.length > 0) {
-				let read = this._reads[0];
-				if (read.allowLess) this._processReadAllowingLess(read);
-				else if (this._buffered >= read.length) this._processRead(read);
-				else break;
-			}
-			if (this._buffers && !this.writable) this._end();
-		} catch (ex) {
-			this.emit("error", ex);
-		}
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/interlace.js
-var require_interlace = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var imagePasses = [
-		{
-			x: [0],
-			y: [0]
-		},
-		{
-			x: [4],
-			y: [0]
-		},
-		{
-			x: [0, 4],
-			y: [4]
-		},
-		{
-			x: [2, 6],
-			y: [0, 4]
-		},
-		{
-			x: [
-				0,
-				2,
-				4,
-				6
-			],
-			y: [2, 6]
-		},
-		{
-			x: [
-				1,
-				3,
-				5,
-				7
-			],
-			y: [
-				0,
-				2,
-				4,
-				6
-			]
-		},
-		{
-			x: [
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7
-			],
-			y: [
-				1,
-				3,
-				5,
-				7
-			]
-		}
-	];
-	exports.getImagePasses = function(width, height) {
-		let images = [];
-		let xLeftOver = width % 8;
-		let yLeftOver = height % 8;
-		let xRepeats = (width - xLeftOver) / 8;
-		let yRepeats = (height - yLeftOver) / 8;
-		for (let i = 0; i < imagePasses.length; i++) {
-			let pass = imagePasses[i];
-			let passWidth = xRepeats * pass.x.length;
-			let passHeight = yRepeats * pass.y.length;
-			for (let j = 0; j < pass.x.length; j++) if (pass.x[j] < xLeftOver) passWidth++;
-			else break;
-			for (let j = 0; j < pass.y.length; j++) if (pass.y[j] < yLeftOver) passHeight++;
-			else break;
-			if (passWidth > 0 && passHeight > 0) images.push({
-				width: passWidth,
-				height: passHeight,
-				index: i
-			});
-		}
-		return images;
-	};
-	exports.getInterlaceIterator = function(width) {
-		return function(x, y, pass) {
-			let outerXLeftOver = x % imagePasses[pass].x.length;
-			let outerX = (x - outerXLeftOver) / imagePasses[pass].x.length * 8 + imagePasses[pass].x[outerXLeftOver];
-			let outerYLeftOver = y % imagePasses[pass].y.length;
-			let outerY = (y - outerYLeftOver) / imagePasses[pass].y.length * 8 + imagePasses[pass].y[outerYLeftOver];
-			return outerX * 4 + outerY * width * 4;
-		};
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/paeth-predictor.js
-var require_paeth_predictor = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	module.exports = function paethPredictor(left, above, upLeft) {
-		let paeth = left + above - upLeft;
-		let pLeft = Math.abs(paeth - left);
-		let pAbove = Math.abs(paeth - above);
-		let pUpLeft = Math.abs(paeth - upLeft);
-		if (pLeft <= pAbove && pLeft <= pUpLeft) return left;
-		if (pAbove <= pUpLeft) return above;
-		return upLeft;
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/filter-parse.js
-var require_filter_parse = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var interlaceUtils = require_interlace();
-	var paethPredictor = require_paeth_predictor();
-	function getByteWidth(width, bpp, depth) {
-		let byteWidth = width * bpp;
-		if (depth !== 8) byteWidth = Math.ceil(byteWidth / (8 / depth));
-		return byteWidth;
-	}
-	var Filter = module.exports = function(bitmapInfo, dependencies) {
-		let width = bitmapInfo.width;
-		let height = bitmapInfo.height;
-		let interlace = bitmapInfo.interlace;
-		let bpp = bitmapInfo.bpp;
-		let depth = bitmapInfo.depth;
-		this.read = dependencies.read;
-		this.write = dependencies.write;
-		this.complete = dependencies.complete;
-		this._imageIndex = 0;
-		this._images = [];
-		if (interlace) {
-			let passes = interlaceUtils.getImagePasses(width, height);
-			for (let i = 0; i < passes.length; i++) this._images.push({
-				byteWidth: getByteWidth(passes[i].width, bpp, depth),
-				height: passes[i].height,
-				lineIndex: 0
-			});
-		} else this._images.push({
-			byteWidth: getByteWidth(width, bpp, depth),
-			height,
-			lineIndex: 0
-		});
-		if (depth === 8) this._xComparison = bpp;
-		else if (depth === 16) this._xComparison = bpp * 2;
-		else this._xComparison = 1;
-	};
-	Filter.prototype.start = function() {
-		this.read(this._images[this._imageIndex].byteWidth + 1, this._reverseFilterLine.bind(this));
-	};
-	Filter.prototype._unFilterType1 = function(rawData, unfilteredLine, byteWidth) {
-		let xComparison = this._xComparison;
-		let xBiggerThan = xComparison - 1;
-		for (let x = 0; x < byteWidth; x++) unfilteredLine[x] = rawData[1 + x] + (x > xBiggerThan ? unfilteredLine[x - xComparison] : 0);
-	};
-	Filter.prototype._unFilterType2 = function(rawData, unfilteredLine, byteWidth) {
-		let lastLine = this._lastLine;
-		for (let x = 0; x < byteWidth; x++) unfilteredLine[x] = rawData[1 + x] + (lastLine ? lastLine[x] : 0);
-	};
-	Filter.prototype._unFilterType3 = function(rawData, unfilteredLine, byteWidth) {
-		let xComparison = this._xComparison;
-		let xBiggerThan = xComparison - 1;
-		let lastLine = this._lastLine;
-		for (let x = 0; x < byteWidth; x++) {
-			let rawByte = rawData[1 + x];
-			let f3Up = lastLine ? lastLine[x] : 0;
-			let f3Left = x > xBiggerThan ? unfilteredLine[x - xComparison] : 0;
-			unfilteredLine[x] = rawByte + Math.floor((f3Left + f3Up) / 2);
-		}
-	};
-	Filter.prototype._unFilterType4 = function(rawData, unfilteredLine, byteWidth) {
-		let xComparison = this._xComparison;
-		let xBiggerThan = xComparison - 1;
-		let lastLine = this._lastLine;
-		for (let x = 0; x < byteWidth; x++) {
-			let rawByte = rawData[1 + x];
-			let f4Up = lastLine ? lastLine[x] : 0;
-			unfilteredLine[x] = rawByte + paethPredictor(x > xBiggerThan ? unfilteredLine[x - xComparison] : 0, f4Up, x > xBiggerThan && lastLine ? lastLine[x - xComparison] : 0);
-		}
-	};
-	Filter.prototype._reverseFilterLine = function(rawData) {
-		let filter = rawData[0];
-		let unfilteredLine;
-		let currentImage = this._images[this._imageIndex];
-		let byteWidth = currentImage.byteWidth;
-		if (filter === 0) unfilteredLine = rawData.slice(1, byteWidth + 1);
-		else {
-			unfilteredLine = Buffer.alloc(byteWidth);
-			switch (filter) {
-				case 1:
-					this._unFilterType1(rawData, unfilteredLine, byteWidth);
-					break;
-				case 2:
-					this._unFilterType2(rawData, unfilteredLine, byteWidth);
-					break;
-				case 3:
-					this._unFilterType3(rawData, unfilteredLine, byteWidth);
-					break;
-				case 4:
-					this._unFilterType4(rawData, unfilteredLine, byteWidth);
-					break;
-				default: throw new Error("Unrecognised filter type - " + filter);
-			}
-		}
-		this.write(unfilteredLine);
-		currentImage.lineIndex++;
-		if (currentImage.lineIndex >= currentImage.height) {
-			this._lastLine = null;
-			this._imageIndex++;
-			currentImage = this._images[this._imageIndex];
-		} else this._lastLine = unfilteredLine;
-		if (currentImage) this.read(currentImage.byteWidth + 1, this._reverseFilterLine.bind(this));
-		else {
-			this._lastLine = null;
-			this.complete();
-		}
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/filter-parse-async.js
-var require_filter_parse_async = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var util$7 = __require("util");
-	var ChunkStream = require_chunkstream();
-	var Filter = require_filter_parse();
-	var FilterAsync = module.exports = function(bitmapInfo) {
-		ChunkStream.call(this);
-		let buffers = [];
-		let that = this;
-		this._filter = new Filter(bitmapInfo, {
-			read: this.read.bind(this),
-			write: function(buffer) {
-				buffers.push(buffer);
-			},
-			complete: function() {
-				that.emit("complete", Buffer.concat(buffers));
-			}
-		});
-		this._filter.start();
-	};
-	util$7.inherits(FilterAsync, ChunkStream);
-}));
-//#endregion
-//#region node_modules/pngjs/lib/constants.js
-var require_constants = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	module.exports = {
-		PNG_SIGNATURE: [
-			137,
-			80,
-			78,
-			71,
-			13,
-			10,
-			26,
-			10
-		],
-		TYPE_IHDR: 1229472850,
-		TYPE_IEND: 1229278788,
-		TYPE_IDAT: 1229209940,
-		TYPE_PLTE: 1347179589,
-		TYPE_tRNS: 1951551059,
-		TYPE_gAMA: 1732332865,
-		COLORTYPE_GRAYSCALE: 0,
-		COLORTYPE_PALETTE: 1,
-		COLORTYPE_COLOR: 2,
-		COLORTYPE_ALPHA: 4,
-		COLORTYPE_PALETTE_COLOR: 3,
-		COLORTYPE_COLOR_ALPHA: 6,
-		COLORTYPE_TO_BPP_MAP: {
-			0: 1,
-			2: 3,
-			3: 1,
-			4: 2,
-			6: 4
-		},
-		GAMMA_DIVISION: 1e5
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/crc.js
-var require_crc = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var crcTable = [];
-	(function() {
-		for (let i = 0; i < 256; i++) {
-			let currentCrc = i;
-			for (let j = 0; j < 8; j++) if (currentCrc & 1) currentCrc = 3988292384 ^ currentCrc >>> 1;
-			else currentCrc = currentCrc >>> 1;
-			crcTable[i] = currentCrc;
-		}
-	})();
-	var CrcCalculator = module.exports = function() {
-		this._crc = -1;
-	};
-	CrcCalculator.prototype.write = function(data) {
-		for (let i = 0; i < data.length; i++) this._crc = crcTable[(this._crc ^ data[i]) & 255] ^ this._crc >>> 8;
-		return true;
-	};
-	CrcCalculator.prototype.crc32 = function() {
-		return this._crc ^ -1;
-	};
-	CrcCalculator.crc32 = function(buf) {
-		let crc = -1;
-		for (let i = 0; i < buf.length; i++) crc = crcTable[(crc ^ buf[i]) & 255] ^ crc >>> 8;
-		return crc ^ -1;
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/parser.js
-var require_parser = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var constants = require_constants();
-	var CrcCalculator = require_crc();
-	var Parser = module.exports = function(options, dependencies) {
-		this._options = options;
-		options.checkCRC = options.checkCRC !== false;
-		this._hasIHDR = false;
-		this._hasIEND = false;
-		this._emittedHeadersFinished = false;
-		this._palette = [];
-		this._colorType = 0;
-		this._chunks = {};
-		this._chunks[constants.TYPE_IHDR] = this._handleIHDR.bind(this);
-		this._chunks[constants.TYPE_IEND] = this._handleIEND.bind(this);
-		this._chunks[constants.TYPE_IDAT] = this._handleIDAT.bind(this);
-		this._chunks[constants.TYPE_PLTE] = this._handlePLTE.bind(this);
-		this._chunks[constants.TYPE_tRNS] = this._handleTRNS.bind(this);
-		this._chunks[constants.TYPE_gAMA] = this._handleGAMA.bind(this);
-		this.read = dependencies.read;
-		this.error = dependencies.error;
-		this.metadata = dependencies.metadata;
-		this.gamma = dependencies.gamma;
-		this.transColor = dependencies.transColor;
-		this.palette = dependencies.palette;
-		this.parsed = dependencies.parsed;
-		this.inflateData = dependencies.inflateData;
-		this.finished = dependencies.finished;
-		this.simpleTransparency = dependencies.simpleTransparency;
-		this.headersFinished = dependencies.headersFinished || function() {};
-	};
-	Parser.prototype.start = function() {
-		this.read(constants.PNG_SIGNATURE.length, this._parseSignature.bind(this));
-	};
-	Parser.prototype._parseSignature = function(data) {
-		let signature = constants.PNG_SIGNATURE;
-		for (let i = 0; i < signature.length; i++) if (data[i] !== signature[i]) {
-			this.error(/* @__PURE__ */ new Error("Invalid file signature"));
-			return;
-		}
-		this.read(8, this._parseChunkBegin.bind(this));
-	};
-	Parser.prototype._parseChunkBegin = function(data) {
-		let length = data.readUInt32BE(0);
-		let type = data.readUInt32BE(4);
-		let name = "";
-		for (let i = 4; i < 8; i++) name += String.fromCharCode(data[i]);
-		let ancillary = Boolean(data[4] & 32);
-		if (!this._hasIHDR && type !== constants.TYPE_IHDR) {
-			this.error(/* @__PURE__ */ new Error("Expected IHDR on beggining"));
-			return;
-		}
-		this._crc = new CrcCalculator();
-		this._crc.write(Buffer.from(name));
-		if (this._chunks[type]) return this._chunks[type](length);
-		if (!ancillary) {
-			this.error(/* @__PURE__ */ new Error("Unsupported critical chunk type " + name));
-			return;
-		}
-		this.read(length + 4, this._skipChunk.bind(this));
-	};
-	Parser.prototype._skipChunk = function() {
-		this.read(8, this._parseChunkBegin.bind(this));
-	};
-	Parser.prototype._handleChunkEnd = function() {
-		this.read(4, this._parseChunkEnd.bind(this));
-	};
-	Parser.prototype._parseChunkEnd = function(data) {
-		let fileCrc = data.readInt32BE(0);
-		let calcCrc = this._crc.crc32();
-		if (this._options.checkCRC && calcCrc !== fileCrc) {
-			this.error(/* @__PURE__ */ new Error("Crc error - " + fileCrc + " - " + calcCrc));
-			return;
-		}
-		if (!this._hasIEND) this.read(8, this._parseChunkBegin.bind(this));
-	};
-	Parser.prototype._handleIHDR = function(length) {
-		this.read(length, this._parseIHDR.bind(this));
-	};
-	Parser.prototype._parseIHDR = function(data) {
-		this._crc.write(data);
-		let width = data.readUInt32BE(0);
-		let height = data.readUInt32BE(4);
-		let depth = data[8];
-		let colorType = data[9];
-		let compr = data[10];
-		let filter = data[11];
-		let interlace = data[12];
-		if (depth !== 8 && depth !== 4 && depth !== 2 && depth !== 1 && depth !== 16) {
-			this.error(/* @__PURE__ */ new Error("Unsupported bit depth " + depth));
-			return;
-		}
-		if (!(colorType in constants.COLORTYPE_TO_BPP_MAP)) {
-			this.error(/* @__PURE__ */ new Error("Unsupported color type"));
-			return;
-		}
-		if (compr !== 0) {
-			this.error(/* @__PURE__ */ new Error("Unsupported compression method"));
-			return;
-		}
-		if (filter !== 0) {
-			this.error(/* @__PURE__ */ new Error("Unsupported filter method"));
-			return;
-		}
-		if (interlace !== 0 && interlace !== 1) {
-			this.error(/* @__PURE__ */ new Error("Unsupported interlace method"));
-			return;
-		}
-		this._colorType = colorType;
-		let bpp = constants.COLORTYPE_TO_BPP_MAP[this._colorType];
-		this._hasIHDR = true;
-		this.metadata({
-			width,
-			height,
-			depth,
-			interlace: Boolean(interlace),
-			palette: Boolean(colorType & constants.COLORTYPE_PALETTE),
-			color: Boolean(colorType & constants.COLORTYPE_COLOR),
-			alpha: Boolean(colorType & constants.COLORTYPE_ALPHA),
-			bpp,
-			colorType
-		});
-		this._handleChunkEnd();
-	};
-	Parser.prototype._handlePLTE = function(length) {
-		this.read(length, this._parsePLTE.bind(this));
-	};
-	Parser.prototype._parsePLTE = function(data) {
-		this._crc.write(data);
-		let entries = Math.floor(data.length / 3);
-		for (let i = 0; i < entries; i++) this._palette.push([
-			data[i * 3],
-			data[i * 3 + 1],
-			data[i * 3 + 2],
-			255
-		]);
-		this.palette(this._palette);
-		this._handleChunkEnd();
-	};
-	Parser.prototype._handleTRNS = function(length) {
-		this.simpleTransparency();
-		this.read(length, this._parseTRNS.bind(this));
-	};
-	Parser.prototype._parseTRNS = function(data) {
-		this._crc.write(data);
-		if (this._colorType === constants.COLORTYPE_PALETTE_COLOR) {
-			if (this._palette.length === 0) {
-				this.error(/* @__PURE__ */ new Error("Transparency chunk must be after palette"));
-				return;
-			}
-			if (data.length > this._palette.length) {
-				this.error(/* @__PURE__ */ new Error("More transparent colors than palette size"));
-				return;
-			}
-			for (let i = 0; i < data.length; i++) this._palette[i][3] = data[i];
-			this.palette(this._palette);
-		}
-		if (this._colorType === constants.COLORTYPE_GRAYSCALE) this.transColor([data.readUInt16BE(0)]);
-		if (this._colorType === constants.COLORTYPE_COLOR) this.transColor([
-			data.readUInt16BE(0),
-			data.readUInt16BE(2),
-			data.readUInt16BE(4)
-		]);
-		this._handleChunkEnd();
-	};
-	Parser.prototype._handleGAMA = function(length) {
-		this.read(length, this._parseGAMA.bind(this));
-	};
-	Parser.prototype._parseGAMA = function(data) {
-		this._crc.write(data);
-		this.gamma(data.readUInt32BE(0) / constants.GAMMA_DIVISION);
-		this._handleChunkEnd();
-	};
-	Parser.prototype._handleIDAT = function(length) {
-		if (!this._emittedHeadersFinished) {
-			this._emittedHeadersFinished = true;
-			this.headersFinished();
-		}
-		this.read(-length, this._parseIDAT.bind(this, length));
-	};
-	Parser.prototype._parseIDAT = function(length, data) {
-		this._crc.write(data);
-		if (this._colorType === constants.COLORTYPE_PALETTE_COLOR && this._palette.length === 0) throw new Error("Expected palette not found");
-		this.inflateData(data);
-		let leftOverLength = length - data.length;
-		if (leftOverLength > 0) this._handleIDAT(leftOverLength);
-		else this._handleChunkEnd();
-	};
-	Parser.prototype._handleIEND = function(length) {
-		this.read(length, this._parseIEND.bind(this));
-	};
-	Parser.prototype._parseIEND = function(data) {
-		this._crc.write(data);
-		this._hasIEND = true;
-		this._handleChunkEnd();
-		if (this.finished) this.finished();
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/bitmapper.js
-var require_bitmapper = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var interlaceUtils = require_interlace();
-	var pixelBppMapper = [
-		function() {},
-		function(pxData, data, pxPos, rawPos) {
-			if (rawPos === data.length) throw new Error("Ran out of data");
-			let pixel = data[rawPos];
-			pxData[pxPos] = pixel;
-			pxData[pxPos + 1] = pixel;
-			pxData[pxPos + 2] = pixel;
-			pxData[pxPos + 3] = 255;
-		},
-		function(pxData, data, pxPos, rawPos) {
-			if (rawPos + 1 >= data.length) throw new Error("Ran out of data");
-			let pixel = data[rawPos];
-			pxData[pxPos] = pixel;
-			pxData[pxPos + 1] = pixel;
-			pxData[pxPos + 2] = pixel;
-			pxData[pxPos + 3] = data[rawPos + 1];
-		},
-		function(pxData, data, pxPos, rawPos) {
-			if (rawPos + 2 >= data.length) throw new Error("Ran out of data");
-			pxData[pxPos] = data[rawPos];
-			pxData[pxPos + 1] = data[rawPos + 1];
-			pxData[pxPos + 2] = data[rawPos + 2];
-			pxData[pxPos + 3] = 255;
-		},
-		function(pxData, data, pxPos, rawPos) {
-			if (rawPos + 3 >= data.length) throw new Error("Ran out of data");
-			pxData[pxPos] = data[rawPos];
-			pxData[pxPos + 1] = data[rawPos + 1];
-			pxData[pxPos + 2] = data[rawPos + 2];
-			pxData[pxPos + 3] = data[rawPos + 3];
-		}
-	];
-	var pixelBppCustomMapper = [
-		function() {},
-		function(pxData, pixelData, pxPos, maxBit) {
-			let pixel = pixelData[0];
-			pxData[pxPos] = pixel;
-			pxData[pxPos + 1] = pixel;
-			pxData[pxPos + 2] = pixel;
-			pxData[pxPos + 3] = maxBit;
-		},
-		function(pxData, pixelData, pxPos) {
-			let pixel = pixelData[0];
-			pxData[pxPos] = pixel;
-			pxData[pxPos + 1] = pixel;
-			pxData[pxPos + 2] = pixel;
-			pxData[pxPos + 3] = pixelData[1];
-		},
-		function(pxData, pixelData, pxPos, maxBit) {
-			pxData[pxPos] = pixelData[0];
-			pxData[pxPos + 1] = pixelData[1];
-			pxData[pxPos + 2] = pixelData[2];
-			pxData[pxPos + 3] = maxBit;
-		},
-		function(pxData, pixelData, pxPos) {
-			pxData[pxPos] = pixelData[0];
-			pxData[pxPos + 1] = pixelData[1];
-			pxData[pxPos + 2] = pixelData[2];
-			pxData[pxPos + 3] = pixelData[3];
-		}
-	];
-	function bitRetriever(data, depth) {
-		let leftOver = [];
-		let i = 0;
-		function split() {
-			if (i === data.length) throw new Error("Ran out of data");
-			let byte = data[i];
-			i++;
-			let byte8, byte7, byte6, byte5, byte4, byte3, byte2, byte1;
-			switch (depth) {
-				default: throw new Error("unrecognised depth");
-				case 16:
-					byte2 = data[i];
-					i++;
-					leftOver.push((byte << 8) + byte2);
-					break;
-				case 4:
-					byte2 = byte & 15;
-					byte1 = byte >> 4;
-					leftOver.push(byte1, byte2);
-					break;
-				case 2:
-					byte4 = byte & 3;
-					byte3 = byte >> 2 & 3;
-					byte2 = byte >> 4 & 3;
-					byte1 = byte >> 6 & 3;
-					leftOver.push(byte1, byte2, byte3, byte4);
-					break;
-				case 1:
-					byte8 = byte & 1;
-					byte7 = byte >> 1 & 1;
-					byte6 = byte >> 2 & 1;
-					byte5 = byte >> 3 & 1;
-					byte4 = byte >> 4 & 1;
-					byte3 = byte >> 5 & 1;
-					byte2 = byte >> 6 & 1;
-					byte1 = byte >> 7 & 1;
-					leftOver.push(byte1, byte2, byte3, byte4, byte5, byte6, byte7, byte8);
-					break;
-			}
-		}
-		return {
-			get: function(count) {
-				while (leftOver.length < count) split();
-				let returner = leftOver.slice(0, count);
-				leftOver = leftOver.slice(count);
-				return returner;
-			},
-			resetAfterLine: function() {
-				leftOver.length = 0;
-			},
-			end: function() {
-				if (i !== data.length) throw new Error("extra data found");
-			}
-		};
-	}
-	function mapImage8Bit(image, pxData, getPxPos, bpp, data, rawPos) {
-		let imageWidth = image.width;
-		let imageHeight = image.height;
-		let imagePass = image.index;
-		for (let y = 0; y < imageHeight; y++) for (let x = 0; x < imageWidth; x++) {
-			let pxPos = getPxPos(x, y, imagePass);
-			pixelBppMapper[bpp](pxData, data, pxPos, rawPos);
-			rawPos += bpp;
-		}
-		return rawPos;
-	}
-	function mapImageCustomBit(image, pxData, getPxPos, bpp, bits, maxBit) {
-		let imageWidth = image.width;
-		let imageHeight = image.height;
-		let imagePass = image.index;
-		for (let y = 0; y < imageHeight; y++) {
-			for (let x = 0; x < imageWidth; x++) {
-				let pixelData = bits.get(bpp);
-				let pxPos = getPxPos(x, y, imagePass);
-				pixelBppCustomMapper[bpp](pxData, pixelData, pxPos, maxBit);
-			}
-			bits.resetAfterLine();
-		}
-	}
-	exports.dataToBitMap = function(data, bitmapInfo) {
-		let width = bitmapInfo.width;
-		let height = bitmapInfo.height;
-		let depth = bitmapInfo.depth;
-		let bpp = bitmapInfo.bpp;
-		let interlace = bitmapInfo.interlace;
-		let bits;
-		if (depth !== 8) bits = bitRetriever(data, depth);
-		let pxData;
-		if (depth <= 8) pxData = Buffer.alloc(width * height * 4);
-		else pxData = new Uint16Array(width * height * 4);
-		let maxBit = Math.pow(2, depth) - 1;
-		let rawPos = 0;
-		let images;
-		let getPxPos;
-		if (interlace) {
-			images = interlaceUtils.getImagePasses(width, height);
-			getPxPos = interlaceUtils.getInterlaceIterator(width, height);
-		} else {
-			let nonInterlacedPxPos = 0;
-			getPxPos = function() {
-				let returner = nonInterlacedPxPos;
-				nonInterlacedPxPos += 4;
-				return returner;
-			};
-			images = [{
-				width,
-				height
-			}];
-		}
-		for (let imageIndex = 0; imageIndex < images.length; imageIndex++) if (depth === 8) rawPos = mapImage8Bit(images[imageIndex], pxData, getPxPos, bpp, data, rawPos);
-		else mapImageCustomBit(images[imageIndex], pxData, getPxPos, bpp, bits, maxBit);
-		if (depth === 8) {
-			if (rawPos !== data.length) throw new Error("extra data found");
-		} else bits.end();
-		return pxData;
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/format-normaliser.js
-var require_format_normaliser = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	function dePalette(indata, outdata, width, height, palette) {
-		let pxPos = 0;
-		for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
-			let color = palette[indata[pxPos]];
-			if (!color) throw new Error("index " + indata[pxPos] + " not in palette");
-			for (let i = 0; i < 4; i++) outdata[pxPos + i] = color[i];
-			pxPos += 4;
-		}
-	}
-	function replaceTransparentColor(indata, outdata, width, height, transColor) {
-		let pxPos = 0;
-		for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
-			let makeTrans = false;
-			if (transColor.length === 1) {
-				if (transColor[0] === indata[pxPos]) makeTrans = true;
-			} else if (transColor[0] === indata[pxPos] && transColor[1] === indata[pxPos + 1] && transColor[2] === indata[pxPos + 2]) makeTrans = true;
-			if (makeTrans) for (let i = 0; i < 4; i++) outdata[pxPos + i] = 0;
-			pxPos += 4;
-		}
-	}
-	function scaleDepth(indata, outdata, width, height, depth) {
-		let maxOutSample = 255;
-		let maxInSample = Math.pow(2, depth) - 1;
-		let pxPos = 0;
-		for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
-			for (let i = 0; i < 4; i++) outdata[pxPos + i] = Math.floor(indata[pxPos + i] * maxOutSample / maxInSample + .5);
-			pxPos += 4;
-		}
-	}
-	module.exports = function(indata, imageData) {
-		let depth = imageData.depth;
-		let width = imageData.width;
-		let height = imageData.height;
-		let colorType = imageData.colorType;
-		let transColor = imageData.transColor;
-		let palette = imageData.palette;
-		let outdata = indata;
-		if (colorType === 3) dePalette(indata, outdata, width, height, palette);
-		else {
-			if (transColor) replaceTransparentColor(indata, outdata, width, height, transColor);
-			if (depth !== 8) {
-				if (depth === 16) outdata = Buffer.alloc(width * height * 4);
-				scaleDepth(indata, outdata, width, height, depth);
-			}
-		}
-		return outdata;
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/parser-async.js
-var require_parser_async = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var util$6 = __require("util");
-	var zlib$5 = __require("zlib");
-	var ChunkStream = require_chunkstream();
-	var FilterAsync = require_filter_parse_async();
-	var Parser = require_parser();
-	var bitmapper = require_bitmapper();
-	var formatNormaliser = require_format_normaliser();
-	var ParserAsync = module.exports = function(options) {
-		ChunkStream.call(this);
-		this._parser = new Parser(options, {
-			read: this.read.bind(this),
-			error: this._handleError.bind(this),
-			metadata: this._handleMetaData.bind(this),
-			gamma: this.emit.bind(this, "gamma"),
-			palette: this._handlePalette.bind(this),
-			transColor: this._handleTransColor.bind(this),
-			finished: this._finished.bind(this),
-			inflateData: this._inflateData.bind(this),
-			simpleTransparency: this._simpleTransparency.bind(this),
-			headersFinished: this._headersFinished.bind(this)
-		});
-		this._options = options;
-		this.writable = true;
-		this._parser.start();
-	};
-	util$6.inherits(ParserAsync, ChunkStream);
-	ParserAsync.prototype._handleError = function(err) {
-		this.emit("error", err);
-		this.writable = false;
-		this.destroy();
-		if (this._inflate && this._inflate.destroy) this._inflate.destroy();
-		if (this._filter) {
-			this._filter.destroy();
-			this._filter.on("error", function() {});
-		}
-		this.errord = true;
-	};
-	ParserAsync.prototype._inflateData = function(data) {
-		if (!this._inflate) if (this._bitmapInfo.interlace) {
-			this._inflate = zlib$5.createInflate();
-			this._inflate.on("error", this.emit.bind(this, "error"));
-			this._filter.on("complete", this._complete.bind(this));
-			this._inflate.pipe(this._filter);
-		} else {
-			let imageSize = ((this._bitmapInfo.width * this._bitmapInfo.bpp * this._bitmapInfo.depth + 7 >> 3) + 1) * this._bitmapInfo.height;
-			let chunkSize = Math.max(imageSize, zlib$5.Z_MIN_CHUNK);
-			this._inflate = zlib$5.createInflate({ chunkSize });
-			let leftToInflate = imageSize;
-			let emitError = this.emit.bind(this, "error");
-			this._inflate.on("error", function(err) {
-				if (!leftToInflate) return;
-				emitError(err);
-			});
-			this._filter.on("complete", this._complete.bind(this));
-			let filterWrite = this._filter.write.bind(this._filter);
-			this._inflate.on("data", function(chunk) {
-				if (!leftToInflate) return;
-				if (chunk.length > leftToInflate) chunk = chunk.slice(0, leftToInflate);
-				leftToInflate -= chunk.length;
-				filterWrite(chunk);
-			});
-			this._inflate.on("end", this._filter.end.bind(this._filter));
-		}
-		this._inflate.write(data);
-	};
-	ParserAsync.prototype._handleMetaData = function(metaData) {
-		this._metaData = metaData;
-		this._bitmapInfo = Object.create(metaData);
-		this._filter = new FilterAsync(this._bitmapInfo);
-	};
-	ParserAsync.prototype._handleTransColor = function(transColor) {
-		this._bitmapInfo.transColor = transColor;
-	};
-	ParserAsync.prototype._handlePalette = function(palette) {
-		this._bitmapInfo.palette = palette;
-	};
-	ParserAsync.prototype._simpleTransparency = function() {
-		this._metaData.alpha = true;
-	};
-	ParserAsync.prototype._headersFinished = function() {
-		this.emit("metadata", this._metaData);
-	};
-	ParserAsync.prototype._finished = function() {
-		if (this.errord) return;
-		if (!this._inflate) this.emit("error", "No Inflate block");
-		else this._inflate.end();
-	};
-	ParserAsync.prototype._complete = function(filteredData) {
-		if (this.errord) return;
-		let normalisedBitmapData;
-		try {
-			let bitmapData = bitmapper.dataToBitMap(filteredData, this._bitmapInfo);
-			normalisedBitmapData = formatNormaliser(bitmapData, this._bitmapInfo);
-			bitmapData = null;
-		} catch (ex) {
-			this._handleError(ex);
-			return;
-		}
-		this.emit("parsed", normalisedBitmapData);
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/bitpacker.js
-var require_bitpacker = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var constants = require_constants();
-	module.exports = function(dataIn, width, height, options) {
-		let outHasAlpha = [constants.COLORTYPE_COLOR_ALPHA, constants.COLORTYPE_ALPHA].indexOf(options.colorType) !== -1;
-		if (options.colorType === options.inputColorType) {
-			let bigEndian = (function() {
-				let buffer = /* @__PURE__ */ new ArrayBuffer(2);
-				new DataView(buffer).setInt16(0, 256, true);
-				return new Int16Array(buffer)[0] !== 256;
-			})();
-			if (options.bitDepth === 8 || options.bitDepth === 16 && bigEndian) return dataIn;
-		}
-		let data = options.bitDepth !== 16 ? dataIn : new Uint16Array(dataIn.buffer);
-		let maxValue = 255;
-		let inBpp = constants.COLORTYPE_TO_BPP_MAP[options.inputColorType];
-		if (inBpp === 4 && !options.inputHasAlpha) inBpp = 3;
-		let outBpp = constants.COLORTYPE_TO_BPP_MAP[options.colorType];
-		if (options.bitDepth === 16) {
-			maxValue = 65535;
-			outBpp *= 2;
-		}
-		let outData = Buffer.alloc(width * height * outBpp);
-		let inIndex = 0;
-		let outIndex = 0;
-		let bgColor = options.bgColor || {};
-		if (bgColor.red === void 0) bgColor.red = maxValue;
-		if (bgColor.green === void 0) bgColor.green = maxValue;
-		if (bgColor.blue === void 0) bgColor.blue = maxValue;
-		function getRGBA() {
-			let red;
-			let green;
-			let blue;
-			let alpha = maxValue;
-			switch (options.inputColorType) {
-				case constants.COLORTYPE_COLOR_ALPHA:
-					alpha = data[inIndex + 3];
-					red = data[inIndex];
-					green = data[inIndex + 1];
-					blue = data[inIndex + 2];
-					break;
-				case constants.COLORTYPE_COLOR:
-					red = data[inIndex];
-					green = data[inIndex + 1];
-					blue = data[inIndex + 2];
-					break;
-				case constants.COLORTYPE_ALPHA:
-					alpha = data[inIndex + 1];
-					red = data[inIndex];
-					green = red;
-					blue = red;
-					break;
-				case constants.COLORTYPE_GRAYSCALE:
-					red = data[inIndex];
-					green = red;
-					blue = red;
-					break;
-				default: throw new Error("input color type:" + options.inputColorType + " is not supported at present");
-			}
-			if (options.inputHasAlpha) {
-				if (!outHasAlpha) {
-					alpha /= maxValue;
-					red = Math.min(Math.max(Math.round((1 - alpha) * bgColor.red + alpha * red), 0), maxValue);
-					green = Math.min(Math.max(Math.round((1 - alpha) * bgColor.green + alpha * green), 0), maxValue);
-					blue = Math.min(Math.max(Math.round((1 - alpha) * bgColor.blue + alpha * blue), 0), maxValue);
-				}
-			}
-			return {
-				red,
-				green,
-				blue,
-				alpha
-			};
-		}
-		for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
-			let rgba = getRGBA(data, inIndex);
-			switch (options.colorType) {
-				case constants.COLORTYPE_COLOR_ALPHA:
-				case constants.COLORTYPE_COLOR:
-					if (options.bitDepth === 8) {
-						outData[outIndex] = rgba.red;
-						outData[outIndex + 1] = rgba.green;
-						outData[outIndex + 2] = rgba.blue;
-						if (outHasAlpha) outData[outIndex + 3] = rgba.alpha;
-					} else {
-						outData.writeUInt16BE(rgba.red, outIndex);
-						outData.writeUInt16BE(rgba.green, outIndex + 2);
-						outData.writeUInt16BE(rgba.blue, outIndex + 4);
-						if (outHasAlpha) outData.writeUInt16BE(rgba.alpha, outIndex + 6);
-					}
-					break;
-				case constants.COLORTYPE_ALPHA:
-				case constants.COLORTYPE_GRAYSCALE: {
-					let grayscale = (rgba.red + rgba.green + rgba.blue) / 3;
-					if (options.bitDepth === 8) {
-						outData[outIndex] = grayscale;
-						if (outHasAlpha) outData[outIndex + 1] = rgba.alpha;
-					} else {
-						outData.writeUInt16BE(grayscale, outIndex);
-						if (outHasAlpha) outData.writeUInt16BE(rgba.alpha, outIndex + 2);
-					}
-					break;
-				}
-				default: throw new Error("unrecognised color Type " + options.colorType);
-			}
-			inIndex += inBpp;
-			outIndex += outBpp;
-		}
-		return outData;
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/filter-pack.js
-var require_filter_pack = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var paethPredictor = require_paeth_predictor();
-	function filterNone(pxData, pxPos, byteWidth, rawData, rawPos) {
-		for (let x = 0; x < byteWidth; x++) rawData[rawPos + x] = pxData[pxPos + x];
-	}
-	function filterSumNone(pxData, pxPos, byteWidth) {
-		let sum = 0;
-		let length = pxPos + byteWidth;
-		for (let i = pxPos; i < length; i++) sum += Math.abs(pxData[i]);
-		return sum;
-	}
-	function filterSub(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
-		for (let x = 0; x < byteWidth; x++) {
-			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-			let val = pxData[pxPos + x] - left;
-			rawData[rawPos + x] = val;
-		}
-	}
-	function filterSumSub(pxData, pxPos, byteWidth, bpp) {
-		let sum = 0;
-		for (let x = 0; x < byteWidth; x++) {
-			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-			let val = pxData[pxPos + x] - left;
-			sum += Math.abs(val);
-		}
-		return sum;
-	}
-	function filterUp(pxData, pxPos, byteWidth, rawData, rawPos) {
-		for (let x = 0; x < byteWidth; x++) {
-			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-			let val = pxData[pxPos + x] - up;
-			rawData[rawPos + x] = val;
-		}
-	}
-	function filterSumUp(pxData, pxPos, byteWidth) {
-		let sum = 0;
-		let length = pxPos + byteWidth;
-		for (let x = pxPos; x < length; x++) {
-			let up = pxPos > 0 ? pxData[x - byteWidth] : 0;
-			let val = pxData[x] - up;
-			sum += Math.abs(val);
-		}
-		return sum;
-	}
-	function filterAvg(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
-		for (let x = 0; x < byteWidth; x++) {
-			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-			let val = pxData[pxPos + x] - (left + up >> 1);
-			rawData[rawPos + x] = val;
-		}
-	}
-	function filterSumAvg(pxData, pxPos, byteWidth, bpp) {
-		let sum = 0;
-		for (let x = 0; x < byteWidth; x++) {
-			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-			let val = pxData[pxPos + x] - (left + up >> 1);
-			sum += Math.abs(val);
-		}
-		return sum;
-	}
-	function filterPaeth(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
-		for (let x = 0; x < byteWidth; x++) {
-			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-			let upleft = pxPos > 0 && x >= bpp ? pxData[pxPos + x - (byteWidth + bpp)] : 0;
-			let val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
-			rawData[rawPos + x] = val;
-		}
-	}
-	function filterSumPaeth(pxData, pxPos, byteWidth, bpp) {
-		let sum = 0;
-		for (let x = 0; x < byteWidth; x++) {
-			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-			let upleft = pxPos > 0 && x >= bpp ? pxData[pxPos + x - (byteWidth + bpp)] : 0;
-			let val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
-			sum += Math.abs(val);
-		}
-		return sum;
-	}
-	var filters = {
-		0: filterNone,
-		1: filterSub,
-		2: filterUp,
-		3: filterAvg,
-		4: filterPaeth
-	};
-	var filterSums = {
-		0: filterSumNone,
-		1: filterSumSub,
-		2: filterSumUp,
-		3: filterSumAvg,
-		4: filterSumPaeth
-	};
-	module.exports = function(pxData, width, height, options, bpp) {
-		let filterTypes;
-		if (!("filterType" in options) || options.filterType === -1) filterTypes = [
-			0,
-			1,
-			2,
-			3,
-			4
-		];
-		else if (typeof options.filterType === "number") filterTypes = [options.filterType];
-		else throw new Error("unrecognised filter types");
-		if (options.bitDepth === 16) bpp *= 2;
-		let byteWidth = width * bpp;
-		let rawPos = 0;
-		let pxPos = 0;
-		let rawData = Buffer.alloc((byteWidth + 1) * height);
-		let sel = filterTypes[0];
-		for (let y = 0; y < height; y++) {
-			if (filterTypes.length > 1) {
-				let min = Infinity;
-				for (let i = 0; i < filterTypes.length; i++) {
-					let sum = filterSums[filterTypes[i]](pxData, pxPos, byteWidth, bpp);
-					if (sum < min) {
-						sel = filterTypes[i];
-						min = sum;
-					}
-				}
-			}
-			rawData[rawPos] = sel;
-			rawPos++;
-			filters[sel](pxData, pxPos, byteWidth, rawData, rawPos, bpp);
-			rawPos += byteWidth;
-			pxPos += byteWidth;
-		}
-		return rawData;
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/packer.js
-var require_packer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var constants = require_constants();
-	var CrcStream = require_crc();
-	var bitPacker = require_bitpacker();
-	var filter = require_filter_pack();
-	var zlib$4 = __require("zlib");
-	var Packer = module.exports = function(options) {
-		this._options = options;
-		options.deflateChunkSize = options.deflateChunkSize || 32 * 1024;
-		options.deflateLevel = options.deflateLevel != null ? options.deflateLevel : 9;
-		options.deflateStrategy = options.deflateStrategy != null ? options.deflateStrategy : 3;
-		options.inputHasAlpha = options.inputHasAlpha != null ? options.inputHasAlpha : true;
-		options.deflateFactory = options.deflateFactory || zlib$4.createDeflate;
-		options.bitDepth = options.bitDepth || 8;
-		options.colorType = typeof options.colorType === "number" ? options.colorType : constants.COLORTYPE_COLOR_ALPHA;
-		options.inputColorType = typeof options.inputColorType === "number" ? options.inputColorType : constants.COLORTYPE_COLOR_ALPHA;
-		if ([
-			constants.COLORTYPE_GRAYSCALE,
-			constants.COLORTYPE_COLOR,
-			constants.COLORTYPE_COLOR_ALPHA,
-			constants.COLORTYPE_ALPHA
-		].indexOf(options.colorType) === -1) throw new Error("option color type:" + options.colorType + " is not supported at present");
-		if ([
-			constants.COLORTYPE_GRAYSCALE,
-			constants.COLORTYPE_COLOR,
-			constants.COLORTYPE_COLOR_ALPHA,
-			constants.COLORTYPE_ALPHA
-		].indexOf(options.inputColorType) === -1) throw new Error("option input color type:" + options.inputColorType + " is not supported at present");
-		if (options.bitDepth !== 8 && options.bitDepth !== 16) throw new Error("option bit depth:" + options.bitDepth + " is not supported at present");
-	};
-	Packer.prototype.getDeflateOptions = function() {
-		return {
-			chunkSize: this._options.deflateChunkSize,
-			level: this._options.deflateLevel,
-			strategy: this._options.deflateStrategy
-		};
-	};
-	Packer.prototype.createDeflate = function() {
-		return this._options.deflateFactory(this.getDeflateOptions());
-	};
-	Packer.prototype.filterData = function(data, width, height) {
-		let packedData = bitPacker(data, width, height, this._options);
-		let bpp = constants.COLORTYPE_TO_BPP_MAP[this._options.colorType];
-		return filter(packedData, width, height, this._options, bpp);
-	};
-	Packer.prototype._packChunk = function(type, data) {
-		let len = data ? data.length : 0;
-		let buf = Buffer.alloc(len + 12);
-		buf.writeUInt32BE(len, 0);
-		buf.writeUInt32BE(type, 4);
-		if (data) data.copy(buf, 8);
-		buf.writeInt32BE(CrcStream.crc32(buf.slice(4, buf.length - 4)), buf.length - 4);
-		return buf;
-	};
-	Packer.prototype.packGAMA = function(gamma) {
-		let buf = Buffer.alloc(4);
-		buf.writeUInt32BE(Math.floor(gamma * constants.GAMMA_DIVISION), 0);
-		return this._packChunk(constants.TYPE_gAMA, buf);
-	};
-	Packer.prototype.packIHDR = function(width, height) {
-		let buf = Buffer.alloc(13);
-		buf.writeUInt32BE(width, 0);
-		buf.writeUInt32BE(height, 4);
-		buf[8] = this._options.bitDepth;
-		buf[9] = this._options.colorType;
-		buf[10] = 0;
-		buf[11] = 0;
-		buf[12] = 0;
-		return this._packChunk(constants.TYPE_IHDR, buf);
-	};
-	Packer.prototype.packIDAT = function(data) {
-		return this._packChunk(constants.TYPE_IDAT, data);
-	};
-	Packer.prototype.packIEND = function() {
-		return this._packChunk(constants.TYPE_IEND, null);
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/packer-async.js
-var require_packer_async = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var util$5 = __require("util");
-	var Stream$2 = __require("stream");
-	var constants = require_constants();
-	var Packer = require_packer();
-	var PackerAsync = module.exports = function(opt) {
-		Stream$2.call(this);
-		let options = opt || {};
-		this._packer = new Packer(options);
-		this._deflate = this._packer.createDeflate();
-		this.readable = true;
-	};
-	util$5.inherits(PackerAsync, Stream$2);
-	PackerAsync.prototype.pack = function(data, width, height, gamma) {
-		this.emit("data", Buffer.from(constants.PNG_SIGNATURE));
-		this.emit("data", this._packer.packIHDR(width, height));
-		if (gamma) this.emit("data", this._packer.packGAMA(gamma));
-		let filteredData = this._packer.filterData(data, width, height);
-		this._deflate.on("error", this.emit.bind(this, "error"));
-		this._deflate.on("data", function(compressedData) {
-			this.emit("data", this._packer.packIDAT(compressedData));
-		}.bind(this));
-		this._deflate.on("end", function() {
-			this.emit("data", this._packer.packIEND());
-			this.emit("end");
-		}.bind(this));
-		this._deflate.end(filteredData);
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/sync-inflate.js
-var require_sync_inflate = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var assert$1 = __require("assert").ok;
-	var zlib$3 = __require("zlib");
-	var util$4 = __require("util");
-	var kMaxLength = __require("buffer").kMaxLength;
-	function Inflate(opts) {
-		if (!(this instanceof Inflate)) return new Inflate(opts);
-		if (opts && opts.chunkSize < zlib$3.Z_MIN_CHUNK) opts.chunkSize = zlib$3.Z_MIN_CHUNK;
-		zlib$3.Inflate.call(this, opts);
-		this._offset = this._offset === void 0 ? this._outOffset : this._offset;
-		this._buffer = this._buffer || this._outBuffer;
-		if (opts && opts.maxLength != null) this._maxLength = opts.maxLength;
-	}
-	function createInflate(opts) {
-		return new Inflate(opts);
-	}
-	function _close(engine, callback) {
-		if (callback) process.nextTick(callback);
-		if (!engine._handle) return;
-		engine._handle.close();
-		engine._handle = null;
-	}
-	Inflate.prototype._processChunk = function(chunk, flushFlag, asyncCb) {
-		if (typeof asyncCb === "function") return zlib$3.Inflate._processChunk.call(this, chunk, flushFlag, asyncCb);
-		let self = this;
-		let availInBefore = chunk && chunk.length;
-		let availOutBefore = this._chunkSize - this._offset;
-		let leftToInflate = this._maxLength;
-		let inOff = 0;
-		let buffers = [];
-		let nread = 0;
-		let error;
-		this.on("error", function(err) {
-			error = err;
-		});
-		function handleChunk(availInAfter, availOutAfter) {
-			if (self._hadError) return;
-			let have = availOutBefore - availOutAfter;
-			assert$1(have >= 0, "have should not go down");
-			if (have > 0) {
-				let out = self._buffer.slice(self._offset, self._offset + have);
-				self._offset += have;
-				if (out.length > leftToInflate) out = out.slice(0, leftToInflate);
-				buffers.push(out);
-				nread += out.length;
-				leftToInflate -= out.length;
-				if (leftToInflate === 0) return false;
-			}
-			if (availOutAfter === 0 || self._offset >= self._chunkSize) {
-				availOutBefore = self._chunkSize;
-				self._offset = 0;
-				self._buffer = Buffer.allocUnsafe(self._chunkSize);
-			}
-			if (availOutAfter === 0) {
-				inOff += availInBefore - availInAfter;
-				availInBefore = availInAfter;
-				return true;
-			}
-			return false;
-		}
-		assert$1(this._handle, "zlib binding closed");
-		let res;
-		do {
-			res = this._handle.writeSync(flushFlag, chunk, inOff, availInBefore, this._buffer, this._offset, availOutBefore);
-			res = res || this._writeState;
-		} while (!this._hadError && handleChunk(res[0], res[1]));
-		if (this._hadError) throw error;
-		if (nread >= kMaxLength) {
-			_close(this);
-			throw new RangeError("Cannot create final Buffer. It would be larger than 0x" + kMaxLength.toString(16) + " bytes");
-		}
-		let buf = Buffer.concat(buffers, nread);
-		_close(this);
-		return buf;
-	};
-	util$4.inherits(Inflate, zlib$3.Inflate);
-	function zlibBufferSync(engine, buffer) {
-		if (typeof buffer === "string") buffer = Buffer.from(buffer);
-		if (!(buffer instanceof Buffer)) throw new TypeError("Not a string or buffer");
-		let flushFlag = engine._finishFlushFlag;
-		if (flushFlag == null) flushFlag = zlib$3.Z_FINISH;
-		return engine._processChunk(buffer, flushFlag);
-	}
-	function inflateSync(buffer, opts) {
-		return zlibBufferSync(new Inflate(opts), buffer);
-	}
-	module.exports = exports = inflateSync;
-	exports.Inflate = Inflate;
-	exports.createInflate = createInflate;
-	exports.inflateSync = inflateSync;
-}));
-//#endregion
-//#region node_modules/pngjs/lib/sync-reader.js
-var require_sync_reader = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var SyncReader = module.exports = function(buffer) {
-		this._buffer = buffer;
-		this._reads = [];
-	};
-	SyncReader.prototype.read = function(length, callback) {
-		this._reads.push({
-			length: Math.abs(length),
-			allowLess: length < 0,
-			func: callback
-		});
-	};
-	SyncReader.prototype.process = function() {
-		while (this._reads.length > 0 && this._buffer.length) {
-			let read = this._reads[0];
-			if (this._buffer.length && (this._buffer.length >= read.length || read.allowLess)) {
-				this._reads.shift();
-				let buf = this._buffer;
-				this._buffer = buf.slice(read.length);
-				read.func.call(this, buf.slice(0, read.length));
-			} else break;
-		}
-		if (this._reads.length > 0) return /* @__PURE__ */ new Error("There are some read requests waitng on finished stream");
-		if (this._buffer.length > 0) return /* @__PURE__ */ new Error("unrecognised content at end of stream");
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/filter-parse-sync.js
-var require_filter_parse_sync = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var SyncReader = require_sync_reader();
-	var Filter = require_filter_parse();
-	exports.process = function(inBuffer, bitmapInfo) {
-		let outBuffers = [];
-		let reader = new SyncReader(inBuffer);
-		new Filter(bitmapInfo, {
-			read: reader.read.bind(reader),
-			write: function(bufferPart) {
-				outBuffers.push(bufferPart);
-			},
-			complete: function() {}
-		}).start();
-		reader.process();
-		return Buffer.concat(outBuffers);
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/parser-sync.js
-var require_parser_sync = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var hasSyncZlib = true;
-	var zlib$2 = __require("zlib");
-	var inflateSync = require_sync_inflate();
-	if (!zlib$2.deflateSync) hasSyncZlib = false;
-	var SyncReader = require_sync_reader();
-	var FilterSync = require_filter_parse_sync();
-	var Parser = require_parser();
-	var bitmapper = require_bitmapper();
-	var formatNormaliser = require_format_normaliser();
-	module.exports = function(buffer, options) {
-		if (!hasSyncZlib) throw new Error("To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0");
-		let err;
-		function handleError(_err_) {
-			err = _err_;
-		}
-		let metaData;
-		function handleMetaData(_metaData_) {
-			metaData = _metaData_;
-		}
-		function handleTransColor(transColor) {
-			metaData.transColor = transColor;
-		}
-		function handlePalette(palette) {
-			metaData.palette = palette;
-		}
-		function handleSimpleTransparency() {
-			metaData.alpha = true;
-		}
-		let gamma;
-		function handleGamma(_gamma_) {
-			gamma = _gamma_;
-		}
-		let inflateDataList = [];
-		function handleInflateData(inflatedData) {
-			inflateDataList.push(inflatedData);
-		}
-		let reader = new SyncReader(buffer);
-		new Parser(options, {
-			read: reader.read.bind(reader),
-			error: handleError,
-			metadata: handleMetaData,
-			gamma: handleGamma,
-			palette: handlePalette,
-			transColor: handleTransColor,
-			inflateData: handleInflateData,
-			simpleTransparency: handleSimpleTransparency
-		}).start();
-		reader.process();
-		if (err) throw err;
-		let inflateData = Buffer.concat(inflateDataList);
-		inflateDataList.length = 0;
-		let inflatedData;
-		if (metaData.interlace) inflatedData = zlib$2.inflateSync(inflateData);
-		else {
-			let imageSize = ((metaData.width * metaData.bpp * metaData.depth + 7 >> 3) + 1) * metaData.height;
-			inflatedData = inflateSync(inflateData, {
-				chunkSize: imageSize,
-				maxLength: imageSize
-			});
-		}
-		inflateData = null;
-		if (!inflatedData || !inflatedData.length) throw new Error("bad png - invalid inflate data response");
-		let unfilteredData = FilterSync.process(inflatedData, metaData);
-		inflateData = null;
-		let bitmapData = bitmapper.dataToBitMap(unfilteredData, metaData);
-		unfilteredData = null;
-		let normalisedBitmapData = formatNormaliser(bitmapData, metaData);
-		metaData.data = normalisedBitmapData;
-		metaData.gamma = gamma || 0;
-		return metaData;
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/packer-sync.js
-var require_packer_sync = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var hasSyncZlib = true;
-	var zlib$1 = __require("zlib");
-	if (!zlib$1.deflateSync) hasSyncZlib = false;
-	var constants = require_constants();
-	var Packer = require_packer();
-	module.exports = function(metaData, opt) {
-		if (!hasSyncZlib) throw new Error("To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0");
-		let packer = new Packer(opt || {});
-		let chunks = [];
-		chunks.push(Buffer.from(constants.PNG_SIGNATURE));
-		chunks.push(packer.packIHDR(metaData.width, metaData.height));
-		if (metaData.gamma) chunks.push(packer.packGAMA(metaData.gamma));
-		let filteredData = packer.filterData(metaData.data, metaData.width, metaData.height);
-		let compressedData = zlib$1.deflateSync(filteredData, packer.getDeflateOptions());
-		filteredData = null;
-		if (!compressedData || !compressedData.length) throw new Error("bad png - invalid compressed data response");
-		chunks.push(packer.packIDAT(compressedData));
-		chunks.push(packer.packIEND());
-		return Buffer.concat(chunks);
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/png-sync.js
-var require_png_sync = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var parse = require_parser_sync();
-	var pack = require_packer_sync();
-	exports.read = function(buffer, options) {
-		return parse(buffer, options || {});
-	};
-	exports.write = function(png, options) {
-		return pack(png, options);
-	};
-}));
-//#endregion
-//#region node_modules/pngjs/lib/png.js
-var require_png$1 = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var util$3 = __require("util");
-	var Stream$1 = __require("stream");
-	var Parser = require_parser_async();
-	var Packer = require_packer_async();
-	var PNGSync = require_png_sync();
-	var PNG = exports.PNG = function(options) {
-		Stream$1.call(this);
-		options = options || {};
-		this.width = options.width | 0;
-		this.height = options.height | 0;
-		this.data = this.width > 0 && this.height > 0 ? Buffer.alloc(4 * this.width * this.height) : null;
-		if (options.fill && this.data) this.data.fill(0);
-		this.gamma = 0;
-		this.readable = this.writable = true;
-		this._parser = new Parser(options);
-		this._parser.on("error", this.emit.bind(this, "error"));
-		this._parser.on("close", this._handleClose.bind(this));
-		this._parser.on("metadata", this._metadata.bind(this));
-		this._parser.on("gamma", this._gamma.bind(this));
-		this._parser.on("parsed", function(data) {
-			this.data = data;
-			this.emit("parsed", data);
-		}.bind(this));
-		this._packer = new Packer(options);
-		this._packer.on("data", this.emit.bind(this, "data"));
-		this._packer.on("end", this.emit.bind(this, "end"));
-		this._parser.on("close", this._handleClose.bind(this));
-		this._packer.on("error", this.emit.bind(this, "error"));
-	};
-	util$3.inherits(PNG, Stream$1);
-	PNG.sync = PNGSync;
-	PNG.prototype.pack = function() {
-		if (!this.data || !this.data.length) {
-			this.emit("error", "No data provided");
-			return this;
-		}
-		process.nextTick(function() {
-			this._packer.pack(this.data, this.width, this.height, this.gamma);
-		}.bind(this));
-		return this;
-	};
-	PNG.prototype.parse = function(data, callback) {
-		if (callback) {
-			let onParsed, onError;
-			onParsed = function(parsedData) {
-				this.removeListener("error", onError);
-				this.data = parsedData;
-				callback(null, this);
-			}.bind(this);
-			onError = function(err) {
-				this.removeListener("parsed", onParsed);
-				callback(err, null);
-			}.bind(this);
-			this.once("parsed", onParsed);
-			this.once("error", onError);
-		}
-		this.end(data);
-		return this;
-	};
-	PNG.prototype.write = function(data) {
-		this._parser.write(data);
-		return true;
-	};
-	PNG.prototype.end = function(data) {
-		this._parser.end(data);
-	};
-	PNG.prototype._metadata = function(metadata) {
-		this.width = metadata.width;
-		this.height = metadata.height;
-		this.emit("metadata", metadata);
-	};
-	PNG.prototype._gamma = function(gamma) {
-		this.gamma = gamma;
-	};
-	PNG.prototype._handleClose = function() {
-		if (!this._parser.writable && !this._packer.readable) this.emit("close");
-	};
-	PNG.bitblt = function(src, dst, srcX, srcY, width, height, deltaX, deltaY) {
-		srcX |= 0;
-		srcY |= 0;
-		width |= 0;
-		height |= 0;
-		deltaX |= 0;
-		deltaY |= 0;
-		if (srcX > src.width || srcY > src.height || srcX + width > src.width || srcY + height > src.height) throw new Error("bitblt reading outside image");
-		if (deltaX > dst.width || deltaY > dst.height || deltaX + width > dst.width || deltaY + height > dst.height) throw new Error("bitblt writing outside image");
-		for (let y = 0; y < height; y++) src.data.copy(dst.data, (deltaY + y) * dst.width + deltaX << 2, (srcY + y) * src.width + srcX << 2, (srcY + y) * src.width + srcX + width << 2);
-	};
-	PNG.prototype.bitblt = function(dst, srcX, srcY, width, height, deltaX, deltaY) {
-		PNG.bitblt(this, dst, srcX, srcY, width, height, deltaX, deltaY);
-		return this;
-	};
-	PNG.adjustGamma = function(src) {
-		if (src.gamma) {
-			for (let y = 0; y < src.height; y++) for (let x = 0; x < src.width; x++) {
-				let idx = src.width * y + x << 2;
-				for (let i = 0; i < 3; i++) {
-					let sample = src.data[idx + i] / 255;
-					sample = Math.pow(sample, 1 / 2.2 / src.gamma);
-					src.data[idx + i] = Math.round(sample * 255);
-				}
-			}
-			src.gamma = 0;
-		}
-	};
-	PNG.prototype.adjustGamma = function() {
-		PNG.adjustGamma(this);
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/utils.js
-var require_utils$1 = /* @__PURE__ */ __commonJSMin(((exports) => {
-	function hex2rgba(hex) {
-		if (typeof hex === "number") hex = hex.toString();
-		if (typeof hex !== "string") throw new Error("Color should be defined as hex string");
-		let hexCode = hex.slice().replace("#", "").split("");
-		if (hexCode.length < 3 || hexCode.length === 5 || hexCode.length > 8) throw new Error("Invalid hex color: " + hex);
-		if (hexCode.length === 3 || hexCode.length === 4) hexCode = Array.prototype.concat.apply([], hexCode.map(function(c) {
-			return [c, c];
-		}));
-		if (hexCode.length === 6) hexCode.push("F", "F");
-		const hexValue = parseInt(hexCode.join(""), 16);
-		return {
-			r: hexValue >> 24 & 255,
-			g: hexValue >> 16 & 255,
-			b: hexValue >> 8 & 255,
-			a: hexValue & 255,
-			hex: "#" + hexCode.slice(0, 6).join("")
-		};
-	}
-	exports.getOptions = function getOptions(options) {
-		if (!options) options = {};
-		if (!options.color) options.color = {};
-		const margin = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
-		const width = options.width && options.width >= 21 ? options.width : void 0;
-		const scale = options.scale || 4;
-		return {
-			width,
-			scale: width ? 4 : scale,
-			margin,
-			color: {
-				dark: hex2rgba(options.color.dark || "#000000ff"),
-				light: hex2rgba(options.color.light || "#ffffffff")
-			},
-			type: options.type,
-			rendererOpts: options.rendererOpts || {}
-		};
-	};
-	exports.getScale = function getScale(qrSize, opts) {
-		return opts.width && opts.width >= qrSize + opts.margin * 2 ? opts.width / (qrSize + opts.margin * 2) : opts.scale;
-	};
-	exports.getImageWidth = function getImageWidth(qrSize, opts) {
-		const scale = exports.getScale(qrSize, opts);
-		return Math.floor((qrSize + opts.margin * 2) * scale);
-	};
-	exports.qrToImageData = function qrToImageData(imgData, qr, opts) {
-		const size = qr.modules.size;
-		const data = qr.modules.data;
-		const scale = exports.getScale(size, opts);
-		const symbolSize = Math.floor((size + opts.margin * 2) * scale);
-		const scaledMargin = opts.margin * scale;
-		const palette = [opts.color.light, opts.color.dark];
-		for (let i = 0; i < symbolSize; i++) for (let j = 0; j < symbolSize; j++) {
-			let posDst = (i * symbolSize + j) * 4;
-			let pxColor = opts.color.light;
-			if (i >= scaledMargin && j >= scaledMargin && i < symbolSize - scaledMargin && j < symbolSize - scaledMargin) {
-				const iSrc = Math.floor((i - scaledMargin) / scale);
-				const jSrc = Math.floor((j - scaledMargin) / scale);
-				pxColor = palette[data[iSrc * size + jSrc] ? 1 : 0];
-			}
-			imgData[posDst++] = pxColor.r;
-			imgData[posDst++] = pxColor.g;
-			imgData[posDst++] = pxColor.b;
-			imgData[posDst] = pxColor.a;
-		}
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/png.js
-var require_png = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var fs$11 = __require("fs");
-	var PNG = require_png$1().PNG;
-	var Utils = require_utils$1();
-	exports.render = function render(qrData, options) {
-		const opts = Utils.getOptions(options);
-		const pngOpts = opts.rendererOpts;
-		const size = Utils.getImageWidth(qrData.modules.size, opts);
-		pngOpts.width = size;
-		pngOpts.height = size;
-		const pngImage = new PNG(pngOpts);
-		Utils.qrToImageData(pngImage.data, qrData, opts);
-		return pngImage;
-	};
-	exports.renderToDataURL = function renderToDataURL(qrData, options, cb) {
-		if (typeof cb === "undefined") {
-			cb = options;
-			options = void 0;
-		}
-		exports.renderToBuffer(qrData, options, function(err, output) {
-			if (err) cb(err);
-			let url = "data:image/png;base64,";
-			url += output.toString("base64");
-			cb(null, url);
-		});
-	};
-	exports.renderToBuffer = function renderToBuffer(qrData, options, cb) {
-		if (typeof cb === "undefined") {
-			cb = options;
-			options = void 0;
-		}
-		const png = exports.render(qrData, options);
-		const buffer = [];
-		png.on("error", cb);
-		png.on("data", function(data) {
-			buffer.push(data);
-		});
-		png.on("end", function() {
-			cb(null, Buffer.concat(buffer));
-		});
-		png.pack();
-	};
-	exports.renderToFile = function renderToFile(path, qrData, options, cb) {
-		if (typeof cb === "undefined") {
-			cb = options;
-			options = void 0;
-		}
-		let called = false;
-		const done = (...args) => {
-			if (called) return;
-			called = true;
-			cb.apply(null, args);
-		};
-		const stream = fs$11.createWriteStream(path);
-		stream.on("error", done);
-		stream.on("close", done);
-		exports.renderToFileStream(stream, qrData, options);
-	};
-	exports.renderToFileStream = function renderToFileStream(stream, qrData, options) {
-		exports.render(qrData, options).pack().pipe(stream);
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/utf8.js
-var require_utf8 = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var Utils = require_utils$1();
-	var BLOCK_CHAR = {
-		WW: " ",
-		WB: "▄",
-		BB: "█",
-		BW: "▀"
-	};
-	var INVERTED_BLOCK_CHAR = {
-		BB: " ",
-		BW: "▄",
-		WW: "█",
-		WB: "▀"
-	};
-	function getBlockChar(top, bottom, blocks) {
-		if (top && bottom) return blocks.BB;
-		if (top && !bottom) return blocks.BW;
-		if (!top && bottom) return blocks.WB;
-		return blocks.WW;
-	}
-	exports.render = function(qrData, options, cb) {
-		const opts = Utils.getOptions(options);
-		let blocks = BLOCK_CHAR;
-		if (opts.color.dark.hex === "#ffffff" || opts.color.light.hex === "#000000") blocks = INVERTED_BLOCK_CHAR;
-		const size = qrData.modules.size;
-		const data = qrData.modules.data;
-		let output = "";
-		let hMargin = Array(size + opts.margin * 2 + 1).join(blocks.WW);
-		hMargin = Array(opts.margin / 2 + 1).join(hMargin + "\n");
-		const vMargin = Array(opts.margin + 1).join(blocks.WW);
-		output += hMargin;
-		for (let i = 0; i < size; i += 2) {
-			output += vMargin;
-			for (let j = 0; j < size; j++) {
-				const topModule = data[i * size + j];
-				const bottomModule = data[(i + 1) * size + j];
-				output += getBlockChar(topModule, bottomModule, blocks);
-			}
-			output += vMargin + "\n";
-		}
-		output += hMargin.slice(0, -1);
-		if (typeof cb === "function") cb(null, output);
-		return output;
-	};
-	exports.renderToFile = function renderToFile(path, qrData, options, cb) {
-		if (typeof cb === "undefined") {
-			cb = options;
-			options = void 0;
-		}
-		const fs = __require("fs");
-		const utf8 = exports.render(qrData, options);
-		fs.writeFile(path, utf8, cb);
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/terminal/terminal.js
-var require_terminal$1 = /* @__PURE__ */ __commonJSMin(((exports) => {
-	exports.render = function(qrData, options, cb) {
-		const size = qrData.modules.size;
-		const data = qrData.modules.data;
-		const black = "\x1B[40m  \x1B[0m";
-		const white = "\x1B[47m  \x1B[0m";
-		let output = "";
-		const hMargin = Array(size + 3).join(white);
-		const vMargin = Array(2).join(white);
-		output += hMargin + "\n";
-		for (let i = 0; i < size; ++i) {
-			output += white;
-			for (let j = 0; j < size; j++) output += data[i * size + j] ? black : white;
-			output += vMargin + "\n";
-		}
-		output += hMargin + "\n";
-		if (typeof cb === "function") cb(null, output);
-		return output;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/terminal/terminal-small.js
-var require_terminal_small = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var foregroundWhite = "\x1B[37m";
-	var foregroundBlack = "\x1B[30m";
-	var reset = "\x1B[0m";
-	var lineSetupNormal = "\x1B[47m\x1B[30m";
-	var lineSetupInverse = "\x1B[40m\x1B[37m";
-	var createPalette = function(lineSetup, foregroundWhite, foregroundBlack) {
-		return {
-			"00": "\x1B[0m " + lineSetup,
-			"01": reset + foregroundWhite + "▄" + lineSetup,
-			"02": reset + foregroundBlack + "▄" + lineSetup,
-			10: reset + foregroundWhite + "▀" + lineSetup,
-			11: " ",
-			12: "▄",
-			20: reset + foregroundBlack + "▀" + lineSetup,
-			21: "▀",
-			22: "█"
-		};
-	};
-	/**
-	* Returns code for QR pixel
-	* @param {boolean[][]} modules
-	* @param {number} size
-	* @param {number} x
-	* @param {number} y
-	* @return {'0' | '1' | '2'}
-	*/
-	var mkCodePixel = function(modules, size, x, y) {
-		const sizePlus = size + 1;
-		if (x >= sizePlus || y >= sizePlus || y < -1 || x < -1) return "0";
-		if (x >= size || y >= size || y < 0 || x < 0) return "1";
-		return modules[y * size + x] ? "2" : "1";
-	};
-	/**
-	* Returns code for four QR pixels. Suitable as key in palette.
-	* @param {boolean[][]} modules
-	* @param {number} size
-	* @param {number} x
-	* @param {number} y
-	* @return {keyof palette}
-	*/
-	var mkCode = function(modules, size, x, y) {
-		return mkCodePixel(modules, size, x, y) + mkCodePixel(modules, size, x, y + 1);
-	};
-	exports.render = function(qrData, options, cb) {
-		const size = qrData.modules.size;
-		const data = qrData.modules.data;
-		const inverse = !!(options && options.inverse);
-		const lineSetup = options && options.inverse ? lineSetupInverse : lineSetupNormal;
-		const palette = createPalette(lineSetup, inverse ? foregroundBlack : foregroundWhite, inverse ? foregroundWhite : foregroundBlack);
-		const newLine = "\x1B[0m\n" + lineSetup;
-		let output = lineSetup;
-		for (let y = -1; y < size + 1; y += 2) {
-			for (let x = -1; x < size; x++) output += palette[mkCode(data, size, x, y)];
-			output += palette[mkCode(data, size, size, y)] + newLine;
-		}
-		output += reset;
-		if (typeof cb === "function") cb(null, output);
-		return output;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/terminal.js
-var require_terminal = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var big = require_terminal$1();
-	var small = require_terminal_small();
-	exports.render = function(qrData, options, cb) {
-		if (options && options.small) return small.render(qrData, options, cb);
-		return big.render(qrData, options, cb);
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/svg-tag.js
-var require_svg_tag = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var Utils = require_utils$1();
-	function getColorAttrib(color, attrib) {
-		const alpha = color.a / 255;
-		const str = attrib + "=\"" + color.hex + "\"";
-		return alpha < 1 ? str + " " + attrib + "-opacity=\"" + alpha.toFixed(2).slice(1) + "\"" : str;
-	}
-	function svgCmd(cmd, x, y) {
-		let str = cmd + x;
-		if (typeof y !== "undefined") str += " " + y;
-		return str;
-	}
-	function qrToPath(data, size, margin) {
-		let path = "";
-		let moveBy = 0;
-		let newRow = false;
-		let lineLength = 0;
-		for (let i = 0; i < data.length; i++) {
-			const col = Math.floor(i % size);
-			const row = Math.floor(i / size);
-			if (!col && !newRow) newRow = true;
-			if (data[i]) {
-				lineLength++;
-				if (!(i > 0 && col > 0 && data[i - 1])) {
-					path += newRow ? svgCmd("M", col + margin, .5 + row + margin) : svgCmd("m", moveBy, 0);
-					moveBy = 0;
-					newRow = false;
-				}
-				if (!(col + 1 < size && data[i + 1])) {
-					path += svgCmd("h", lineLength);
-					lineLength = 0;
-				}
-			} else moveBy++;
-		}
-		return path;
-	}
-	exports.render = function render(qrData, options, cb) {
-		const opts = Utils.getOptions(options);
-		const size = qrData.modules.size;
-		const data = qrData.modules.data;
-		const qrcodesize = size + opts.margin * 2;
-		const bg = !opts.color.light.a ? "" : "<path " + getColorAttrib(opts.color.light, "fill") + " d=\"M0 0h" + qrcodesize + "v" + qrcodesize + "H0z\"/>";
-		const path = "<path " + getColorAttrib(opts.color.dark, "stroke") + " d=\"" + qrToPath(data, size, opts.margin) + "\"/>";
-		const viewBox = "viewBox=\"0 0 " + qrcodesize + " " + qrcodesize + "\"";
-		const svgTag = "<svg xmlns=\"http://www.w3.org/2000/svg\" " + (!opts.width ? "" : "width=\"" + opts.width + "\" height=\"" + opts.width + "\" ") + viewBox + " shape-rendering=\"crispEdges\">" + bg + path + "</svg>\n";
-		if (typeof cb === "function") cb(null, svgTag);
-		return svgTag;
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/svg.js
-var require_svg = /* @__PURE__ */ __commonJSMin(((exports) => {
-	exports.render = require_svg_tag().render;
-	exports.renderToFile = function renderToFile(path, qrData, options, cb) {
-		if (typeof cb === "undefined") {
-			cb = options;
-			options = void 0;
-		}
-		const fs = __require("fs");
-		const xmlStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" + exports.render(qrData, options);
-		fs.writeFile(path, xmlStr, cb);
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/renderer/canvas.js
-var require_canvas = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var Utils = require_utils$1();
-	function clearCanvas(ctx, canvas, size) {
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		if (!canvas.style) canvas.style = {};
-		canvas.height = size;
-		canvas.width = size;
-		canvas.style.height = size + "px";
-		canvas.style.width = size + "px";
-	}
-	function getCanvasElement() {
-		try {
-			return document.createElement("canvas");
-		} catch (e) {
-			throw new Error("You need to specify a canvas element");
-		}
-	}
-	exports.render = function render(qrData, canvas, options) {
-		let opts = options;
-		let canvasEl = canvas;
-		if (typeof opts === "undefined" && (!canvas || !canvas.getContext)) {
-			opts = canvas;
-			canvas = void 0;
-		}
-		if (!canvas) canvasEl = getCanvasElement();
-		opts = Utils.getOptions(opts);
-		const size = Utils.getImageWidth(qrData.modules.size, opts);
-		const ctx = canvasEl.getContext("2d");
-		const image = ctx.createImageData(size, size);
-		Utils.qrToImageData(image.data, qrData, opts);
-		clearCanvas(ctx, canvasEl, size);
-		ctx.putImageData(image, 0, 0);
-		return canvasEl;
-	};
-	exports.renderToDataURL = function renderToDataURL(qrData, canvas, options) {
-		let opts = options;
-		if (typeof opts === "undefined" && (!canvas || !canvas.getContext)) {
-			opts = canvas;
-			canvas = void 0;
-		}
-		if (!opts) opts = {};
-		const canvasEl = exports.render(qrData, canvas, opts);
-		const type = opts.type || "image/png";
-		const rendererOpts = opts.rendererOpts || {};
-		return canvasEl.toDataURL(type, rendererOpts.quality);
-	};
-}));
-//#endregion
-//#region node_modules/qrcode/lib/browser.js
-var require_browser = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var canPromise = require_can_promise();
-	var QRCode = require_qrcode();
-	var CanvasRenderer = require_canvas();
-	var SvgRenderer = require_svg_tag();
-	function renderCanvas(renderFunc, canvas, text, opts, cb) {
-		const args = [].slice.call(arguments, 1);
-		const argsNum = args.length;
-		const isLastArgCb = typeof args[argsNum - 1] === "function";
-		if (!isLastArgCb && !canPromise()) throw new Error("Callback required as last argument");
-		if (isLastArgCb) {
-			if (argsNum < 2) throw new Error("Too few arguments provided");
-			if (argsNum === 2) {
-				cb = text;
-				text = canvas;
-				canvas = opts = void 0;
-			} else if (argsNum === 3) if (canvas.getContext && typeof cb === "undefined") {
-				cb = opts;
-				opts = void 0;
-			} else {
-				cb = opts;
-				opts = text;
-				text = canvas;
-				canvas = void 0;
-			}
-		} else {
-			if (argsNum < 1) throw new Error("Too few arguments provided");
-			if (argsNum === 1) {
-				text = canvas;
-				canvas = opts = void 0;
-			} else if (argsNum === 2 && !canvas.getContext) {
-				opts = text;
-				text = canvas;
-				canvas = void 0;
-			}
-			return new Promise(function(resolve, reject) {
-				try {
-					resolve(renderFunc(QRCode.create(text, opts), canvas, opts));
-				} catch (e) {
-					reject(e);
-				}
-			});
-		}
-		try {
-			const data = QRCode.create(text, opts);
-			cb(null, renderFunc(data, canvas, opts));
-		} catch (e) {
-			cb(e);
-		}
-	}
-	exports.create = QRCode.create;
-	exports.toCanvas = renderCanvas.bind(null, CanvasRenderer.render);
-	exports.toDataURL = renderCanvas.bind(null, CanvasRenderer.renderToDataURL);
-	exports.toString = renderCanvas.bind(null, function(data, _, opts) {
-		return SvgRenderer.render(data, opts);
-	});
-}));
+var __require = /* #__PURE__ */ (() => createRequire(import.meta.url))();
 //#endregion
 //#region node_modules/cosmokit/lib/index.mjs
-var import_server = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((exports) => {
-	var canPromise = require_can_promise();
-	var QRCode = require_qrcode();
-	require_png();
-	var Utf8Renderer = require_utf8();
-	var TerminalRenderer = require_terminal();
-	var SvgRenderer = require_svg();
-	function checkParams(text, opts, cb) {
-		if (typeof text === "undefined") throw new Error("String required as first argument");
-		if (typeof cb === "undefined") {
-			cb = opts;
-			opts = {};
-		}
-		if (typeof cb !== "function") if (!canPromise()) throw new Error("Callback required as last argument");
-		else {
-			opts = cb || {};
-			cb = null;
-		}
-		return {
-			opts,
-			cb
-		};
-	}
-	function getStringRendererFromType(type) {
-		switch (type) {
-			case "svg": return SvgRenderer;
-			case "terminal": return TerminalRenderer;
-			default: return Utf8Renderer;
-		}
-	}
-	function render(renderFunc, text, params) {
-		if (!params.cb) return new Promise(function(resolve, reject) {
-			try {
-				return renderFunc(QRCode.create(text, params.opts), params.opts, function(err, data) {
-					return err ? reject(err) : resolve(data);
-				});
-			} catch (e) {
-				reject(e);
-			}
-		});
-		try {
-			return renderFunc(QRCode.create(text, params.opts), params.opts, params.cb);
-		} catch (e) {
-			params.cb(e);
-		}
-	}
-	exports.create = QRCode.create;
-	exports.toCanvas = require_browser().toCanvas;
-	exports.toString = function toString(text, opts, cb) {
-		const params = checkParams(text, opts, cb);
-		return render(getStringRendererFromType(params.opts ? params.opts.type : void 0).render, text, params);
-	};
-})))(), 1);
 function noop() {}
 function isNullable(value) {
 	return value === null || value === void 0;
@@ -6010,17 +1667,76 @@ var Service = class _Service {
 //#endregion
 //#region src/common/globalVars.ts
 var DATA_DIR = path.resolve("data");
-if (!existsSync$1(DATA_DIR)) mkdirSync(DATA_DIR);
+if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR);
 var TEMP_DIR = path.join(DATA_DIR, "temp");
 var LOG_DIR = path.join(DATA_DIR, "logs");
 var dbDir = path.join(DATA_DIR, "database");
-if (!existsSync$1(dbDir)) mkdirSync(dbDir);
+if (!existsSync(dbDir)) mkdirSync(dbDir);
 var selfInfo = {
 	uid: "",
 	uin: "",
 	nick: "",
 	online: false
 };
+var authTokenStatus = {
+	hasToken: false,
+	validation: "idle",
+	message: "",
+	loginError: ""
+};
+//#endregion
+//#region src/common/logger.ts
+defaultFormatters.h = (value) => Buffer.isBuffer(value) ? value.toString("hex") : value == null ? "" : String(value);
+var DEBUG_ARGV = process.argv.includes("--debug");
+var configDebug = false;
+var makeLogger;
+var cache$1 = /* @__PURE__ */ new Map();
+function isDebugEnabled() {
+	return DEBUG_ARGV || configDebug;
+}
+/** config 加载 / 热更新时同步进来. logLevel 目前只区分 'info' (默认) 与 'debug'. */
+function setConfigLogLevel(level) {
+	configDebug = level === "debug";
+}
+/** main 启动时注入 ctx.logger 工厂. 之后无 ctx 的模块经 getLogger 也能走统一 cordis logger。 */
+function bindLoggerFactory(factory) {
+	makeLogger = factory;
+}
+/**
+* 给拿不到 ctx.logger 的模块 (client / sign / connection 等) 用的命名空间 logger。
+* 返回稳定句柄, 每次调用时才解析真 logger (模块 import 时工厂常还没注入); 注入前退回 console。
+* 用法与 ctx.logger 一致: logger.info(...) / logger.warn(...) / logger.error(...) / logger.debug(`...%h`, buf)。
+*/
+function getLogger(namespace) {
+	const forward = (level) => (...args) => resolve(namespace)[level](...args);
+	return {
+		error: forward("error"),
+		warn: forward("warn"),
+		info: forward("info"),
+		debug: forward("debug")
+	};
+}
+function resolve(namespace) {
+	const factory = makeLogger;
+	if (!factory) return consoleShim(namespace);
+	let lg = cache$1.get(namespace);
+	if (!lg) {
+		lg = factory(namespace);
+		cache$1.set(namespace, lg);
+	}
+	return lg;
+}
+function consoleShim(namespace) {
+	const p = `[${namespace}]`;
+	return {
+		error: (...a) => console.error(p, ...a),
+		warn: (...a) => console.warn(p, ...a),
+		info: (...a) => console.info(p, ...a),
+		debug: (...a) => {
+			if (isDebugEnabled()) console.debug(p, ...a);
+		}
+	};
+}
 //#endregion
 //#region src/main/log.ts
 var MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -6062,12 +1778,12 @@ var Log = class {
 		this.currentSize = 0;
 		this.colors = false;
 		this.showTime = "yyyy-MM-dd hh:mm:ss ";
-		this.levels = { default: 2 };
+		this.levels = { default: isDebugEnabled() ? 3 : 2 };
 		this.formatters = {
 			o: inspectFormatter,
 			O: inspectFormatter
 		};
-		stat$1(this.currentFile, (err, stats) => {
+		stat(this.currentFile, (err, stats) => {
 			if (!err && stats) this.currentSize = stats.size;
 		});
 		ctx.on("llob/config-updated", (input) => {
@@ -6308,7 +2024,7 @@ var require_windows = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 }));
 //#endregion
 //#region node_modules/isexe/mode.js
-var require_mode = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+var require_mode$1 = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	module.exports = isexe;
 	isexe.sync = sync;
 	var fs$9 = __require("fs");
@@ -6342,7 +2058,7 @@ var require_isexe = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	__require("fs");
 	var core;
 	if (process.platform === "win32" || global.TESTING_WINDOWS) core = require_windows();
-	else core = require_mode();
+	else core = require_mode$1();
 	module.exports = isexe;
 	isexe.sync = sync;
 	function isexe(path, options, cb) {
@@ -6468,7 +2184,7 @@ var require_which = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 }));
 //#endregion
 //#region node_modules/fluent-ffmpeg/lib/utils.js
-var require_utils = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+var require_utils$2 = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	__require("child_process").exec;
 	var isWindows = __require("os").platform().match(/win(32|64)/);
 	var which = require_which();
@@ -6782,7 +2498,7 @@ var require_utils = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 //#endregion
 //#region node_modules/fluent-ffmpeg/lib/options/inputs.js
 var require_inputs = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var utils = require_utils();
+	var utils = require_utils$2();
 	module.exports = function(proto) {
 		/**
 		* Add an input to command
@@ -6901,7 +2617,7 @@ var require_inputs = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 //#endregion
 //#region node_modules/fluent-ffmpeg/lib/options/audio.js
 var require_audio = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var utils = require_utils();
+	var utils = require_utils$2();
 	module.exports = function(proto) {
 		/**
 		* Disable audio in the output
@@ -7045,7 +2761,7 @@ var require_audio = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 //#endregion
 //#region node_modules/fluent-ffmpeg/lib/options/video.js
 var require_video = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var utils = require_utils();
+	var utils = require_utils$2();
 	module.exports = function(proto) {
 		/**
 		* Disable video in the output
@@ -7373,7 +3089,7 @@ var require_videosize = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 //#endregion
 //#region node_modules/fluent-ffmpeg/lib/options/output.js
 var require_output = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var utils = require_utils();
+	var utils = require_utils$2();
 	module.exports = function(proto) {
 		/**
 		* Add output
@@ -7499,7 +3215,7 @@ var require_output = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 //#endregion
 //#region node_modules/fluent-ffmpeg/lib/options/custom.js
 var require_custom = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var utils = require_utils();
+	var utils = require_utils$2();
 	module.exports = function(proto) {
 		/**
 		* Add custom input option(s)
@@ -7671,8 +3387,8 @@ var require_misc = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			if (typeof preset === "function") preset(this);
 			else try {
 				var modulePath = path$8.join(this.options.presets, preset);
-				var module$6 = __require(modulePath);
-				if (typeof module$6.load === "function") module$6.load(this);
+				var module$7 = __require(modulePath);
+				if (typeof module$7.load === "function") module$7.load(this);
 				else throw new Error("preset " + modulePath + " has no load() function");
 			} catch (err) {
 				throw new Error("preset " + modulePath + " could not be loaded: " + err.message);
@@ -8404,7 +4120,7 @@ var require_processor = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	__require("path");
 	__require("fs");
 	var async = require_async();
-	var utils = require_utils();
+	var utils = require_utils$2();
 	/**
 	* Run ffprobe asynchronously and store data in command
 	*
@@ -8813,7 +4529,7 @@ var require_capabilities = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	var fs$8 = __require("fs");
 	var path$7 = __require("path");
 	var async = require_async();
-	var utils = require_utils();
+	var utils = require_utils$2();
 	var avCodecRegexp = /^\s*([D ])([E ])([VAS])([S ])([D ])([T ]) ([^ ]+) +(.*)$/;
 	var ffCodecRegexp = /^\s*([D\.])([E\.])([VAS])([I\.])([L\.])([S\.]) ([^ ]+) +(.*)$/;
 	var ffEncodersRegexp = /\(encoders:([^\)]+)\)/;
@@ -9476,7 +5192,7 @@ var require_recipes = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	var path$6 = __require("path");
 	var PassThrough$4 = __require("stream").PassThrough;
 	var async = require_async();
-	var utils = require_utils();
+	var utils = require_utils$2();
 	module.exports = function recipes(proto) {
 		/**
 		* Execute ffmpeg command and save output to a file
@@ -9763,9 +5479,9 @@ var require_recipes = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 //#region node_modules/fluent-ffmpeg/lib/fluent-ffmpeg.js
 var require_fluent_ffmpeg$1 = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	var path$5 = __require("path");
-	var util$2 = __require("util");
+	var util$8 = __require("util");
 	var EventEmitter$7 = __require("events").EventEmitter;
-	var utils = require_utils();
+	var utils = require_utils$2();
 	/**
 	* Create an ffmpeg command
 	*
@@ -9812,7 +5528,7 @@ var require_fluent_ffmpeg$1 = /* @__PURE__ */ __commonJSMin(((exports, module) =
 			error: function() {}
 		};
 	}
-	util$2.inherits(FfmpegCommand, EventEmitter$7);
+	util$8.inherits(FfmpegCommand, EventEmitter$7);
 	module.exports = FfmpegCommand;
 	/**
 	* Clone an ffmpeg command
@@ -9927,9 +5643,9 @@ function setFFMpegPath(ffmpegPath) {
 		path.join(import.meta.dirname, "ffmpeg.exe"),
 		process.env["FFMPEG_PATH"] || ""
 	];
-	for (const p of paths) if (fs$2.existsSync(p)) {
+	for (const p of paths) if (fs.existsSync(p)) {
 		import_fluent_ffmpeg.default.setFfmpegPath(p);
-		console.log("set ffmpeg successfully", p);
+		getLogger("ffmpeg").info("set ffmpeg successfully", p);
 		break;
 	}
 }
@@ -10884,7 +6600,7 @@ function ProtoField(fieldNumber, type, modifier, options) {
 		[kTagLength]: SizeOf.varint32(tag)
 	};
 }
-var MapKeyWireTypes = new Set([
+var MapKeyWireTypes = /* @__PURE__ */ new Set([
 	"int32",
 	"int64",
 	"uint32",
@@ -11956,6 +7672,7 @@ var Oidb;
 			announcement: ProtoField(30, "bool")
 		}),
 		config2: ProtoField(2, {
+			memberRole: ProtoField(2, "bool"),
 			remark: ProtoField(3, "bool"),
 			personShutupExpireTime: ProtoField(4, "bool")
 		})
@@ -11976,6 +7693,7 @@ var Oidb;
 			announcement: ProtoField(30, "string", "optional")
 		}),
 		personInfo: ProtoField(5, {
+			memberRole: ProtoField(2, "uint32"),
 			remark: ProtoField(3, "string", "optional"),
 			personShutupExpireTime: ProtoField(4, "uint32", "optional")
 		})
@@ -13505,6 +9223,10 @@ var Msg;
 		atMemberUin: ProtoField(4, "uint32", "optional"),
 		atMemberTinyid: ProtoField(5, "uint32", "optional"),
 		atMemberUid: ProtoField(9, "string")
+	});
+	_Msg.PokeExtra = ProtoMessage.of({
+		type: ProtoField(1, "uint32"),
+		strength: ProtoField(7, "uint32")
 	});
 })(Msg || (Msg = {}));
 //#endregion
@@ -18066,7 +13788,7 @@ function validateBigTIFFHeader(input, isBigEndian) {
 	const reserved = readUInt(input, 16, 6, isBigEndian);
 	if (byteSize !== 8 || reserved !== 0) throw new TypeError("Invalid BigTIFF header");
 }
-var signatures = new Set([
+var signatures = /* @__PURE__ */ new Set([
 	"49492a00",
 	"4d4d002a",
 	"49492b00",
@@ -18113,7 +13835,7 @@ function calculateLossy(input) {
 }
 //#endregion
 //#region src/common/image-size/lib/types/index.ts
-var typeHandlers = new Map([
+var typeHandlers = /* @__PURE__ */ new Map([
 	["bmp", BMP],
 	["cur", CUR],
 	["dds", DDS],
@@ -18160,7 +13882,7 @@ var typeHandlers = new Map([
 var types = Array.from(typeHandlers.keys());
 //#endregion
 //#region src/common/image-size/lib/detector.ts
-var firstBytes = new Map([
+var firstBytes = /* @__PURE__ */ new Map([
 	[0, "heif"],
 	[56, "psd"],
 	[66, "bmp"],
@@ -18254,7 +13976,7 @@ function checkUriType(uri) {
 	if (uri.startsWith("data:")) return { type: 4 };
 	if (uri.startsWith("http://") || uri.startsWith("https://")) return { type: 2 };
 	if (uri.startsWith("file://")) return { type: 1 };
-	if (fs$2.existsSync(uri)) return { type: 5 };
+	if (fs.existsSync(uri)) return { type: 5 };
 	return { type: 0 };
 }
 async function fetchFile(url, headersInit) {
@@ -18284,7 +14006,7 @@ async function uri2local(ctx, uri, needExt) {
 	const { type } = checkUriType(uri);
 	if (type === 1) {
 		const filePath = fileURLToPath(uri);
-		if (!fs$2.existsSync(filePath)) return {
+		if (!fs.existsSync(filePath)) return {
 			success: false,
 			errMsg: "路径不存在",
 			fileName: "",
@@ -18310,12 +14032,12 @@ async function uri2local(ctx, uri, needExt) {
 		const res = await fetchFile(uri);
 		let fileName = randomUUID();
 		let filePath = path.join(TEMP_DIR, fileName);
-		await fs.writeFile(filePath, res.data);
+		await fsPromise.writeFile(filePath, res.data);
 		if (needExt) {
 			const ext = (await getFileType(filePath)).ext;
 			fileName += `.${ext}`;
 			const newPath = `${filePath}.${ext}`;
-			await fs.rename(filePath, newPath);
+			await fsPromise.rename(filePath, newPath);
 			filePath = newPath;
 		}
 		return {
@@ -18338,11 +14060,11 @@ async function uri2local(ctx, uri, needExt) {
 		let filename = randomUUID();
 		let filePath = path.join(TEMP_DIR, filename);
 		const base64 = uri.replace(/^base64:\/\//, "");
-		await fs.writeFile(filePath, base64, "base64");
+		await fsPromise.writeFile(filePath, base64, "base64");
 		if (needExt) {
 			const ext = (await getFileType(filePath)).ext;
 			filename += `.${ext}`;
-			await fs.rename(filePath, `${filePath}.${ext}`);
+			await fsPromise.rename(filePath, `${filePath}.${ext}`);
 			filePath = `${filePath}.${ext}`;
 		}
 		return {
@@ -18359,11 +14081,11 @@ async function uri2local(ctx, uri, needExt) {
 			let filename = randomUUID();
 			const [, _type, base64] = capture;
 			let filePath = path.join(TEMP_DIR, filename);
-			await fs.writeFile(filePath, base64, "base64");
+			await fsPromise.writeFile(filePath, base64, "base64");
 			if (needExt) {
 				const ext = (await getFileType(filePath)).ext;
 				filename += `.${ext}`;
-				await fs.rename(filePath, `${filePath}.${ext}`);
+				await fsPromise.rename(filePath, `${filePath}.${ext}`);
 				filePath = `${filePath}.${ext}`;
 			}
 			return {
@@ -18414,7 +14136,7 @@ async function getFileType(filePath) {
 			ext: type.ext
 		};
 	} catch (error) {
-		console.error("Error detecting file type:", error);
+		getLogger("file-util").error("Error detecting file type:", error);
 		return {
 			mime: "",
 			ext: ""
@@ -18432,13 +14154,13 @@ function getSha1HexFromBuffer(buf) {
 }
 async function getMd5HexFromFile(filePath) {
 	const hash = createHash("md5");
-	const stream = fs$2.createReadStream(filePath);
+	const stream = fs.createReadStream(filePath);
 	for await (const chunk of stream) hash.update(chunk);
 	return hash.digest("hex");
 }
 async function getSha1HexFromFile(filePath) {
 	const hash = createHash("sha1");
-	const stream = fs$2.createReadStream(filePath);
+	const stream = fs.createReadStream(filePath);
 	for await (const chunk of stream) hash.update(chunk);
 	return hash.digest("hex");
 }
@@ -18447,13 +14169,13 @@ function getMd5BufferFromBuffer(buf) {
 }
 async function getMd5BufferFromFile(filePath) {
 	const hash = createHash("md5");
-	const stream = fs$2.createReadStream(filePath);
+	const stream = fs.createReadStream(filePath);
 	for await (const chunk of stream) hash.update(chunk);
 	return hash.digest();
 }
 async function getSha1BufferFromFile(filePath) {
 	const hash = createHash("sha1");
-	const stream = fs$2.createReadStream(filePath);
+	const stream = fs.createReadStream(filePath);
 	for await (const chunk of stream) hash.update(chunk);
 	return hash.digest();
 }
@@ -18529,10 +14251,10 @@ var Sha1Stream = class Sha1Stream {
 	_buffer;
 	_w;
 	constructor() {
-		this._state = new Uint32Array(5);
-		this._count = new Uint32Array(2);
-		this._buffer = new Uint8Array(64);
-		this._w = new Uint32Array(80);
+		this._state = /* @__PURE__ */ new Uint32Array(5);
+		this._count = /* @__PURE__ */ new Uint32Array(2);
+		this._buffer = /* @__PURE__ */ new Uint8Array(64);
+		this._w = /* @__PURE__ */ new Uint32Array(80);
 		this.reset();
 	}
 	reset() {
@@ -18619,7 +14341,7 @@ var Sha1Stream = class Sha1Stream {
 		this._buffer.set(data.subarray(i), index);
 	}
 	hash(bigEnding = true) {
-		const out = new Uint8Array(20);
+		const out = /* @__PURE__ */ new Uint8Array(20);
 		const st = this._state;
 		if (bigEnding) {
 			out[0] = st[0] >>> 24;
@@ -18667,8 +14389,8 @@ var Sha1Stream = class Sha1Stream {
 		return out;
 	}
 	final() {
-		const digest = new Uint8Array(20);
-		const bits = new Uint8Array(8);
+		const digest = /* @__PURE__ */ new Uint8Array(20);
+		const bits = /* @__PURE__ */ new Uint8Array(8);
 		for (let i = 0; i < 8; i++) {
 			const byteIndex = i >= 4 ? 0 : 1;
 			const shift = (3 - (i & 3)) * 8;
@@ -18689,7 +14411,7 @@ async function calculateSha1StreamBytes(filePath) {
 	let bytesRead = 0;
 	let nextBlockBoundary = blockSize;
 	const byteArrayList = [];
-	const readable = fs$2.createReadStream(filePath);
+	const readable = fs.createReadStream(filePath);
 	for await (const chunk of readable) {
 		let buf;
 		if (tail.length > 0) {
@@ -18714,7 +14436,7 @@ async function calculateSha1StreamBytes(filePath) {
 }
 async function readAndHash10M(filePath) {
 	const maxSize = 10002432;
-	const fd = await fs.open(filePath, "r");
+	const fd = await fsPromise.open(filePath, "r");
 	const buffer = Buffer.allocUnsafe(maxSize);
 	const { bytesRead } = await fd.read(buffer, 0, maxSize, 0);
 	await fd.close();
@@ -18756,7 +14478,7 @@ var TriSha1 = class {
 };
 async function calculateTriSha1(filePath, fileSize) {
 	const hash = new TriSha1(fileSize);
-	const stream = fs$2.createReadStream(filePath);
+	const stream = fs.createReadStream(filePath);
 	for await (const chunk of stream) hash.update(chunk);
 	return hash.finalize();
 }
@@ -18836,7 +14558,7 @@ function groupCodeToGroupUin(groupCode) {
 }
 var defaultVideoThumb = Buffer.from("/9j/4AAQSkZJRgABAQAAAQABAAD//gAXR2VuZXJhdGVkIGJ5IFNuaXBhc3Rl/9sAhAAKBwcIBwYKCAgICwoKCw4YEA4NDQ4dFRYRGCMfJSQiHyIhJis3LyYpNCkhIjBBMTQ5Oz4+PiUuRElDPEg3PT47AQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAF/APADAREAAhEBAxEB/8QBogAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoLEAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+foBAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKCxEAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDiAayNxwagBwNAC5oAM0xBmgBM0ANJoAjY0AQsaBkTGgCM0DEpAFAC0AFMBaACgAoEJTASgQlACUwCgQ4UAOFADhQA4UAOFADxQIkBqDQUGgBwagBQaBC5pgGaAELUAMLUARs1AETGgBhNAxhoASkAUALQIKYxaBBQAUwEoAQ0CEoASmAUAOoEKKAHCgBwoAeKAHigQ7NZmoZpgLmgBd1Ahd1ABupgNLUAMLUAMY0AMJoAYaAENACUCCgAoAWgAoAWgBKYCUAJQISgApgLQAooEOFACigB4oAeKBDxQAVmaiZpgGaAFzQAbqAE3UAIWpgNJoAYTQIaaAEoAQ0CEoASgBaACgBaACmAUAJQAlAgoAKYC0AKKBCigB4FADgKBDwKAHigBuazNRM0DEzTAM0AJmgAzQAhNAhpNACGmA2gQlACUCEoAKACgBaAFpgFACUAJQAUCCmAUALQIcBQA4CgB4FADgKBDhQA4UAMzWZqNzTGJQAZoATNABmgBKAEoEIaYCUCEoASgQlABQAtABQAtMBKACgAoEFABimAYoEKBQA4CgB4FADwKBDgKAFFADhQBCazNhKAEpgFACUAFACUAFAhDTAbQISgAoEJQAUALQAtMAoAKADFABigQYoAMUALimIUCgBwFAh4FADgKAHUALQAtAENZmwlACUwEoAKAEoAKACgQlMBpoEJQAUCCgBcUAFABTAXFAC4oAMUAGKBBigAxQIKYCigQ8UAOFADhQAtAC0ALQBDWZqJQMSgBKYBQAlABQISgBKYCGgQlAC0CCgBcUAFABTAUCkA7FMAxQAYoEJQAUCCmAooEOFADxQA4UAFAC0ALQBDWZqJQAlACUxhQAlABQIKAEoASmISgBcUCCgBaACgBcUAKBQAuKYC0CEoAQ0AJQISmAooEPFADhQA4UALQAtAC0AQ1maiUAFACUAJTAKAEoAKAEoAMUxBigAxQIWgAoAKAFAoAWgBaYBQIQ0ANNACUCCmIUUAOFADxQA4UALQAtABQBFWZqFACUAFACYpgFACUAFACUAFAgxTEFABQAUALQAooAWgAoAKYDTQIaaAEpiCgQ4UAOFAh4oGOFAC0ALSAKYEdZmglABQAUDDFACUwEoASgAoAKBBQIKYBQAUALQAtAC0AJQAhpgNJoENJoATNMQCgQ8UCHigB4oAWgYtABQAUAMrM0CgAoAKADFACUxiUAJQAlAgoAKYgoAKACgYtAC0AFAhDTAQmgBhNAhpNACZpiFBoEPFAEi0CHigB1ABQAUDEoAbWZoFABQAtABTAQ0ANNAxDQAlAhaAEpiCgAoGFAC0AFABmgBCaYhpNADCaBDSaBBmgABpiJFNAEimgB4NADqAFzQAlACE0AJWZoFAC0AFAC0wEIoAaaAG0AJQAUCCgApjCgAoAKADNABmgBpNMQ0mgBpNAhhNAgzQAoNADwaAHqaAJAaBDgaYC5oATNACZoAWszQKACgBaBDqYCGgBpoAYaBiUCCgBKYBQMKACgAoAM0AITQIaTQA0mmA0mgQ3NAhKAHCgBwNADwaAHg0AOBpiFzQAZoATNAD6zNAoAKAFoEOpgBoAaaAGGmAw0AJmgAzQMM0AGaADNABmgBM0AITQIaTQAhNMQw0AJQIKAFFADhQA4GgBwNADs0xC5oAM0CDNAEtZmoUCCgBaAHUwCgBppgRtQAw0ANzQAZoAM0AGaADNABmgBKAEoAQ0ANNMQhoEJQAlMBaQDgaAFBoAcDTAdmgQuaADNAgzQBPWZqFAgoAWgBaYC0CGmmBG1AyM0ANJoATNACZoAXNABmgAzQAUAJQAhoAQ0xDTQISmAUALQAUgHA0AKDTAdmgQuaBBQAtAFiszQKACgBaAFFMAoEIaYEbUDI2oAYaAEoASgAzQAuaACgAoAKAENMQ00AJTEFAhKACgAoAXNACg0AOBoAWgQtAC0AWazNAoAKACgBaYBQIQ0AMNMYw0AMIoAbQAlMAoAKACgAzSAKYhKAENACUxBQIKACgBKACgBaAHCgQ4UALQAUAWqzNAoAKACgApgFACGgQ00xjTQAwigBCKAG4pgJQAlABQAUCCgBKACgBKYgoEFABQISgAoAWgBRQA4UALQAUCLdZmoUAFABQAlMAoASgBDQA00wENACYoATFMBpFADSKAEoEJQAUAFABQAlMQtAgoASgQUAJQAUAKKAHCgBaBBQBbrM1CgAoAKACmAUAJQAlADaYBQAlACYpgIRQA0igBpFAhtABQAUAFMAoEFABQIKAEoASgQUALQAooAWgQUAW81mbC0CCgApgFACUAIaAEpgJQAUAFABQAhFMBpFADSKAGkUCExQAYoAMUAGKADFMQYoAMUCExSATFABQIKYBQAtABQIt5qDYM0ALmgQtIApgIaAENADaACmAlAC0ALQAUwGkUANIoAaRQAmKBBigAxQAYoAMUAGKBBigBMUAJigQmKAExTAKBC0AFAFnNQaig0AKDQAtAgoASgBDQAlMBKACgAFADhQAtMBCKAGkUAIRQAmKADFABigQmKADFACYoAXFABigQmKAExQAmKBCYpgJigAoAnzUGgZoAcDQAuaBC0AJQAhoASmAlABQAtADhQAtMAoATFACEUAJigAxQAYoATFAhMUAFABQAuKADFABigBpWgBCKBCYpgJigB+ag0DNADgaBDgaAFzQITNACUAJTAKACgBRQAopgOoAWgBKAEoAKACgAoASgBpoEJQAooAWgBaBhigBMUCEIoAQigBMUAJSLCgBQaBDgaQC5oEFACUwCgBKACmAtADhQA4UALQAUAJQAUAJQAUAJQAhoENoAWgBRQAooGLQAUAGKAGkUAIRQIZSKEoGKKBDhQAUCCgAoAKBBQAUwFoGKKAHCgBaACgAoASgAoASgBCaAEoEJmgAoAUGgBQaAHZoGFABQAUANoAjpDEoAWgBaAFoEFACUALQAUCCmAUAOFAxRQAtAC0AJQAUAJQAmaBDSaAEzQAmaYBmgBQaAHA0gFzQAuaBhmgAzQAlAEdIYUALQAtAgoAKAEoEFAC0AFMAoAUUDFFAC0ALQAUAJQAhoENNACE0wEoATNABmgBc0ALmgBc0gDNAC5oATNABmgBKRQlACigB1AgoASgQlABTAWgBKACgBaBi0ALQAZoAM0AFACGgQ00wENACUAJQAUCFzQMM0ALmgAzQAZoAM0AGaQC0igoAUUALQIWgBDQISmAUAFACUAFABQAuaBi5oAM0AGaBBmgBKAEpgIaAG0AJQAUCFoAM0DDNAC5oATNABmgAzQBJUlBQAooAWgQtACGmIaaACgAoASgBKACgBc0DCgQUAGaADNABTASgBDQAlACUAFAgoAKBhQAUAFABQAlAE1SUFAxRQIWgQtMBDQIQ0AJQAlAhKBiUAFABmgBc0AGaADNABTAKACgBKAEoASgQlABQAUAFAC0AFACUAFAE1SaBQAUCHCgQtMBKBCUAJQISgBDQA00DEzQAuaADNMBc0AGaADNABQAUAJQAlABQISgAoAKACgBaACgBKAEoAnqTQSgBRQIcKBC0xCUAJQISgBKAENADDQAmaYwzQAuaADNAC0AFABQAUAFAhKACgBKACgAoAWgAoELQAlAxKAJqk0EoAWgQooELTEFADaBCUABoENNMY00ANNAwzQAZoAXNAC0AFAC0CFoASgAoASgBKACgAoAWgQtABQAUANNAyWpNAoAKBCimIWgQUCEoASmIQ0ANNADTQMaaAEoGLmgAzQAtADhQIWgBaACgQhoASgYlACUALQIWgBaACgBKAENAyWpNBKYBQIcKBC0CEoEJTAKBCUANNADDQMQ0ANoGFAC5oAUGgBwNAhRQIWgBaAENACGgBtAwoAKAFzQIXNABmgAoAQ0DJKRoJQAtAhRQSLQIKYCUCCgBDQA00AMNAxpoGNoAM0AGaAFBoAcDQIcKBDqACgBDQAhoAQ0DEoAKADNAC5oEGaBhmgAoAkpGgUCCgQooELQIKYhKACgBKAGmgBpoGMNAxDQAlAwzQIUUAOFAhwoAcKBC0AJQAhoGNNACUAFABQAZoAXNABQAUAS0ixKACgQoNAhaYgoEFACUABoAaaAGmgYw0DENAxtABQAooEOFADhQIcKAFoASgBDQAhoGJQAUAFACUALQIKBi0CJDSLEoATNAhc0CHZpiCgQUAJQIKBjTQAhoGNNAxpoATFABigBQKAHCgBwoAWgAoAKACgBKAEoASgAoASgBaAAUAOoEONIoaTQAZoAUGmIUGgQtAgzQISgAoAQ0DGmgYlAxKACgAxQAtACigBRQAtAxaACgAoATFABigBCKAG0CEoAWgBRTAUUAf//Z", "base64");
 async function getVideoInfo(filePath) {
-	const size = fs$2.statSync(filePath).size;
+	const size = fs.statSync(filePath).size;
 	return new Promise((resolve, reject) => {
 		(0, import_fluent_ffmpeg.default)(filePath).ffprobe((err, metadata) => {
 			if (err) reject(err);
@@ -18913,7 +14635,7 @@ function convert(ctx, input, options, outputPath) {
 	});
 }
 async function encodeSilk(ctx, filePath) {
-	const file = await fs.readFile(filePath);
+	const file = await fsPromise.readFile(filePath);
 	if (!isSilk(file)) {
 		ctx.logger.info(`语音文件${filePath}需要转换成silk`);
 		let result;
@@ -18932,7 +14654,7 @@ async function encodeSilk(ctx, filePath) {
 			"-f s16le"
 		] }), 24e3);
 		const pttPath = path.join(TEMP_DIR, randomUUID());
-		await fs.writeFile(pttPath, result.data);
+		await fsPromise.writeFile(pttPath, result.data);
 		ctx.logger.info(`语音文件${filePath}转换成功!`, pttPath, `时长:`, result.duration);
 		return {
 			converted: true,
@@ -18955,11 +14677,11 @@ async function encodeSilk(ctx, filePath) {
 	}
 }
 async function decodeSilk(ctx, inputFilePath, outFormat) {
-	const { data } = await decode(await fs.readFile(inputFilePath), 24e3);
+	const { data } = await decode(await fsPromise.readFile(inputFilePath), 24e3);
 	const tmpPath = path.join(TEMP_DIR, path.basename(inputFilePath));
 	const outFilePath = tmpPath + `.${outFormat}`;
 	const pcmFilePath = tmpPath + ".pcm";
-	await fs.writeFile(pcmFilePath, data);
+	await fsPromise.writeFile(pcmFilePath, data);
 	return convert(ctx, pcmFilePath, { input: [
 		"-f s16le",
 		"-ar 24000",
@@ -19063,6 +14785,7 @@ function parseElements(elems, isGroup) {
 					key: mf.key ?? ""
 				}
 			});
+			skipIndex = index + 1;
 			continue;
 		}
 		if (elem.richMsg) {
@@ -19145,7 +14868,18 @@ function parseElements(elems, isGroup) {
 			const svcType = elem.commonElem.serviceType;
 			const bizType = elem.commonElem.businessType;
 			const pbElem = elem.commonElem.pbElem;
-			if (svcType === 33) {
+			if (svcType === 2) {
+				result.push({
+					elementType: ElementType.Face,
+					faceElement: {
+						faceIndex: bizType,
+						faceType: 5,
+						faceText: "",
+						pokeType: 1
+					}
+				});
+				skipIndex = index + 1;
+			} else if (svcType === 33) {
 				const ext = Msg.QSmallFaceExtra.decode(pbElem);
 				result.push({
 					elementType: ElementType.Face,
@@ -19258,6 +14992,7 @@ function parseMsgInfoElement(pbElem, bizType) {
 }
 //#endregion
 //#region src/ntqqapi/dispatcher.ts
+var logger$7 = getLogger("dispatcher");
 var MSG_PUSH_CMD = "trpc.msg.olpush.OlPushService.MsgPush";
 var KICK_CMD = "trpc.qq_new_tech.status_svc.StatusService.KickNT";
 var INFO_SYNC_PUSH_CMD = "trpc.msg.register_proxy.RegisterProxy.InfoSyncPush";
@@ -19269,7 +15004,7 @@ var CONFIG_PUSH_CMD = "ConfigPushSvc.PushReq";
 */
 function registerDispatcher(ctx) {
 	ctx.on("qq/raw", ({ cmd, payload }) => {
-		if (process.env.DEBUG_RAW_PUSH) console.log(`[RawPush] cmd=${cmd} bodyLen=${payload.length} bodyHex=${payload.toString("hex").slice(0, 400)}`);
+		logger$7.debug(`cmd=${cmd} bodyLen=${payload.length} bodyHex=%h`, payload);
 		try {
 			switch (cmd) {
 				case MSG_PUSH_CMD:
@@ -19289,17 +15024,14 @@ function registerDispatcher(ctx) {
 }
 function handleMsgPush(ctx, payload) {
 	const msg = Msg.PushMsg.decode(payload).message;
-	if (process.env.DEBUG_RAW_PUSH) {
-		const m = msg;
-		const rh = m?.routingHead;
-		console.log(`[RawPush] MsgPush msgType=${m?.contentHead.msgType} subType=${m?.contentHead.subType} fromUid=${rh?.fromUid ?? "?"} fromUin=${rh?.fromUin ?? "?"} groupCode=${rh?.group?.groupCode ?? "?"}`);
-	}
+	logger$7.debug(`MsgPush msgType=${msg?.contentHead.msgType} subType=${msg?.contentHead.subType} fromUid=${msg?.routingHead?.fromUid ?? "?"} fromUin=${msg?.routingHead?.fromUin ?? "?"} groupCode=${msg?.routingHead?.group?.groupCode ?? "?"}`);
 	if (!msg) return;
 	const msgType = msg.contentHead.msgType;
 	const subType = msg.contentHead.subType;
 	switch (msgType) {
 		case 82:
 		case 166:
+		case 167:
 		case 141:
 		case 208:
 		case 529:
@@ -19840,12 +15572,12 @@ function handleChatMessage(ctx, msg, msgType) {
 	}
 	const rawMessage = convertToRawMessage(msg);
 	if (!rawMessage) return;
-	if (process.env.DEBUG_RAW_PUSH) {
+	{
 		const elemSummary = rawMessage.elements.map((e) => `type=${e.elementType}` + (e.fileElement ? ` file=${e.fileElement.fileName}` : "") + (e.textElement ? ` text="${e.textElement.content?.slice(0, 30)}"` : "")).join(", ");
-		console.log(`[RawPush] convertedRawMsg msgId=${rawMessage.msgId} chatType=${rawMessage.chatType} peerUin=${rawMessage.peerUin} senderUin=${rawMessage.senderUin} elementsLen=${rawMessage.elements.length} [${elemSummary}]`);
+		logger$7.debug(`convertedRawMsg msgId=${rawMessage.msgId} chatType=${rawMessage.chatType} peerUin=${rawMessage.peerUin} senderUin=${rawMessage.senderUin} elementsLen=${rawMessage.elements.length} [${elemSummary}]`);
 	}
 	if (rawMessage.senderUin === +selfInfo.uin) {
-		if (process.env.DEBUG_RAW_PUSH) console.log(`[RawPush] emit nt/message-sent msgId=${rawMessage.msgId}`);
+		logger$7.debug(`emit nt/message-sent msgId=${rawMessage.msgId}`);
 		ctx.parallel("nt/message-sent", { message: rawMessage });
 		return;
 	}
@@ -19912,7 +15644,7 @@ function convertToRawMessage(msg) {
 			}
 		});
 	} catch (e) {
-		console.warn("PrivateFile FileExtra decode failed:", e.message);
+		logger$7.warn("PrivateFile FileExtra decode failed:", e.message);
 	}
 	return {
 		msgId: String(contentHead.msgUid || 16777216n << 32n | BigInt(contentHead.random)),
@@ -19972,8 +15704,7 @@ var Core = class extends Service {
 	async sendMessage(ctx, peer, sendElements, deleteAfterSentFiles) {
 		if (peer.chatType === ChatType.Group) {
 			const info = await ctx.ntGroupApi.getGroup(+peer.peerUid, false);
-			// 已注释：跳过禁言检查（管理员被禁言后仍可发消息）
-			// if (info.personShutupExpireTime * 1e3 > Date.now() || info.groupShutupExpireTime * 1e3 > Date.now()) throw new Error("当前处于被禁言状态");
+			if (info.personShutupExpireTime * 1e3 > Date.now() || info.groupShutupExpireTime * 1e3 > Date.now() && info.memberRole === GroupMemberRole.Normal) throw new Error("当前处于被禁言状态");
 		}
 		if (!sendElements.length) throw new Error("消息体无法解析，请检查是否发送了不支持的消息类型");
 		const returnMsg = await ctx.ntMsgApi.sendMsg(peer, sendElements);
@@ -20679,7 +16410,7 @@ var OB11HeartbeatEvent = class extends OB11BaseMetaEvent {
 };
 //#endregion
 //#region src/version.ts
-var version$3 = "8.0.7";
+var version$3 = "8.0.9";
 //#endregion
 //#region node_modules/sift/es5m/index.js
 /******************************************************************************
@@ -21695,7 +17426,7 @@ var SendElement;
 	}
 	_SendElement.reply = reply;
 	async function pic(ctx, picPath, summary = "", subType = 0) {
-		if ((await stat(picPath)).size === 0) throw new Error(`文件异常，大小为 0: ${picPath}`);
+		if ((await stat$1(picPath)).size === 0) throw new Error(`文件异常，大小为 0: ${picPath}`);
 		const size = await getImageSize(picPath);
 		return {
 			elementType: ElementType.Pic,
@@ -21710,7 +17441,7 @@ var SendElement;
 	}
 	_SendElement.pic = pic;
 	async function video(ctx, filePath, diyThumbPath) {
-		const fileSize = (await stat(filePath)).size;
+		const fileSize = (await stat$1(filePath)).size;
 		if (fileSize === 0) throw new Error(`文件异常，大小为 0: ${filePath}`);
 		const maxMB = 1024;
 		if (fileSize > 1024 * 1024 * maxMB) throw new Error(`视频过大，最大支持${maxMB}MB，当前文件大小${fileSize}B`);
@@ -21754,7 +17485,7 @@ var SendElement;
 	_SendElement.video = video;
 	async function ptt(ctx, pttPath) {
 		const { converted, path: silkPath, duration } = await encodeSilk(ctx, pttPath);
-		if ((await stat(silkPath)).size === 0) throw new Error(`文件异常，大小为 0: ${silkPath}`);
+		if ((await stat$1(silkPath)).size === 0) throw new Error(`文件异常，大小为 0: ${silkPath}`);
 		return {
 			elementType: ElementType.Ptt,
 			pttElement: {
@@ -21864,7 +17595,7 @@ var SendElement;
 	}
 	_SendElement.forward = forward;
 	async function file(ctx, filePath, fileName) {
-		const fileSize = (await stat(filePath)).size;
+		const fileSize = (await stat$1(filePath)).size;
 		if (fileSize === 0) throw new Error("文件异常，大小为 0");
 		return {
 			elementType: ElementType.File,
@@ -22316,18 +18047,27 @@ var compose = (middleware, onError, onNotFound) => {
 //#region node_modules/hono/dist/request/constants.js
 var GET_MATCH_RESULT = /* @__PURE__ */ Symbol();
 //#endregion
+//#region node_modules/hono/dist/utils/buffer.js
+var bufferToFormData = (arrayBuffer, contentType) => {
+	return new Response(arrayBuffer, { headers: { "Content-Type": contentType.replace(/^[^;]+/, (mediaType) => mediaType.toLowerCase()) } }).formData();
+};
+//#endregion
 //#region node_modules/hono/dist/utils/body.js
+var isRawRequest = (request) => "headers" in request;
 var parseBody = async (request, options = /* @__PURE__ */ Object.create(null)) => {
 	const { all = false, dot = false } = options;
-	const contentType = (request instanceof HonoRequest ? request.raw.headers : request.headers).get("Content-Type");
-	if (contentType?.startsWith("multipart/form-data") || contentType?.startsWith("application/x-www-form-urlencoded")) return parseFormData(request, {
+	const mediaType = (isRawRequest(request) ? request.headers : request.raw.headers).get("Content-Type")?.split(";")[0].trim().toLowerCase();
+	if (mediaType === "multipart/form-data" || mediaType === "application/x-www-form-urlencoded") return parseFormData(request, {
 		all,
 		dot
 	});
 	return {};
 };
 async function parseFormData(request, options) {
-	const formData = await request.formData();
+	const headers = isRawRequest(request) ? request.headers : request.raw.headers;
+	const formDataPromise = bufferToFormData(await request.arrayBuffer(), headers.get("Content-Type") || "");
+	if (!isRawRequest(request)) request.bodyCache.formData = formDataPromise;
+	const formData = await formDataPromise;
 	if (formData) return convertFormDataToBodyData(formData, options);
 	return {};
 }
@@ -24075,10 +19815,8 @@ var cors = (options) => {
 		...options
 	};
 	const findAllowOrigin = ((optsOrigin) => {
-		if (typeof optsOrigin === "string") if (optsOrigin === "*") {
-			if (opts.credentials) return (origin) => origin || null;
-			return () => optsOrigin;
-		} else return (origin) => optsOrigin === origin ? origin : null;
+		if (typeof optsOrigin === "string") if (optsOrigin === "*") return () => optsOrigin;
+		else return (origin) => optsOrigin === origin ? origin : null;
 		else if (typeof optsOrigin === "function") return optsOrigin;
 		else return (origin) => optsOrigin.includes(origin) ? origin : null;
 	})(opts.origin);
@@ -24096,7 +19834,7 @@ var cors = (options) => {
 		if (opts.credentials) set("Access-Control-Allow-Credentials", "true");
 		if (opts.exposeHeaders?.length) set("Access-Control-Expose-Headers", opts.exposeHeaders.join(","));
 		if (c.req.method === "OPTIONS") {
-			if (opts.origin !== "*" || opts.credentials) set("Vary", "Origin");
+			if (opts.origin !== "*") set("Vary", "Origin");
 			if (opts.maxAge != null) set("Access-Control-Max-Age", opts.maxAge.toString());
 			const allowMethods = await findAllowMethods(c.req.header("origin") || "", c);
 			if (allowMethods.length) set("Access-Control-Allow-Methods", allowMethods.join(","));
@@ -24118,7 +19856,7 @@ var cors = (options) => {
 			});
 		}
 		await next();
-		if (opts.origin !== "*" || opts.credentials) c.header("Vary", "Origin", { append: true });
+		if (opts.origin !== "*") c.header("Vary", "Origin", { append: true });
 	};
 };
 //#endregion
@@ -24668,7 +20406,8 @@ var Response$1 = class Response$1 {
 		const liveHeaders = cache && cache[2] instanceof Headers ? cache[2] : void 0;
 		delete this[cacheKey];
 		return this[responseCache] ||= new GlobalResponse(this.#body, liveHeaders ? {
-			...this.#init,
+			status: this.#init?.status,
+			statusText: this.#init?.statusText,
 			headers: liveHeaders
 		} : this.#init);
 	}
@@ -24752,7 +20491,7 @@ var parseRedirectUrl = (url) => {
 	if (validRedirectUrl.test(url)) return url;
 	return new URL(url).href;
 };
-var validRedirectStatuses = new Set([
+var validRedirectStatuses = /* @__PURE__ */ new Set([
 	301,
 	302,
 	303,
@@ -25096,7 +20835,7 @@ var CloseEvent = globalThis.CloseEvent ?? class extends Event {
 var generateConnectionSymbol = () => Symbol("connection");
 var CONNECTION_SYMBOL_KEY = Symbol("CONNECTION_SYMBOL_KEY");
 var WAIT_FOR_WEBSOCKET_SYMBOL = Symbol("WAIT_FOR_WEBSOCKET_SYMBOL");
-var responseHeadersToSkip = new Set([
+var responseHeadersToSkip = /* @__PURE__ */ new Set([
 	"connection",
 	"content-length",
 	"keep-alive",
@@ -26954,7 +22693,7 @@ var GetRecord = class extends BaseAction {
 			const res = {
 				file: decoded,
 				file_name: path.basename(decoded),
-				file_size: (await stat(decoded)).size.toString()
+				file_size: (await stat$1(decoded)).size.toString()
 			};
 			if (this.adapter.config.enableLocalFile2Url) res.base64 = await readFile(decoded, "base64");
 			return res;
@@ -26965,7 +22704,7 @@ var GetRecord = class extends BaseAction {
 		const res = {
 			file: outPath,
 			file_name: path.basename(outPath),
-			file_size: (await stat(outPath)).size.toString()
+			file_size: (await stat$1(outPath)).size.toString()
 		};
 		if (this.adapter.config.enableLocalFile2Url) res.base64 = await readFile(outPath, "base64");
 		return res;
@@ -27058,17 +22797,17 @@ var DownloadFile = class extends BaseAction {
 		const isRandomName = !payload.name;
 		const name = payload.name ? path.basename(payload.name) : randomUUID();
 		const filePath = path.join(TEMP_DIR, name);
-		if (payload.base64) await fsPromise.writeFile(filePath, payload.base64, "base64");
+		if (payload.base64) await fsPromise$1.writeFile(filePath, payload.base64, "base64");
 		else if (payload.url) {
 			const headers = this.getHeaders(payload.headers);
 			const res = await fetchFile(payload.url, headers);
-			await fsPromise.writeFile(filePath, res.data);
+			await fsPromise$1.writeFile(filePath, res.data);
 		} else throw new Error("不存在任何文件, 无法下载");
 		if (fs$1.existsSync(filePath)) {
 			if (isRandomName) {
 				const md5 = await getMd5HexFromFile(filePath);
 				const newPath = path.join(TEMP_DIR, md5);
-				await fsPromise.rename(filePath, newPath);
+				await fsPromise$1.rename(filePath, newPath);
 				return { file: newPath };
 			}
 			return { file: filePath };
@@ -27104,7 +22843,7 @@ var GetGroupMsgHistory = class extends BaseAction {
 		if (!seq || +seq === 0) {
 			const latestSeq = await this.ctx.ntMsgApi.getLatestMsgSeq(peer);
 			msgList = (await this.ctx.ntMsgApi.getMsgsBySeqAndCount(peer, latestSeq, count, false)).msgList;
-		} else msgList = (await this.ctx.ntMsgApi.getMsgsBySeqAndCount(peer, +seq, count, true)).msgList;
+		} else msgList = (await this.ctx.ntMsgApi.getMsgsBySeqAndCount(peer, +seq, count, false)).msgList;
 		if (!msgList?.length) return;
 		return {
 			list: filterNullable(await Promise.all(msgList.map((msg) => {
@@ -27118,7 +22857,7 @@ var GetGroupMsgHistory = class extends BaseAction {
 			chatType: ChatType.Group,
 			peerUid: payload.group_id.toString()
 		};
-		const messages = [];
+		let messages = [];
 		let seq = payload.message_seq;
 		let count = +payload.count;
 		while (count > 0) {
@@ -27127,6 +22866,13 @@ var GetGroupMsgHistory = class extends BaseAction {
 			seq = res.seq - 1;
 			count -= res.list.length;
 			messages.unshift(...res.list);
+		}
+		if (messages.length > 0) {
+			const info = await this.ctx.ntGroupApi.getGroup(+payload.group_id, false);
+			messages = messages.map((e) => ({
+				...e,
+				group_name: info.groupName
+			}));
 		}
 		if (payload.reverseOrder) messages.reverse();
 		return { messages };
@@ -27511,7 +23257,6 @@ var BASIC_LATIN = {
 	num: "#",
 	dollar: "$",
 	percent: "%",
-	amp: "&",
 	ast: "*",
 	commat: "@",
 	lowbar: "_",
@@ -27938,9 +23683,6 @@ var CYRILLIC = {
 */
 var MATH = {
 	plus: "+",
-	minus: "−",
-	mnplus: "∓",
-	mp: "∓",
 	pm: "±",
 	times: "×",
 	div: "÷",
@@ -28013,10 +23755,6 @@ var MATH = {
 	bumpe: "≏",
 	bumpeq: "≏",
 	HumpEqual: "≏",
-	dotminus: "∸",
-	minusd: "∸",
-	plusdo: "∔",
-	dotplus: "∔",
 	le: "≤",
 	LessEqual: "≤",
 	ge: "≥",
@@ -28131,7 +23869,6 @@ var MATH_ADVANCED = {
 	wr: "≀",
 	wreath: "≀",
 	nsime: "≄",
-	nsimeq: "≄",
 	nsimeq: "≄",
 	ncong: "≇",
 	simne: "≆",
@@ -28248,10 +23985,6 @@ var ARROWS = {
 	mapsto: "↦",
 	mapstodown: "↧",
 	crarr: "↵",
-	nwarrow: "↖",
-	nearrow: "↗",
-	searrow: "↘",
-	swarrow: "↙",
 	nleftarrow: "↚",
 	nleftrightarrow: "↮",
 	nrightarrow: "↛",
@@ -28292,7 +24025,6 @@ var ARROWS = {
 	ldrushar: "⥋",
 	rdldhar: "⥩",
 	lrhard: "⥭",
-	rlhar: "⇌",
 	uharr: "↾",
 	uharl: "↿",
 	dharr: "⇂",
@@ -28308,7 +24040,6 @@ var ARROWS = {
 	nhArr: "⇎",
 	nlarr: "↚",
 	nlArr: "⇍",
-	nrarr: "↛",
 	nrArr: "⇏",
 	larrb: "⇤",
 	LeftArrowBar: "⇤",
@@ -28467,8 +24198,7 @@ var PUNCTUATION = {
 	DiacriticalTilde: "˜",
 	DiacriticalDot: "˙",
 	DiacriticalDoubleAcute: "˝",
-	grave: "`",
-	acute: "´"
+	grave: "`"
 };
 /**
 * Currency Symbols
@@ -28481,7 +24211,6 @@ var CURRENCY = {
 	yen: "¥",
 	euro: "€",
 	dollar: "$",
-	euro: "€",
 	fnof: "ƒ",
 	inr: "₹",
 	af: "؋",
@@ -28579,7 +24308,6 @@ var MISC_SYMBOLS = {
 	Vdash: "⊩",
 	dashv: "⊣",
 	vDash: "⊨",
-	Vdash: "⊩",
 	Vvdash: "⊪",
 	nvdash: "⊬",
 	nvDash: "⊭",
@@ -28632,6 +24360,25 @@ var COMMON_HTML = {
 };
 //#endregion
 //#region node_modules/@nodable/entities/src/EntityDecoder.js
+/**
+* Action constants for `onExternalEntity` and `onInputEntity` hooks.
+*
+* Use these instead of raw strings to avoid typos:
+*
+* @example
+* import EntityDecoder, { ENTITY_ACTION } from './EntityDecoder.js';
+* const dec = new EntityDecoder({
+*   onInputEntity: (name, value) => ENTITY_ACTION.BLOCK,
+* });
+*/
+var ENTITY_ACTION = Object.freeze({
+	/** Resolve and expand the entity normally. */
+	ALLOW: "allow",
+	/** Silently skip this entity — it will not be registered. */
+	BLOCK: "block",
+	/** Throw an error, aborting entity registration entirely. */
+	THROW: "throw"
+});
 var SPECIAL_CHARS = /* @__PURE__ */ new Set("!?\\\\/[]$%{}^&*()<>|+");
 /**
 * Validate that an entity name contains no dangerous characters.
@@ -28681,11 +24428,11 @@ var LIMIT_TIER_ALL = "all";
 * @returns {Set<string>}
 */
 function parseLimitTiers(raw) {
-	if (!raw || raw === LIMIT_TIER_EXTERNAL) return new Set([LIMIT_TIER_EXTERNAL]);
-	if (raw === LIMIT_TIER_ALL) return new Set([LIMIT_TIER_ALL]);
-	if (raw === LIMIT_TIER_BASE) return new Set([LIMIT_TIER_BASE]);
+	if (!raw || raw === LIMIT_TIER_EXTERNAL) return /* @__PURE__ */ new Set([LIMIT_TIER_EXTERNAL]);
+	if (raw === LIMIT_TIER_ALL) return /* @__PURE__ */ new Set([LIMIT_TIER_ALL]);
+	if (raw === LIMIT_TIER_BASE) return /* @__PURE__ */ new Set([LIMIT_TIER_BASE]);
 	if (Array.isArray(raw)) return new Set(raw);
-	return new Set([LIMIT_TIER_EXTERNAL]);
+	return /* @__PURE__ */ new Set([LIMIT_TIER_EXTERNAL]);
 }
 var NCR_LEVEL = Object.freeze({
 	allow: 0,
@@ -28693,7 +24440,7 @@ var NCR_LEVEL = Object.freeze({
 	remove: 2,
 	throw: 3
 });
-var XML10_ALLOWED_C0 = new Set([
+var XML10_ALLOWED_C0 = /* @__PURE__ */ new Set([
 	9,
 	10,
 	13
@@ -28770,6 +24517,14 @@ var EntityDecoder = class {
 	*   the effective action is max(onNCR, rangeMinimum).
 	* @param {'remove'|'throw'} [options.ncr.nullNCR='remove']
 	*   Action for U+0000 (null). 'allow' and 'leave' are clamped to 'remove' since null is never safe.
+	* @param {((name: string, value: string) => 'allow'|'block'|'throw')|null} [options.onExternalEntity=null]
+	*   Hook called when an external entity is registered via `setExternalEntities()` or
+	*   `addExternalEntity()`. Return `ENTITY_ACTION.ALLOW` to accept the entity,
+	*   `ENTITY_ACTION.BLOCK` to silently skip it, or `ENTITY_ACTION.THROW` to abort with an error.
+	* @param {((name: string, value: string) => 'allow'|'block'|'throw')|null} [options.onInputEntity=null]
+	*   Hook called when an input entity is registered via `addInputEntities()`. Return
+	*   `ENTITY_ACTION.ALLOW` to accept, `ENTITY_ACTION.BLOCK` to silently skip, or
+	*   `ENTITY_ACTION.THROW` to abort with an error.
 	*/
 	constructor(options = {}) {
 		this._limit = options.limit || {};
@@ -28793,34 +24548,79 @@ var EntityDecoder = class {
 		this._ncrXmlVersion = ncrCfg.xmlVersion;
 		this._ncrOnLevel = ncrCfg.onLevel;
 		this._ncrNullLevel = ncrCfg.nullLevel;
+		/** @type {((name: string, value: string) => 'allow'|'block'|'throw')|null} */
+		this._onExternalEntity = typeof options.onExternalEntity === "function" ? options.onExternalEntity : null;
+		/** @type {((name: string, value: string) => 'allow'|'block'|'throw')|null} */
+		this._onInputEntity = typeof options.onInputEntity === "function" ? options.onInputEntity : null;
+	}
+	/**
+	* Invoke a registration hook for a single entity name/value pair.
+	* Returns true when the entity should be accepted, false when it should be
+	* silently skipped (BLOCK), and throws when the hook returns THROW.
+	*
+	* @param {((name: string, value: string) => 'allow'|'block'|'throw')|null} hook
+	* @param {string} name
+	* @param {string} value
+	* @param {string} context  — used in error messages ('external' | 'input')
+	* @returns {boolean}  true = accept, false = skip
+	*/
+	_applyRegistrationHook(hook, name, value, context) {
+		if (!hook) return true;
+		const action = hook(name, value);
+		if (action === ENTITY_ACTION.BLOCK) return false;
+		if (action === ENTITY_ACTION.THROW) throw new Error(`[EntityDecoder] Registration of ${context} entity "&${name};" was rejected by hook`);
+		return true;
 	}
 	/**
 	* Replace the full set of persistent external entities.
 	* All keys are validated — throws on invalid characters.
+	* If `onExternalEntity` is set, it is called once per entry; entries that
+	* return `ENTITY_ACTION.BLOCK` are silently omitted, `ENTITY_ACTION.THROW`
+	* aborts the whole call.
 	* @param {Record<string, string | { regex?: RegExp, val: string }>} map
 	*/
 	setExternalEntities(map) {
 		if (map) for (const key of Object.keys(map)) validateEntityName$1(key);
-		this._externalMap = mergeEntityMaps(map);
+		if (!this._onExternalEntity) {
+			this._externalMap = mergeEntityMaps(map);
+			return;
+		}
+		const flat = mergeEntityMaps(map);
+		const filtered = Object.create(null);
+		for (const [name, value] of Object.entries(flat)) if (this._applyRegistrationHook(this._onExternalEntity, name, value, "external")) filtered[name] = value;
+		this._externalMap = filtered;
 	}
 	/**
 	* Add a single persistent external entity.
+	* If `onExternalEntity` is set it is called before the entity is stored;
+	* `ENTITY_ACTION.BLOCK` silently skips storage, `ENTITY_ACTION.THROW` raises.
 	* @param {string} key
 	* @param {string} value
 	*/
 	addExternalEntity(key, value) {
 		validateEntityName$1(key);
-		if (typeof value === "string" && value.indexOf("&") === -1) this._externalMap[key] = value;
+		if (typeof value === "string" && value.indexOf("&") === -1) {
+			if (this._applyRegistrationHook(this._onExternalEntity, key, value, "external")) this._externalMap[key] = value;
+		}
 	}
 	/**
 	* Inject DOCTYPE entities for the current document.
 	* Also resets per-document expansion counters.
+	* If `onInputEntity` is set it is called once per entry; entries returning
+	* `ENTITY_ACTION.BLOCK` are silently omitted, `ENTITY_ACTION.THROW` aborts.
 	* @param {Record<string, string | { regx?: RegExp, regex?: RegExp, val: string }>} map
 	*/
 	addInputEntities(map) {
 		this._totalExpansions = 0;
 		this._expandedLength = 0;
-		this._inputMap = mergeEntityMaps(map);
+		if (!this._onInputEntity) {
+			this._inputMap = mergeEntityMaps(map);
+			return;
+		}
+		const flat = mergeEntityMaps(map);
+		const filtered = Object.create(null);
+		for (const [name, value] of Object.entries(flat)) if (this._applyRegistrationHook(this._onInputEntity, name, value, "input")) filtered[name] = value;
+		this._inputMap = filtered;
 	}
 	/**
 	* Wipe input/runtime entities and reset counters.
@@ -28849,6 +24649,7 @@ var EntityDecoder = class {
 	*/
 	decode(str) {
 		if (typeof str !== "string" || str.length === 0) return str;
+		if (str.indexOf("&") === -1) return str;
 		const original = str;
 		const chunks = [];
 		const len = str.length;
@@ -29043,7 +24844,8 @@ var defaultOptions = {
 	numberParseOptions: {
 		hex: true,
 		leadingZeros: true,
-		eNotation: true
+		eNotation: true,
+		unicode: false
 	},
 	tagValueProcessor: function(tagName, val) {
 		return val;
@@ -29435,6 +25237,188 @@ function validateEntityName(name, xmlVersion) {
 	else throw new Error(`Invalid entity name ${name}`);
 }
 //#endregion
+//#region node_modules/anynum/digitTable.js
+/**
+* Flat lookup table: maps Unicode code point → ASCII digit (0-9).
+* Only decimal digit characters (Unicode category Nd) are included.
+*
+* Strategy: Int32Array of size (maxCodePoint - minCodePoint + 1).
+* Value 0xFF means "not a digit". Value 0-9 is the ASCII digit value.
+* This gives O(1) lookup with no branching, no bisect, no loop.
+*
+* Memory: range is 0x0660 to 0x1FBF0 → ~129,936 entries × 1 byte = ~127 KB.
+* Acceptable for a one-time init; lookup is a single array index.
+*/
+var SCRIPT_ZEROS = [
+	48,
+	1632,
+	1776,
+	2406,
+	2534,
+	2662,
+	2790,
+	2918,
+	3046,
+	3174,
+	3302,
+	3430,
+	3558,
+	3664,
+	3792,
+	3872,
+	4160,
+	4240,
+	6112,
+	6160,
+	6470,
+	6608,
+	6784,
+	6800,
+	6992,
+	7088,
+	7232,
+	7248,
+	65296,
+	120782,
+	120792,
+	120802,
+	120812,
+	120822,
+	66720,
+	68912,
+	69734,
+	69872,
+	69942,
+	70096,
+	70384,
+	70736,
+	70864,
+	71248,
+	71360,
+	71472,
+	71904,
+	72016,
+	72688,
+	72784,
+	73040,
+	73120,
+	73552,
+	92768,
+	92864,
+	93008,
+	123200,
+	123632,
+	124144,
+	125264,
+	130032
+];
+var HIGH_MAP = /* @__PURE__ */ new Map();
+var LOW_MAX = 65535;
+var TABLE_OFFSET = 1632;
+var TABLE = (/* @__PURE__ */ new Uint8Array(63904)).fill(255);
+for (const zero of SCRIPT_ZEROS) for (let d = 0; d < 10; d++) {
+	const cp = zero + d;
+	if (cp <= LOW_MAX) TABLE[cp - TABLE_OFFSET] = d;
+	else HIGH_MAP.set(cp, d);
+}
+//#endregion
+//#region node_modules/anynum/anynum.js
+var CHAR_0 = 48;
+var CHAR_9 = 57;
+var CHAR_MINUS = 45;
+var MINUS_SET = /* @__PURE__ */ new Set([
+	8722,
+	65293,
+	65123
+]);
+/**
+* Normalize all Unicode decimal digit characters in a string to ASCII (0-9),
+* and normalize Unicode minus variants to ASCII '-' (U+002D).
+*
+* Non-digit, non-minus characters are passed through unchanged.
+*
+* Performance design:
+* - Fast path: if the string has no convertible characters, return it unchanged
+*   (zero allocation).
+* - BMP digits (0x0660..0xFFFF excl. surrogates): flat Uint8Array lookup (O(1)).
+* - Supplementary plane digits (> 0xFFFF, encoded as surrogate pairs): Map lookup.
+* - Minus variants: checked inline with a small fixed Set.
+*
+* @param {string} str
+* @returns {string}
+*/
+function anynum(str) {
+	if (typeof str !== "string") return str;
+	const len = str.length;
+	if (len === 0) return str;
+	let firstHit = -1;
+	for (let i = 0; i < len; i++) {
+		const cc = str.charCodeAt(i);
+		if (cc >= CHAR_0 && cc <= CHAR_9 || cc === CHAR_MINUS) continue;
+		if (cc < 1632) {
+			if (MINUS_SET.has(cc)) {
+				firstHit = i;
+				break;
+			}
+			continue;
+		}
+		if (cc >= 55296 && cc <= 56319) {
+			if (i + 1 < len) {
+				const low = str.charCodeAt(i + 1);
+				if (low >= 56320 && low <= 57343) {
+					const cp = 65536 + (cc - 55296 << 10) + (low - 56320);
+					if (HIGH_MAP.has(cp)) {
+						firstHit = i;
+						break;
+					}
+				}
+			}
+			continue;
+		}
+		if (TABLE[cc - 1632] !== 255 || MINUS_SET.has(cc)) {
+			firstHit = i;
+			break;
+		}
+	}
+	if (firstHit === -1) return str;
+	const chars = [];
+	if (firstHit > 0) chars.push(str.slice(0, firstHit));
+	for (let i = firstHit; i < len; i++) {
+		const cc = str.charCodeAt(i);
+		if (cc >= CHAR_0 && cc <= CHAR_9 || cc === CHAR_MINUS) {
+			chars.push(str[i]);
+			continue;
+		}
+		if (cc < 1632) {
+			chars.push(MINUS_SET.has(cc) ? "-" : str[i]);
+			continue;
+		}
+		if (cc >= 55296 && cc <= 56319) {
+			if (i + 1 < len) {
+				const low = str.charCodeAt(i + 1);
+				if (low >= 56320 && low <= 57343) {
+					const cp = 65536 + (cc - 55296 << 10) + (low - 56320);
+					const d = HIGH_MAP.get(cp);
+					if (d !== void 0) {
+						chars.push(String.fromCharCode(d + 48));
+						i++;
+						continue;
+					}
+				}
+			}
+			chars.push(str[i]);
+			continue;
+		}
+		if (MINUS_SET.has(cc)) {
+			chars.push("-");
+			continue;
+		}
+		const d = TABLE[cc - TABLE_OFFSET];
+		chars.push(d !== 255 ? String.fromCharCode(d + 48) : str[i]);
+	}
+	return chars.join("");
+}
+//#endregion
 //#region node_modules/strnum/strnum.js
 var hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
 var binRegex = /^0b[01]+$/;
@@ -29447,7 +25431,8 @@ var consider = {
 	leadingZeros: true,
 	decimalPoint: ".",
 	eNotation: true,
-	infinity: "original"
+	infinity: "original",
+	unicode: false
 };
 function toNumber(str, options = {}) {
 	options = Object.assign({}, consider, options);
@@ -29456,7 +25441,11 @@ function toNumber(str, options = {}) {
 	if (trimmedStr.length === 0) return str;
 	else if (options.skipLike !== void 0 && options.skipLike.test(trimmedStr)) return str;
 	else if (trimmedStr === "0") return 0;
-	else if (options.hex && hexRegex.test(trimmedStr)) return parse_int(trimmedStr, 16);
+	if (options.unicode) {
+		trimmedStr = anynum(trimmedStr);
+		if (trimmedStr === "0") return 0;
+	}
+	if (options.hex && hexRegex.test(trimmedStr)) return parse_int(trimmedStr, 16);
 	else if (options.binary && binRegex.test(trimmedStr)) return parse_int(trimmedStr, 2);
 	else if (options.octal && octRegex.test(trimmedStr)) return parse_int(trimmedStr, 8);
 	else if (!isFinite(trimmedStr)) return handleInfinity(str, Number(trimmedStr), options);
@@ -29742,6 +25731,8 @@ var ExpressionSet = class {
 		this._wildcardByDepth = /* @__PURE__ */ new Map();
 		/** @type {import('./Expression.js').default[]} expressions containing deep wildcard (..) */
 		this._deepWildcards = [];
+		/** @type {Map<string, import('./Expression.js').default[]>} terminalTag → deep wildcard expressions */
+		this._deepByTerminalTag = /* @__PURE__ */ new Map();
 		/** @type {Set<string>} pattern strings already added — used for deduplication */
 		this._patterns = /* @__PURE__ */ new Set();
 		/** @type {boolean} whether the set is sealed against further additions */
@@ -29764,7 +25755,12 @@ var ExpressionSet = class {
 		if (this._patterns.has(expression.pattern)) return this;
 		this._patterns.add(expression.pattern);
 		if (expression.hasDeepWildcard()) {
-			this._deepWildcards.push(expression);
+			const lastSeg = expression.segments[expression.segments.length - 1];
+			if (lastSeg && lastSeg.type !== "deep-wildcard" && lastSeg.tag !== "*") {
+				const tag = lastSeg.tag;
+				if (!this._deepByTerminalTag.has(tag)) this._deepByTerminalTag.set(tag, []);
+				this._deepByTerminalTag.get(tag).push(expression);
+			} else this._deepWildcards.push(expression);
 			return this;
 		}
 		const depth = expression.length;
@@ -29867,7 +25863,8 @@ var ExpressionSet = class {
 	*/
 	findMatch(matcher) {
 		const depth = matcher.getDepth();
-		const exactKey = `${depth}:${matcher.getCurrentTag()}`;
+		const tag = matcher.getCurrentTag();
+		const exactKey = `${depth}:${tag}`;
 		const exactBucket = this._byDepthAndTag.get(exactKey);
 		if (exactBucket) {
 			for (let i = 0; i < exactBucket.length; i++) if (matcher.matches(exactBucket[i])) return exactBucket[i];
@@ -29875,6 +25872,10 @@ var ExpressionSet = class {
 		const wildcardBucket = this._wildcardByDepth.get(depth);
 		if (wildcardBucket) {
 			for (let i = 0; i < wildcardBucket.length; i++) if (matcher.matches(wildcardBucket[i])) return wildcardBucket[i];
+		}
+		const deepBucket = this._deepByTerminalTag.get(tag);
+		if (deepBucket) {
+			for (let i = 0; i < deepBucket.length; i++) if (matcher.matches(deepBucket[i])) return deepBucket[i];
 		}
 		for (let i = 0; i < this._deepWildcards.length; i++) if (matcher.matches(this._deepWildcards[i])) return this._deepWildcards[i];
 		return null;
@@ -29951,6 +25952,24 @@ var MatcherView = class {
 		if (path.length === 0) return false;
 		const current = path[path.length - 1];
 		return current.values !== void 0 && attrName in current.values;
+	}
+	/**
+	* Get the value of a "kept" attribute from the nearest ancestor (or
+	* current node) that declared it via `push(tag, attrs, ns, { keep: [...] })`.
+	* @param {string} attrName
+	* @returns {*}
+	*/
+	getAnyParentAttr(attrName) {
+		return this._matcher.getAnyParentAttr(attrName);
+	}
+	/**
+	* Check whether any ancestor (or the current node) kept the given
+	* attribute via `push(tag, attrs, ns, { keep: [...] })`.
+	* @param {string} attrName
+	* @returns {boolean}
+	*/
+	hasAnyParentAttr(attrName) {
+		return this._matcher.hasAnyParentAttr(attrName);
 	}
 	/**
 	* Get current node's sibling position (child index in parent).
@@ -30049,24 +26068,33 @@ var Matcher = class {
 		this.siblingStacks = [];
 		this._pathStringCache = null;
 		this._view = new MatcherView(this);
+		this._keptAttrs = [];
 	}
 	/**
 	* Push a new tag onto the path.
 	* @param {string} tagName
 	* @param {Object|null} [attrValues=null]
 	* @param {string|null} [namespace=null]
+	* @param {Object|null} [options=null]
+	* @param {string[]} [options.keep] - Names of attributes (from attrValues)
 	*/
-	push(tagName, attrValues = null, namespace = null) {
+	push(tagName, attrValues = null, namespace = null, options = null) {
 		this._pathStringCache = null;
 		if (this.path.length > 0) this.path[this.path.length - 1].values = void 0;
 		const currentLevel = this.path.length;
-		if (!this.siblingStacks[currentLevel]) this.siblingStacks[currentLevel] = /* @__PURE__ */ new Map();
-		const siblings = this.siblingStacks[currentLevel];
+		let level = this.siblingStacks[currentLevel];
+		if (!level) {
+			level = {
+				counts: /* @__PURE__ */ new Map(),
+				total: 0
+			};
+			this.siblingStacks[currentLevel] = level;
+		}
 		const siblingKey = namespace ? `${namespace}:${tagName}` : tagName;
-		const counter = siblings.get(siblingKey) || 0;
-		let position = 0;
-		for (const count of siblings.values()) position += count;
-		siblings.set(siblingKey, counter + 1);
+		const counter = level.counts.get(siblingKey) || 0;
+		const position = level.total;
+		level.counts.set(siblingKey, counter + 1);
+		level.total++;
 		const node = {
 			tag: tagName,
 			position,
@@ -30075,6 +26103,16 @@ var Matcher = class {
 		if (namespace !== null && namespace !== void 0) node.namespace = namespace;
 		if (attrValues !== null && attrValues !== void 0) node.values = attrValues;
 		this.path.push(node);
+		const depth = this.path.length;
+		const keep = options !== null ? options.keep : null;
+		if (keep !== null && keep !== void 0 && keep.length > 0 && attrValues) for (let i = 0; i < keep.length; i++) {
+			const name = keep[i];
+			if (attrValues[name] !== void 0) this._keptAttrs.push({
+				depth,
+				name,
+				value: attrValues[name]
+			});
+		}
 	}
 	/**
 	* Pop the last tag from the path.
@@ -30085,6 +26123,8 @@ var Matcher = class {
 		this._pathStringCache = null;
 		const node = this.path.pop();
 		if (this.siblingStacks.length > this.path.length + 1) this.siblingStacks.length = this.path.length + 1;
+		const poppedDepth = this.path.length + 1;
+		while (this._keptAttrs.length > 0 && this._keptAttrs[this._keptAttrs.length - 1].depth >= poppedDepth) this._keptAttrs.pop();
 		return node;
 	}
 	/**
@@ -30130,6 +26170,31 @@ var Matcher = class {
 		if (this.path.length === 0) return false;
 		const current = this.path[this.path.length - 1];
 		return current.values !== void 0 && attrName in current.values;
+	}
+	/**
+	* Get the value of a "kept" attribute from the nearest ancestor (or
+	* current node) that declared it via `push(tag, attrs, ns, { keep: [...] })`.
+	* Unlike getAttrValue(), this works regardless of how deep the path has
+	* gone since the attribute was pushed — but only for attribute names that
+	* were explicitly marked with `keep` at push time. Cost is proportional to
+	* the number of currently-kept attributes (typically 0-3), not path depth.
+	* @param {string} attrName
+	* @returns {*} the value, or undefined if no ancestor kept this attribute
+	*/
+	getAnyParentAttr(attrName) {
+		const kept = this._keptAttrs;
+		for (let i = kept.length - 1; i >= 0; i--) if (kept[i].name === attrName) return kept[i].value;
+	}
+	/**
+	* Check whether any ancestor (or the current node) kept the given
+	* attribute via `push(tag, attrs, ns, { keep: [...] })`.
+	* @param {string} attrName
+	* @returns {boolean}
+	*/
+	hasAnyParentAttr(attrName) {
+		const kept = this._keptAttrs;
+		for (let i = kept.length - 1; i >= 0; i--) if (kept[i].name === attrName) return true;
+		return false;
 	}
 	/**
 	* Get current node's sibling position (child index in parent).
@@ -30192,6 +26257,7 @@ var Matcher = class {
 		this._pathStringCache = null;
 		this.path = [];
 		this.siblingStacks = [];
+		this._keptAttrs = [];
 	}
 	/**
 	* Match current path against an Expression.
@@ -30280,7 +26346,11 @@ var Matcher = class {
 	snapshot() {
 		return {
 			path: this.path.map((node) => ({ ...node })),
-			siblingStacks: this.siblingStacks.map((map) => new Map(map))
+			siblingStacks: this.siblingStacks.map((level) => level ? {
+				counts: new Map(level.counts),
+				total: level.total
+			} : level),
+			keptAttrs: this._keptAttrs.map((entry) => ({ ...entry }))
 		};
 	}
 	/**
@@ -30290,7 +26360,11 @@ var Matcher = class {
 	restore(snapshot) {
 		this._pathStringCache = null;
 		this.path = snapshot.path.map((node) => ({ ...node }));
-		this.siblingStacks = snapshot.siblingStacks.map((map) => new Map(map));
+		this.siblingStacks = snapshot.siblingStacks.map((level) => level ? {
+			counts: new Map(level.counts),
+			total: level.total
+		} : level);
+		this._keptAttrs = (snapshot.keptAttrs || []).map((entry) => ({ ...entry }));
 	}
 	/**
 	* Return the read-only {@link MatcherView} for this matcher.
@@ -30312,6 +26386,810 @@ var Matcher = class {
 		return this._view;
 	}
 };
+//#endregion
+//#region node_modules/is-unsafe/src/contexts/html.js
+/**
+* HTML context patterns.
+*
+* Detects XSS vectors that are dangerous when a string ends up rendered as HTML.
+* All patterns use bounded quantifiers to ensure linear-time matching (ReDoS-safe).
+*
+* Each entry is { pattern: RegExp, id: string, description: string }
+* so callers can inspect which rule fired if they need to.
+*/
+var HTML_PATTERNS = [
+	{
+		id: "html-script-open",
+		description: "<script opening tag",
+		pattern: /<script[\s>/]/i
+	},
+	{
+		id: "html-script-close",
+		description: "<\/script closing tag",
+		pattern: /<\/script[\s>]/i
+	},
+	{
+		id: "html-javascript-protocol",
+		description: "javascript: URI scheme (with optional whitespace/encoding)",
+		pattern: /j[\t\n\r ]*a[\t\n\r ]*v[\t\n\r ]*a[\t\n\r ]*s[\t\n\r ]*c[\t\n\r ]*r[\t\n\r ]*i[\t\n\r ]*p[\t\n\r ]*t[\t\n\r ]*:/i
+	},
+	{
+		id: "html-vbscript-protocol",
+		description: "vbscript: URI scheme",
+		pattern: /vbscript[\t\n\r ]*:/i
+	},
+	{
+		id: "html-data-html",
+		description: "data:text/html URI — can execute scripts in browsers",
+		pattern: /data[\t\n\r ]*:[\t\n\r ]*text\/html/i
+	},
+	{
+		id: "html-data-xhtml",
+		description: "data:application/xhtml+xml URI",
+		pattern: /data[\t\n\r ]*:[\t\n\r ]*application\/xhtml/i
+	},
+	{
+		id: "html-data-svg",
+		description: "data:image/svg+xml URI — can execute scripts",
+		pattern: /data[\t\n\r ]*:[\t\n\r ]*image\/svg\+xml/i
+	},
+	{
+		id: "html-inline-event-handler",
+		description: "Inline event handler attributes: onclick=, onerror=, onload=, etc.",
+		pattern: /\bon\w{1,30}\s*=/i
+	},
+	{
+		id: "html-entity-obfuscated-script",
+		description: "HTML-entity-encoded <script (e.g. &#x3C;script or &lt;script)",
+		pattern: /(?:&#x0*3[Cc];?|&#0*60;?|&lt;)\s*script/i
+	},
+	{
+		id: "html-entity-obfuscated-javascript",
+		description: "HTML-entity-encoded javascript: (partial — catches common &#106; or &#x6a; for \"j\")",
+		pattern: /(?:&#x0*6[Aa];?|&#0*106;?)\s*(?:&#x0*61;?|a)[\s\S]{0,80}script\s*:/i
+	},
+	{
+		id: "html-style-expression",
+		description: "CSS expression() — IE-era code execution in style attributes",
+		pattern: /style[\s\S]{0,20}expression\s*\(/i
+	},
+	{
+		id: "html-object-embed",
+		description: "<object or <embed tags that can load active content",
+		pattern: /<(?:object|embed)[\s>/]/i
+	},
+	{
+		id: "html-base-tag",
+		description: "<base href= — can hijack all relative URLs on a page",
+		pattern: /<base[\s>]/i
+	},
+	{
+		id: "html-meta-refresh",
+		description: "<meta http-equiv=\"refresh\" — can redirect users",
+		pattern: /<meta[\s\S]{0,40}http-equiv[\s\S]{0,20}refresh/i
+	},
+	{
+		id: "html-srcdoc",
+		description: "srcdoc= attribute on iframes — embeds HTML that can run scripts",
+		pattern: /srcdoc\s*=/i
+	},
+	{
+		id: "html-iframe",
+		description: "<iframe tag",
+		pattern: /<iframe[\s>/]/i
+	},
+	{
+		id: "html-form",
+		description: "<form tag — can be used for phishing / credential harvesting injection",
+		pattern: /<form[\s>/]/i
+	}
+];
+//#endregion
+//#region node_modules/is-unsafe/src/contexts/xml.js
+/**
+* XML context patterns.
+*
+* Detects injection vectors that are specifically dangerous when a string
+* is inserted into an XML document (not HTML rendering context).
+*
+* Key distinction from HTML: these patterns target parser-level attacks —
+* things that can confuse or subvert an XML parser, trigger external entity
+* resolution, or inject DTD content. HTML rendering concerns (XSS) belong
+* in the HTML context.
+*/
+var XML_PATTERNS = [
+	{
+		id: "xml-cdata-injection",
+		description: "CDATA section injection: <![CDATA[ breaks out of text node context",
+		pattern: /<!\[CDATA\[/i
+	},
+	{
+		id: "xml-cdata-close",
+		description: "CDATA close sequence: ]]> can terminate an enclosing CDATA section",
+		pattern: /\]\]>/
+	},
+	{
+		id: "xml-processing-instruction",
+		description: "XML processing instruction: <?xml-stylesheet or <?php etc.",
+		pattern: /<\?(?:xml[\- ]|php|asp)/i
+	},
+	{
+		id: "xml-doctype-injection",
+		description: "DOCTYPE declaration embedded in content — can define entities",
+		pattern: /<!DOCTYPE(?:[\s[]|$)/i
+	},
+	{
+		id: "xml-entity-system",
+		description: "SYSTEM keyword — used in external entity declarations (XXE)",
+		pattern: /\bSYSTEM\s+["']/i
+	},
+	{
+		id: "xml-entity-public",
+		description: "PUBLIC keyword — used in external entity declarations (XXE)",
+		pattern: /\bPUBLIC\s+["']/i
+	},
+	{
+		id: "xml-entity-declaration",
+		description: "<!ENTITY declaration — defines entities, potential XXE or entity expansion",
+		pattern: /<!ENTITY[\s%]/i
+	},
+	{
+		id: "xml-billion-laughs",
+		description: "Entity reference chaining / billion laughs: repeated &eX; style references",
+		pattern: /(?:&\w{1,20};){3,}/
+	},
+	{
+		id: "xml-namespace-confusion",
+		description: "xmlns: attribute injection — can redefine namespaces to confuse parsers",
+		pattern: /\bxmlns\s*(?::\w{1,40})?\s*=/i
+	},
+	{
+		id: "xml-comment-injection",
+		description: "<!-- comment injection — can hide content from some parsers",
+		pattern: /<!--/
+	},
+	{
+		id: "xml-comment-close",
+		description: "--> closes an enclosing XML comment",
+		pattern: /-->/
+	},
+	{
+		id: "xml-pi-close",
+		description: "?> closes an enclosing processing instruction",
+		pattern: /\?>/
+	}
+];
+//#endregion
+//#region node_modules/is-unsafe/src/contexts/svg.js
+/**
+* SVG context patterns.
+*
+* SVG is XML-based but renders in browsers, giving it a unique attack surface
+* that combines XML parser behaviour with browser rendering and JavaScript execution.
+*
+* Many of these vectors bypass HTML sanitizers that don't understand SVG semantics
+* (DOMPurify has documented bypass vulnerabilities specifically in SVG/XML context).
+*/
+var SVG_PATTERNS = [
+	{
+		id: "svg-script-element",
+		description: "<script element inside SVG executes JavaScript",
+		pattern: /<script[\s>/]/i
+	},
+	{
+		id: "svg-xlink-href-javascript",
+		description: "xlink:href with javascript: — classic SVG XSS via <a> or <use>",
+		pattern: /xlink\s*:\s*href\s*=\s*["']?\s*javascript\s*:/i
+	},
+	{
+		id: "svg-href-javascript",
+		description: "href= with javascript: in SVG context (<a>, <animate>, etc.)",
+		pattern: /href\s*=\s*["']?\s*javascript\s*:/i
+	},
+	{
+		id: "svg-foreignobject",
+		description: "<foreignObject embeds HTML inside SVG — can execute scripts",
+		pattern: /<foreignObject[\s>/]/i
+	},
+	{
+		id: "svg-use-external",
+		description: "<use xlink:href or href pointing to external resource (non-fragment URL)",
+		pattern: /<use[\s\S]{0,60}(?:xlink\s*:\s*)?href\s*=\s*(?:["'][^#]|[^"'#\s>])/i
+	},
+	{
+		id: "svg-animate-href",
+		description: "<animate attributeName=\"href\" — can dynamically change href to javascript:",
+		pattern: /<animate[\s\S]{0,80}attributeName\s*=\s*["'][\s]*href["']/i
+	},
+	{
+		id: "svg-animate-xlinkhref",
+		description: "<animate attributeName=\"xlink:href\"",
+		pattern: /<animate[\s\S]{0,80}attributeName\s*=\s*["'][\s]*xlink\s*:\s*href["']/i
+	},
+	{
+		id: "svg-set-javascript",
+		description: "<set to=\"javascript:...\" — sets an attribute to a javascript: URI",
+		pattern: /<set[\s\S]{0,80}to\s*=\s*["']?\s*javascript\s*:/i
+	},
+	{
+		id: "svg-event-handler",
+		description: "SVG-specific event handler attributes: onload=, onerror=, onactivate=, etc.",
+		pattern: /\bon(?:load|error|activate|begin|end|repeat|focus|blur|click|mouse\w{1,20}|key\w{1,20})\s*=/i
+	},
+	{
+		id: "svg-handler-generic",
+		description: "Generic on* handler catch-all for SVG attributes",
+		pattern: /\bon\w{1,30}\s*=/i
+	},
+	{
+		id: "svg-filter-feimage",
+		description: "<feImage href= — filter primitive that can load external resources",
+		pattern: /<feImage[\s\S]{0,80}(?:xlink\s*:\s*)?href\s*=/i
+	},
+	{
+		id: "svg-image-external",
+		description: "<image xlink:href with http/https or javascript protocol",
+		pattern: /<image[\s\S]{0,80}(?:xlink\s*:\s*)?href\s*=\s*["']?\s*(?:https?|javascript)\s*:/i
+	},
+	{
+		id: "svg-style-javascript",
+		description: "style= attribute containing javascript: (e.g. background:url(javascript:...))",
+		pattern: /style\s*=[\s\S]{0,60}javascript\s*:/i
+	}
+];
+//#endregion
+//#region node_modules/is-unsafe/src/contexts/sql.js
+/**
+* SQL context patterns — high-precision rules only.
+*
+* These rules have very low false-positive risk and are safe to apply to
+* general user text (names, descriptions, search queries, etc.).
+* All patterns are ReDoS-safe — unlike the `sql-injection` npm package
+* which has an active CVE on its own detection regexes.
+*
+* For exhaustive coverage including noisier heuristics (comment sequences,
+* hex literals, stacked queries with semicolons), use 'SQL-STRICT' instead.
+* Apply 'SQL-STRICT' only to strings that are specifically SQL fragments,
+* not to general free-text fields.
+*/
+var SQL_PATTERNS = [
+	{
+		id: "sql-block-comment-open",
+		description: "SQL block comment open: /* ... */ — unusual in legitimate user text",
+		pattern: /\/\*/
+	},
+	{
+		id: "sql-union-select",
+		description: "UNION SELECT — most common SQL injection aggregation attack",
+		pattern: /\bUNION\s{1,20}(?:ALL\s{1,20})?SELECT\b/i
+	},
+	{
+		id: "sql-drop-table",
+		description: "DROP TABLE — destructive DDL injection",
+		pattern: /\bDROP\s{1,20}TABLE\b/i
+	},
+	{
+		id: "sql-drop-database",
+		description: "DROP DATABASE — destructive DDL injection",
+		pattern: /\bDROP\s{1,20}DATABASE\b/i
+	},
+	{
+		id: "sql-insert-into",
+		description: "INSERT INTO — data injection",
+		pattern: /\bINSERT\s{1,20}INTO\b/i
+	},
+	{
+		id: "sql-delete-from",
+		description: "DELETE FROM — data deletion injection",
+		pattern: /\bDELETE\s{1,20}FROM\b/i
+	},
+	{
+		id: "sql-update-set",
+		description: "UPDATE ... SET — data modification injection",
+		pattern: /\bUPDATE\b[\s\S]{1,60}\bSET\b/i
+	},
+	{
+		id: "sql-exec-xp",
+		description: "EXEC xp_ — MSSQL extended stored procedure execution",
+		pattern: /\bEXEC(?:UTE)?\s{1,20}xp_/i
+	},
+	{
+		id: "sql-tautology-string",
+		description: "Classic string tautology: ' OR '1'='1 or \" OR \"1\"=\"1\"",
+		pattern: /'\s{0,10}OR\s{0,10}'[^']{0,20}'\s*=\s*'[^']{0,20}/i
+	},
+	{
+		id: "sql-tautology-numeric",
+		description: "Numeric tautology: OR 1=1",
+		pattern: /\bOR\s{1,10}1\s*=\s*1\b/i
+	},
+	{
+		id: "sql-always-true-zero",
+		description: "Numeric tautology: OR 0=0",
+		pattern: /\bOR\s{1,10}0\s*=\s*0\b/i
+	},
+	{
+		id: "sql-sleep-benchmark",
+		description: "Time-based blind injection: SLEEP() or BENCHMARK()",
+		pattern: /\b(?:SLEEP|BENCHMARK)\s*\(/i
+	},
+	{
+		id: "sql-waitfor-delay",
+		description: "MSSQL time-based blind injection: WAITFOR DELAY",
+		pattern: /\bWAITFOR\s{1,20}DELAY\b/i
+	},
+	{
+		id: "sql-char-function",
+		description: "CHAR() function — used to obfuscate injected strings",
+		pattern: /\bCHAR\s*\(\s*\d{1,3}/i
+	},
+	{
+		id: "sql-information-schema",
+		description: "INFORMATION_SCHEMA — reconnaissance query for table/column enumeration",
+		pattern: /\bINFORMATION_SCHEMA\b/i
+	}
+];
+//#endregion
+//#region node_modules/is-unsafe/src/contexts/sql-strict.js
+/**
+* SQL-STRICT context patterns.
+*
+* Extends the base 'SQL' context with three additional rules that are
+* effective at detecting real injections but carry a higher false-positive
+* risk on general free-text input.
+*
+* Use 'SQL-STRICT' when:
+*   - The string is specifically a SQL fragment or database identifier
+*   - You control the input domain (e.g. a dedicated SQL search field)
+*   - You can tolerate occasional false positives in exchange for broader coverage
+*
+* Use 'SQL' (not STRICT) when:
+*   - The field is general user text (names, descriptions, comments)
+*   - False positives would block legitimate content (e.g. "see note -- above")
+*
+* Rules moved here from 'SQL' due to false-positive risk:
+*
+*   sql-line-comment   — "--" fires on "see note -- above", "value--", CSS var(--primary)
+*   sql-stacked-query  — "; SELECT" fires on legitimate prose with semicolons + SQL words
+*   sql-hex-encoding   — "0xDEAD" fires on hex values in technical docs and log output
+*/
+var SQL_STRICT_EXTRA = [
+	{
+		id: "sql-line-comment",
+		description: "SQL line comment: -- followed by whitespace or end of string",
+		pattern: /--(?:\s|$)/
+	},
+	{
+		id: "sql-stacked-query",
+		description: "Stacked queries: semicolon immediately followed by a SQL keyword",
+		pattern: /;\s{0,10}(?:SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC)\b/i
+	},
+	{
+		id: "sql-hex-encoding",
+		description: "Hex-encoded string injection: 0x41414141 style (MySQL)",
+		pattern: /\b0x[0-9a-f]{4,}/i
+	}
+];
+var SQL_STRICT_PATTERNS = [...SQL_PATTERNS, ...SQL_STRICT_EXTRA];
+//#endregion
+//#region node_modules/is-unsafe/src/contexts/shell.js
+/**
+* SHELL context patterns.
+*
+* Detects shell injection vectors and path traversal patterns.
+* Designed for use when a string will be passed to a shell command,
+* used as a file path, or interpolated into OS-level operations.
+*/
+var SHELL_PATTERNS = [
+	{
+		id: "shell-path-traversal-unix",
+		description: "Unix path traversal: ../  — climbing the directory tree",
+		pattern: /\.\.\//
+	},
+	{
+		id: "shell-path-traversal-windows",
+		description: "Windows path traversal: ..\\ — climbing the directory tree",
+		pattern: /\.\.\\/
+	},
+	{
+		id: "shell-path-traversal-encoded",
+		description: "URL-encoded path traversal: %2e%2e or %2f variants",
+		pattern: /%2e%2e|%2f\.\.|\.\.%2f/i
+	},
+	{
+		id: "shell-null-byte",
+		description: "Null byte injection: \\x00 or %00 — truncates strings in C-backed functions",
+		pattern: /\x00|%00/
+	},
+	{
+		id: "shell-semicolon",
+		description: "Semicolon command separator: cmd1; cmd2",
+		pattern: /;/
+	},
+	{
+		id: "shell-pipe",
+		description: "Pipe operator: cmd1 | cmd2",
+		pattern: /\|/
+	},
+	{
+		id: "shell-and-operator",
+		description: "AND operator: cmd1 && cmd2",
+		pattern: /&&/
+	},
+	{
+		id: "shell-or-operator",
+		description: "OR operator: cmd1 || cmd2",
+		pattern: /\|\|/
+	},
+	{
+		id: "shell-backtick",
+		description: "Backtick command substitution: `cmd`",
+		pattern: /`/
+	},
+	{
+		id: "shell-dollar-paren",
+		description: "Dollar-paren command substitution: $(cmd)",
+		pattern: /\$\(/
+	},
+	{
+		id: "shell-dollar-brace",
+		description: "Dollar-brace variable expansion: ${var} — can be abused for injection",
+		pattern: /\$\{/
+	},
+	{
+		id: "shell-redirect-out",
+		description: "Output redirection: cmd > file or cmd >> file",
+		pattern: />{1,2}/
+	},
+	{
+		id: "shell-redirect-in",
+		description: "Input redirection: cmd < file",
+		pattern: /</
+	},
+	{
+		id: "shell-newline-injection",
+		description: "Newline injection: \\n or \\r — can inject new shell commands",
+		pattern: /[\n\r]/
+	},
+	{
+		id: "shell-glob-star",
+		description: "Glob expansion: * or ? — can expand to unintended files",
+		pattern: /[/\\][*?]/
+	},
+	{
+		id: "shell-absolute-root",
+		description: "Absolute root path injection: string starting with / or \\ (Windows UNC)",
+		pattern: /^(?:\/|\\\\)/
+	},
+	{
+		id: "shell-windows-drive",
+		description: "Windows drive letter path injection: C:\\ or D:/",
+		pattern: /^[a-zA-Z]:[/\\]/
+	},
+	{
+		id: "shell-curl-wget",
+		description: "curl/wget with URL or flags — can exfiltrate data or download payloads",
+		pattern: /\b(?:curl|wget)\s+(?:https?:\/\/|ftp:\/\/|-)/i
+	}
+];
+//#endregion
+//#region node_modules/is-unsafe/src/contexts/redos.js
+/**
+* REDOS context patterns.
+*
+* Detects strings that, if used as regular expressions, could cause
+* catastrophic backtracking (ReDoS — Regular Expression Denial of Service).
+*
+* These patterns detect the structural forms that lead to exponential or
+* polynomial backtracking in NFA-based regex engines (V8, PCRE, Java, etc.).
+*
+* Use this context when user-supplied strings will be compiled into RegExp objects.
+*/
+var REDOS_PATTERNS = [
+	{
+		id: "redos-nested-quantifier-plus",
+		description: "Nested + quantifier inside a group with outer quantifier: (a+)+, (.+b)*, etc.",
+		pattern: /\([^)]*\+[^)]*\)[+*]/
+	},
+	{
+		id: "redos-nested-quantifier-star",
+		description: "Nested * quantifier: (a*)* or (a*)+ — catastrophic backtracking",
+		pattern: /\([^)]*\*[^)]*\)[*+]/
+	},
+	{
+		id: "redos-nested-groups",
+		description: "Doubly nested quantified groups: ((a+)+) — guaranteed catastrophic",
+		pattern: /\(\([^)]{0,40}\)[+*]\)[+*]/
+	},
+	{
+		id: "redos-alternation-overlap",
+		description: "Overlapping alternation under quantifier: (a|a)+ — ambiguous NFA paths",
+		pattern: /\(([^|()]{1,20})\|(?:\1)(?:\|[^|()]{1,20}){0,5}\)[+*?]{1,2}/
+	},
+	{
+		id: "redos-star-plus-concat",
+		description: "(x*x)+ pattern — triggers super-linear backtracking",
+		pattern: /\([^)]{0,10}\*[^)]{0,10}\)[+*]/
+	},
+	{
+		id: "redos-dot-star-greedy",
+		description: "(.*){n,} or (.+){n,} — repeated greedy dot quantifiers",
+		pattern: /\(\.[*+]\)\{?\d/
+	},
+	{
+		id: "redos-large-repetition",
+		description: "Very large fixed or range repetition count {1000,} or {1000,n} — denial of service via backtracking",
+		pattern: /\{\d{4,}(?:,\d*)?\}/
+	},
+	{
+		id: "redos-catastrophic-alternation",
+		description: "Long alternation with many similar branches — polynomial backtracking risk",
+		pattern: /\([^)]{0,200}(?:\|[^|)]{0,50}){9,}\)/
+	}
+];
+//#endregion
+//#region node_modules/is-unsafe/src/contexts/nosql.js
+var sep = "[\"'\\s]*:";
+//#endregion
+//#region node_modules/is-unsafe/src/registry.js
+/**
+* Context registry — maps context name strings to their pattern arrays.
+*
+* Adding a new context: create a file in ./contexts/, export a default array
+* of pattern objects, and register it here.
+*
+* Context name guide:
+*   SQL        — high-precision rules; safe for general text fields
+*   SQL-STRICT — SQL + three noisier rules (line comments, stacked queries, hex);
+*                use only for SQL-specific inputs
+*   REDOS      — detects ReDoS-prone patterns when string will be compiled as RegExp
+*/
+/** @type {Record<string, Array<{id: string, description: string, pattern: RegExp}>>} */
+var CONTEXT_REGISTRY = {
+	HTML: HTML_PATTERNS,
+	XML: XML_PATTERNS,
+	SVG: SVG_PATTERNS,
+	SQL: SQL_PATTERNS,
+	"SQL-STRICT": SQL_STRICT_PATTERNS,
+	SHELL: SHELL_PATTERNS,
+	REDOS: REDOS_PATTERNS,
+	NOSQL: [
+		{
+			id: "nosql-where-operator",
+			description: "$where — executes arbitrary JavaScript server-side in MongoDB",
+			pattern: new RegExp(`\\$where${sep}`, "i")
+		},
+		{
+			id: "nosql-ne-operator",
+			description: "$ne — \"not equal\" operator used to bypass equality checks",
+			pattern: new RegExp(`\\$ne${sep}`, "i")
+		},
+		{
+			id: "nosql-gt-operator",
+			description: "$gt — \"greater than\" used to bypass password/value checks",
+			pattern: new RegExp(`\\$gte?${sep}`, "i")
+		},
+		{
+			id: "nosql-lt-operator",
+			description: "$lt / $lte — \"less than\" bypass variants",
+			pattern: new RegExp(`\\$lte?${sep}`, "i")
+		},
+		{
+			id: "nosql-regex-operator",
+			description: "$regex — can be used to extract data character by character (blind injection)",
+			pattern: new RegExp(`\\$regex${sep}`, "i")
+		},
+		{
+			id: "nosql-or-operator",
+			description: "$or — logical OR; used to create always-true conditions",
+			pattern: new RegExp(`\\$or${sep}\\s*\\[`, "i")
+		},
+		{
+			id: "nosql-and-operator",
+			description: "$and — logical AND operator injection",
+			pattern: new RegExp(`\\$and${sep}\\s*\\[`, "i")
+		},
+		{
+			id: "nosql-nor-operator",
+			description: "$nor — logical NOR operator injection",
+			pattern: new RegExp(`\\$nor${sep}\\s*\\[`, "i")
+		},
+		{
+			id: "nosql-exists-operator",
+			description: "$exists — can enumerate fields to determine schema",
+			pattern: new RegExp(`\\$exists${sep}`, "i")
+		},
+		{
+			id: "nosql-in-operator",
+			description: "$in — matches any value in a list; can enumerate values",
+			pattern: new RegExp(`\\$in${sep}\\s*\\[`, "i")
+		},
+		{
+			id: "nosql-expr-operator",
+			description: "$expr — allows aggregation expressions in queries (MongoDB 3.6+)",
+			pattern: new RegExp(`\\$expr${sep}`, "i")
+		},
+		{
+			id: "nosql-function-operator",
+			description: "$function — executes arbitrary JavaScript in MongoDB 4.4+",
+			pattern: new RegExp(`\\$function${sep}`, "i")
+		},
+		{
+			id: "nosql-accumulator-operator",
+			description: "$accumulator — custom aggregation with arbitrary JS execution",
+			pattern: new RegExp(`\\$accumulator${sep}`, "i")
+		},
+		{
+			id: "nosql-proto-pollution",
+			description: "__proto__ — prototype pollution via object key injection",
+			pattern: /__proto__/
+		},
+		{
+			id: "nosql-constructor-prototype",
+			description: "constructor.prototype — alternative prototype pollution vector (dot notation or JSON key)",
+			pattern: /constructor[\s"':.,{\[]*prototype/i
+		},
+		{
+			id: "nosql-proto-bracket",
+			description: "[\"__proto__\"] — bracket-notation prototype pollution",
+			pattern: /\[["']__proto__["']\]/
+		}
+	],
+	LOG: [
+		{
+			id: "log-crlf-injection",
+			description: "CRLF injection: literal \\r or \\n embeds fake log lines",
+			pattern: /[\r\n]/
+		},
+		{
+			id: "log-url-encoded-crlf",
+			description: "URL-encoded CRLF: %0d, %0a, %0D, %0A — decoded by some log parsers",
+			pattern: /%0[dDaA]/
+		},
+		{
+			id: "log-unicode-newline",
+			description: "Unicode newline variants: U+2028 (line separator), U+2029 (paragraph separator)",
+			pattern: /[\u2028\u2029]/
+		},
+		{
+			id: "log-log4shell-jndi",
+			description: "Log4Shell: ${jndi:...} triggers remote code execution in Apache Log4j",
+			pattern: /\$\{jndi\s*:/i
+		},
+		{
+			id: "log-log4shell-obfuscated",
+			description: "Obfuscated Log4Shell: ${::-j}... lookup-bypass prefix used to evade WAF detection",
+			pattern: /\$\{::-/
+		},
+		{
+			id: "log-log4j-lookup",
+			description: "Log4j lookup syntax: ${env:...}, ${sys:...}, ${ctx:...} — data exfiltration",
+			pattern: /\$\{(?:env|sys|ctx|main|map|sd|web|docker|k8s|spring)\s*:/i
+		},
+		{
+			id: "log-ssti-double-brace",
+			description: "SSTI double-brace: {{expression}} — Jinja2, Twig, Handlebars, etc.",
+			pattern: /\{\{[\s\S]{0,80}\}\}/
+		},
+		{
+			id: "log-ssti-hash-brace",
+			description: "SSTI hash-brace: #{expression} — Thymeleaf, Velocity, Ruby ERB",
+			pattern: /#\{[\s\S]{0,80}\}/
+		},
+		{
+			id: "log-ssti-dollar-brace",
+			description: "SSTI/EL injection: ${expression with operators or method calls} — JSP EL, Freemarker, SpEL",
+			pattern: /\$\{[^}]*(?:\.|\(|\*|\+|\bclass\b|\bruntime\b|\bprocess\b|\bexec\b)[^}]{0,80}\}/i
+		},
+		{
+			id: "log-ssti-percent-tag",
+			description: "SSTI ERB/ASP tag: <%= expression %> — Ruby ERB, ASP",
+			pattern: /<%=[\s\S]{0,80}%>/
+		},
+		{
+			id: "log-null-byte",
+			description: "Null byte: \\x00 or %00 — can truncate log entries in C-backed loggers",
+			pattern: /\x00|%00/
+		},
+		{
+			id: "log-ansi-escape",
+			description: "ANSI escape sequence: ESC[ — can manipulate terminal output when logs are tailed",
+			pattern: /\x1b\[/
+		}
+	]
+};
+/**
+* Enum of valid context names — e.g. `VALID_CONTEXTS.HTML === 'HTML'`.
+* @type {Record<string, string>}
+*/
+var VALID_CONTEXTS = Object.freeze(Object.fromEntries(Object.keys(CONTEXT_REGISTRY).map((k) => [k, k])));
+//#endregion
+//#region node_modules/is-unsafe/src/index.js
+/**
+* is-unsafe
+*
+* Zero-dependency, DOM-free, pure predicate for detecting unsafe strings
+* across HTML, XML, SVG, SQL, SQL-STRICT, SHELL, REDOS, NOSQL, and LOG contexts.
+*
+* @module is-unsafe
+*/
+/**
+* @typedef {'HTML'|'XML'|'SVG'|'SQL'|'SQL-STRICT'|'SHELL'|'REDOS'|'NOSQL'|'LOG'} ContextName
+*/
+/**
+* @typedef {Object} MatchResult
+* @property {string} context   - The context in which the match was found
+* @property {string} id        - Rule identifier
+* @property {string} description - Human-readable description of what was matched
+* @property {RegExp} pattern   - The pattern that matched
+*/
+/**
+* Validate that `value` is a string. Throws TypeError if not.
+* @param {unknown} value
+*/
+function assertString(value) {
+	if (typeof value !== "string") throw new TypeError(`is-unsafe: first argument must be a string, got ${typeof value}`);
+}
+/**
+* Validate that `context` is a recognised context name, an array of them,
+* or a RegExp instance. Throws TypeError if not.
+* @param {ContextName|ContextName[]|RegExp} context
+*/
+function assertContext(context) {
+	if (context instanceof RegExp) return;
+	if (typeof context === "string") {
+		if (!CONTEXT_REGISTRY[context]) throw new TypeError(`is-unsafe: unknown context "${context}". Valid contexts: ${Object.keys(VALID_CONTEXTS).join(", ")}`);
+		return;
+	}
+	if (Array.isArray(context)) {
+		if (context.length === 0) throw new TypeError("is-unsafe: context array must not be empty");
+		for (const c of context) if (typeof c !== "string" || !CONTEXT_REGISTRY[c]) throw new TypeError(`is-unsafe: unknown context "${c}" in array. Valid contexts: ${Object.keys(VALID_CONTEXTS).join(", ")}`);
+		return;
+	}
+	throw new TypeError(`is-unsafe: second argument must be a context string, array of context strings, or RegExp. Got: ${typeof context}`);
+}
+/**
+* Test a single value against one named context's patterns.
+* Returns the first matching MatchResult, or null if nothing matched.
+*
+* @param {string} value
+* @param {string} contextName
+* @returns {MatchResult|null}
+*/
+function matchContext(value, contextName) {
+	const patterns = CONTEXT_REGISTRY[contextName];
+	for (const rule of patterns) if (rule.pattern.test(value)) return {
+		context: contextName,
+		id: rule.id,
+		description: rule.description,
+		pattern: rule.pattern
+	};
+	return null;
+}
+/**
+* Returns `true` if `value` is unsafe in the given context(s), `false` otherwise.
+*
+* @param {string} value           - The string to test
+* @param {ContextName|ContextName[]|RegExp} context
+*   - A named context ('HTML', 'XML', 'SVG', 'SQL', 'SQL-STRICT', 'SHELL', 'REDOS', 'NOSQL', 'LOG')
+*   - An array of named contexts — returns true if unsafe in **any** of them
+*   - A custom RegExp — returns true if the pattern matches
+* @returns {boolean}
+*
+* @example
+* isUnsafe('<script>alert(1)<\/script>', 'HTML')  // true
+* isUnsafe('hello world', 'HTML')                // false
+* isUnsafe('value', ['HTML', 'SQL'])             // false
+* isUnsafe('value', /my-pattern/i)               // false
+*/
+function isUnsafe(value, context) {
+	assertString(value);
+	assertContext(context);
+	if (context instanceof RegExp) return context.test(value);
+	if (typeof context === "string") return matchContext(value, context) !== null;
+	for (const c of context) if (matchContext(value, c) !== null) return true;
+	return false;
+}
 //#endregion
 //#region node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js
 /**
@@ -30379,7 +27257,8 @@ var OrderedObjParser = class {
 					maxTotalExpansions: this.options.processEntities.maxTotalExpansions,
 					maxExpandedLength: this.options.processEntities.maxExpandedLength,
 					applyLimitsTo: this.options.processEntities.appliesTo
-				}
+				},
+				onInputEntity: (name, value) => isUnsafe(value, [VALID_CONTEXTS.HTML, VALID_CONTEXTS.XML]) ? ENTITY_ACTION.BLOCK : ENTITY_ACTION.ALLOW
 			});
 		}
 		this.matcher = new Matcher();
@@ -31429,7 +28308,7 @@ var GetFriendMsgHistory = class extends BaseAction {
 		if (!seq || +seq === 0) {
 			const latestSeq = await this.ctx.ntMsgApi.getLatestMsgSeq(peer);
 			msgList = (await this.ctx.ntMsgApi.getMsgsBySeqAndCount(peer, latestSeq, count, false)).msgList;
-		} else msgList = (await this.ctx.ntMsgApi.getMsgsBySeqAndCount(peer, +seq, count, true)).msgList;
+		} else msgList = (await this.ctx.ntMsgApi.getMsgsBySeqAndCount(peer, +seq, count, false)).msgList;
 		if (!msgList?.length) return;
 		return {
 			list: filterNullable(await Promise.all(msgList.map((msg) => {
@@ -32420,7 +29299,8 @@ var SendGroupAiRecord = class extends BaseAction {
 		const checkAndResolve = (msg) => {
 			if (targetMsgRandom !== null && msg.msgRandom === targetMsgRandom) {
 				dispose();
-				resolve({ message_id: this.ctx.store.createMsgShortId(msg) });
+				const shortId = this.ctx.store.createMsgShortId(msg);
+				resolve({ message_id: shortId });
 				return true;
 			}
 			return false;
@@ -34654,8 +31534,11 @@ var deleteReaction = async (ctx, payload) => {
 var getReactionList = async (ctx, payload) => {
 	const info = decodeMessageId(payload.message_id);
 	if (info.chatType !== ChatType.Group) throw new Error("暂不支持私聊消息回应");
-	const data = await ctx.ntMsgApi.getMsgReactionList(info, info.msgSeq, payload.emoji_id, 50);
-	return { data: (await Promise.all(data.users.map((e) => ctx.ntUserApi.getUserByUin(e.uin)))).map((u) => decodeUser(u)) };
+	const data = await ctx.ntMsgApi.getMsgReactionList(info, info.msgSeq, payload.emoji_id, 15, payload.next ?? "");
+	return {
+		data: (await Promise.all(data.users.map((e) => ctx.ntUserApi.getUserByUin(e.uin)))).map((u) => decodeUser(u)),
+		next: data.cookie || void 0
+	};
 };
 //#endregion
 //#region src/satori/api/role/member/set.ts
@@ -35205,7 +32088,7 @@ var util_exports = /* @__PURE__ */ __exportAll({
 	NUMBER_FORMAT_RANGES: () => NUMBER_FORMAT_RANGES,
 	aborted: () => aborted,
 	allowsEval: () => allowsEval,
-	assert: () => assert,
+	assert: () => assert$1,
 	assertEqual: () => assertEqual,
 	assertIs: () => assertIs,
 	assertNever: () => assertNever,
@@ -35274,7 +32157,7 @@ function assertIs(_arg) {}
 function assertNever(_x) {
 	throw new Error("Unexpected value in exhaustive check");
 }
-function assert(_) {}
+function assert$1(_) {}
 function getEnumValues(entries) {
 	const numericValues = Object.values(entries).filter((v) => typeof v === "number");
 	return Object.entries(entries).filter(([k, _]) => numericValues.indexOf(+k) === -1).map(([_, v]) => v);
@@ -35342,7 +32225,10 @@ function assignProp(target, prop, value) {
 }
 function mergeDefs(...defs) {
 	const mergedDescriptors = {};
-	for (const def of defs) Object.assign(mergedDescriptors, Object.getOwnPropertyDescriptors(def));
+	for (const def of defs) {
+		const descriptors = Object.getOwnPropertyDescriptors(def);
+		Object.assign(mergedDescriptors, descriptors);
+	}
 	return Object.defineProperties({}, mergedDescriptors);
 }
 function cloneDef(schema) {
@@ -35906,7 +32792,7 @@ var _parse = (_Err) => (schema, value, _ctx, _params) => {
 	}, ctx);
 	if (result instanceof Promise) throw new $ZodAsyncError();
 	if (result.issues.length) {
-		const e = new (_params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+		const e = new ((_params?.Err) ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
 		captureStackTrace(e, _params?.callee);
 		throw e;
 	}
@@ -35924,7 +32810,7 @@ var _parseAsync = (_Err) => async (schema, value, _ctx, params) => {
 	}, ctx);
 	if (result instanceof Promise) result = await result;
 	if (result.issues.length) {
-		const e = new (params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+		const e = new ((params?.Err) ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
 		captureStackTrace(e, params?.callee);
 		throw e;
 	}
@@ -37199,7 +34085,7 @@ var $ZodSymbol = /*@__PURE__*/ $constructor("$ZodSymbol", (inst, def) => {
 var $ZodUndefined = /*@__PURE__*/ $constructor("$ZodUndefined", (inst, def) => {
 	$ZodType.init(inst, def);
 	inst._zod.pattern = _undefined$2;
-	inst._zod.values = new Set([void 0]);
+	inst._zod.values = /* @__PURE__ */ new Set([void 0]);
 	inst._zod.parse = (payload, _ctx) => {
 		const input = payload.value;
 		if (typeof input === "undefined") return payload;
@@ -37215,7 +34101,7 @@ var $ZodUndefined = /*@__PURE__*/ $constructor("$ZodUndefined", (inst, def) => {
 var $ZodNull = /*@__PURE__*/ $constructor("$ZodNull", (inst, def) => {
 	$ZodType.init(inst, def);
 	inst._zod.pattern = _null$2;
-	inst._zod.values = new Set([null]);
+	inst._zod.values = /* @__PURE__ */ new Set([null]);
 	inst._zod.parse = (payload, _ctx) => {
 		const input = payload.value;
 		if (input === null) return payload;
@@ -37399,13 +34285,13 @@ var $ZodObject = /*@__PURE__*/ $constructor("$ZodObject", (inst, def) => {
 		}
 		return propValues;
 	});
-	const isObject$3 = isObject;
+	const isObject$4 = isObject;
 	const catchall = def.catchall;
 	let value;
 	inst._zod.parse = (payload, ctx) => {
 		value ?? (value = _normalized.value);
 		const input = payload.value;
-		if (!isObject$3(input)) {
+		if (!isObject$4(input)) {
 			payload.issues.push({
 				expected: "object",
 				code: "invalid_type",
@@ -37528,7 +34414,7 @@ var $ZodObjectJIT = /*@__PURE__*/ $constructor("$ZodObjectJIT", (inst, def) => {
 		return (payload, ctx) => fn(shape, payload, ctx);
 	};
 	let fastpass;
-	const isObject$4 = isObject;
+	const isObject$3 = isObject;
 	const jit = !globalConfig.jitless;
 	const fastEnabled = jit && allowsEval.value;
 	const catchall = def.catchall;
@@ -37536,7 +34422,7 @@ var $ZodObjectJIT = /*@__PURE__*/ $constructor("$ZodObjectJIT", (inst, def) => {
 	inst._zod.parse = (payload, ctx) => {
 		value ?? (value = _normalized.value);
 		const input = payload.value;
-		if (!isObject$4(input)) {
+		if (!isObject$3(input)) {
 			payload.issues.push({
 				expected: "object",
 				code: "invalid_type",
@@ -38173,7 +35059,7 @@ var $ZodOptional = /*@__PURE__*/ $constructor("$ZodOptional", (inst, def) => {
 	inst._zod.optin = "optional";
 	inst._zod.optout = "optional";
 	defineLazy(inst._zod, "values", () => {
-		return def.innerType._zod.values ? new Set([...def.innerType._zod.values, void 0]) : void 0;
+		return def.innerType._zod.values ? /* @__PURE__ */ new Set([...def.innerType._zod.values, void 0]) : void 0;
 	});
 	defineLazy(inst._zod, "pattern", () => {
 		const pattern = def.innerType._zod.pattern;
@@ -38207,7 +35093,7 @@ var $ZodNullable = /*@__PURE__*/ $constructor("$ZodNullable", (inst, def) => {
 		return pattern ? new RegExp(`^(${cleanRegex(pattern.source)}|null)$`) : void 0;
 	});
 	defineLazy(inst._zod, "values", () => {
-		return def.innerType._zod.values ? new Set([...def.innerType._zod.values, null]) : void 0;
+		return def.innerType._zod.values ? /* @__PURE__ */ new Set([...def.innerType._zod.values, null]) : void 0;
 	});
 	inst._zod.parse = (payload, ctx) => {
 		if (payload.value === null) return payload;
@@ -50003,7 +46889,7 @@ async function download(url, headers) {
 	return Buffer.from(bytes);
 }
 async function resolveMilkyUri(uri) {
-	if (uri.startsWith("file://")) return await fs.readFile(fileURLToPath(uri));
+	if (uri.startsWith("file://")) return await fsPromise.readFile(fileURLToPath(uri));
 	if (uri.startsWith("http://") || uri.startsWith("https://")) return await download(uri);
 	if (uri.startsWith("base64://")) return Buffer.from(uri.slice(9), "base64");
 	throw new Error(`Unsupported URI scheme: ${uri}`);
@@ -52232,7 +49118,7 @@ var uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 function uuidToBuffer(value) {
 	if (!uuidRegex.test(value)) throw new TypeError(`invalid uuid: ${value}`);
 	const hex = value.replace(/-/g, "");
-	const buffer = new Uint8Array(16);
+	const buffer = /* @__PURE__ */ new Uint8Array(16);
 	for (let i = 0; i < 16; i++) buffer[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
 	return buffer;
 }
@@ -53259,7 +50145,8 @@ var Database = class _Database extends Service {
 		return false;
 	}
 };
-var _Driver_decorators = [Inject("model")], _init;
+var _Driver_decorators = [Inject("model")];
+var _init;
 var Driver = class {
 	constructor(ctx, config) {
 		this.ctx = ctx;
@@ -53945,17 +50832,24 @@ var __vitePreload = function preload(baseModule, deps, importerUrl) {
 				reason
 			}))));
 		}
+		function importMetaResolve(specifier) {
+			if (import.meta.resolve) return import.meta.resolve(specifier);
+			return new URL(
+				specifier,
+				/** #__KEEP__ */
+				import.meta.url
+			).href;
+		}
 		promise = allSettled(deps.map((dep) => {
 			dep = assetsURL(dep, importerUrl);
+			dep = importMetaResolve(dep);
 			if (dep in seen) return;
 			seen[dep] = true;
 			const isCss = dep.endsWith(".css");
-			const cssSelector = isCss ? "[rel=\"stylesheet\"]" : "";
-			if (!!importerUrl) for (let i = links.length - 1; i >= 0; i--) {
+			for (let i = links.length - 1; i >= 0; i--) {
 				const link = links[i];
 				if (link.href === dep && (!isCss || link.rel === "stylesheet")) return;
 			}
-			else if (document.querySelector(`link[href="${dep}"]${cssSelector}`)) return;
 			const link = document.createElement("link");
 			link.rel = isCss ? "stylesheet" : scriptRel;
 			if (!isCss) link.as = "script";
@@ -54749,7 +51643,7 @@ var RkeyManager = class {
 	}
 	async refreshRkey() {
 		if (this.pull) return this.pull;
-		const { promise, resolve } = Promise.withResolvers();
+		const { promise, resolve, reject } = Promise.withResolvers();
 		this.pull = promise;
 		try {
 			const { privateRKey, groupRKey, expiredTime } = await this.ctx.ntFileApi.getRKey();
@@ -54763,9 +51657,16 @@ var RkeyManager = class {
 			this.ctx.logger.info(`发包获取rkey成功, private:${privateRKey}, group:${groupRKey}`);
 		} catch (e) {
 			this.ctx.logger.warn(`发包获取rkey失败 ${e}，开始获取远程rkey`);
-			this.rkeyData = await this.fetchServerRkey();
-			resolve();
-			this.pull = void 0;
+			try {
+				this.rkeyData = await this.fetchServerRkey();
+				resolve();
+				this.pull = void 0;
+			} catch (e) {
+				promise.catch(noop);
+				reject(e);
+				this.pull = void 0;
+				throw e;
+			}
 		}
 	}
 	async fetchServerRkey() {
@@ -54776,6 +51677,7 @@ var RkeyManager = class {
 };
 //#endregion
 //#region src/main/qqProtocol/direct/machineGuid.ts
+var logger$6 = getLogger("machine-guid");
 var DEFAULT_FILE = path$4.resolve("data/machine_guid.bin");
 var cache = /* @__PURE__ */ new Map();
 /** 同步版 loadMachineGuid; 跟 async 版共用 cache. */
@@ -54783,7 +51685,7 @@ function loadMachineGuidSync(filePath = DEFAULT_FILE) {
 	const resolved = path$4.resolve(filePath);
 	const cached = cache.get(resolved);
 	if (cached) return cached;
-	if (existsSync$1(resolved)) {
+	if (existsSync(resolved)) {
 		const buf = readFileSync(resolved);
 		if (buf.length === 16) {
 			cache.set(resolved, buf);
@@ -54793,14 +51695,14 @@ function loadMachineGuidSync(filePath = DEFAULT_FILE) {
 		try {
 			renameSync(resolved, backup);
 		} catch {}
-		console.warn(`[MachineGuid] ${resolved} length=${buf.length} (expect 16), backed up to ${backup}, regenerating`);
+		logger$6.warn(`[MachineGuid] ${resolved} length=${buf.length} (expect 16), backed up to ${backup}, regenerating`);
 	}
 	const guid = randomBytes(16);
 	try {
 		mkdirSync(path$4.dirname(resolved), { recursive: true });
 	} catch {}
 	writeFileSync(resolved, guid);
-	console.log(`[MachineGuid] generated new 16B GUID -> ${resolved}`);
+	logger$6.info(`[MachineGuid] generated new 16B GUID -> ${resolved}`);
 	cache.set(resolved, guid);
 	return guid;
 }
@@ -54848,15 +51750,18 @@ var DeviceInfo = {
 };
 //#endregion
 //#region src/ntqqapi/helper/highway.ts
+var logger$5 = getLogger("highway");
 var AbstractHighwaySession = class {
 	trans;
 	/** 单调递增的 block seq */
 	nextSeq = 1;
+	retryTimes = 0;
+	availableServer = 0;
 	constructor(trans) {
 		this.trans = trans;
 	}
 	buildPicUpHead(offset, bodyLength, bodyMd5) {
-		if (process.env.DEBUG_HIGHWAY) console.log("[highway] buildPicUpHead:", {
+		logger$5.debug("buildPicUpHead:", {
 			offset,
 			bodyLength,
 			ticketLen: this.trans.ticket?.length || 0,
@@ -54869,7 +51774,7 @@ var AbstractHighwaySession = class {
 				uin: this.trans.uin,
 				command: "PicUp.DataUp",
 				seq: this.nextSeq++,
-				retryTimes: 0,
+				retryTimes: this.retryTimes,
 				appId: AppInfo.appId,
 				dataFlag: 16,
 				commandId: this.trans.cmd
@@ -54947,14 +51852,15 @@ var HighwayHttpSession = class extends AbstractHighwaySession {
 		for await (const chunk of this.trans.readable) {
 			const block = chunk;
 			const isEnd = offset + block.length >= this.trans.size;
-			let retries = 0;
 			const upload = async () => {
 				try {
 					await this.uploadBlock(block, offset, isEnd);
+					this.availableServer = this.retryTimes;
+					this.retryTimes = 0;
 				} catch (err) {
 					const { message } = err;
-					if ((message.includes("Highway request timeout") || message.includes("read ECONNRESET")) && retries < 3) {
-						retries++;
+					if ((message.includes("Highway request timeout") || message.includes("read ECONNRESET")) && this.retryTimes < this.trans.server.length - 1) {
+						this.retryTimes++;
 						await upload();
 					} else throw new Error(`[Highway] httpUpload Error uploading block at offset ${offset}: ${message}`);
 				}
@@ -54967,7 +51873,7 @@ var HighwayHttpSession = class extends AbstractHighwaySession {
 		const chunkMd5 = getMd5BufferFromBuffer(block);
 		const payload = this.buildPicUpHead(offset, block.length, chunkMd5);
 		const frame = this.packFrame(payload, block);
-		if (process.env.DEBUG_HIGHWAY) console.log("[HTTP highway] block req:", JSON.stringify({
+		logger$5.debug("HTTP block req:", {
 			offset,
 			cmd: this.trans.cmd,
 			bodyLen: block.length,
@@ -54975,11 +51881,12 @@ var HighwayHttpSession = class extends AbstractHighwaySession {
 			extLen: this.trans.ext?.length || 0,
 			headHex: payload.toString("hex"),
 			extHex: this.trans.ext?.toString("hex") || ""
-		}));
-		const resp = await this.httpPostHighwayContent(frame, `http://${this.trans.server}:${this.trans.port}/cgi-bin/httpconn?htcmd=0x6FF0087&uin=${this.trans.uin}`, isEnd);
+		});
+		const server = this.availableServer ? this.trans.server[this.availableServer] : this.trans.server[this.retryTimes];
+		const resp = await this.httpPostHighwayContent(frame, `http://${server}/cgi-bin/httpconn?htcmd=0x6FF0087&uin=${this.trans.uin}`, isEnd);
 		const [head, body] = this.unpackFrame(resp);
 		const headData = Media.RespDataHighwayHead.decode(head);
-		if (process.env.DEBUG_HIGHWAY) console.log("[HTTP highway] block resp:", JSON.stringify({
+		logger$5.debug("HTTP block resp:", {
 			offset,
 			isEnd,
 			cmd: this.trans.cmd,
@@ -54990,7 +51897,7 @@ var HighwayHttpSession = class extends AbstractHighwaySession {
 				dataLength: headData.msgSegHead.dataLength
 			} : null,
 			bodyHex: body.toString("hex").slice(0, 200)
-		}));
+		});
 		if (headData.errorCode !== 0) throw new Error(`HTTP Upload failed with code ${headData.errorCode}`);
 		const segRet = headData.msgSegHead?.retCode;
 		if (segRet !== void 0 && segRet !== 0) throw new Error(`HTTP Upload seg retCode=${segRet}`);
@@ -55148,7 +52055,7 @@ var NTFileApi = class extends Service {
 		const files = [];
 		let totalSize = 0;
 		for (const p of filePaths) {
-			const st = await stat(p);
+			const st = await stat$1(p);
 			const sha1 = await getSha1HexFromFile(p);
 			const md5 = await getMd5HexFromFile(p);
 			files.push({
@@ -55430,11 +52337,10 @@ var NTFileApi = class extends Service {
 	}
 	async uploadGroupVideo(groupCode, filePath, thumbPath, duration, width, height) {
 		const result = await this.ctx.qqProtocol.getGroupVideoUploadInfo(groupCode, filePath, thumbPath, duration, width, height);
-		if (process.env.DEBUG_VIDEO_UPLOAD) {
+		{
 			const idxMain = result.ext?.msgInfoBody?.[0]?.index;
 			const idxThumb = result.subExt?.msgInfoBody?.[1]?.index;
-			console.log(`[uploadGroupVideo] main fileUuid=${idxMain?.fileUuid?.slice(0, 60)}... mainUKey=${result.ext?.uKey ? "set" : "EMPTY"}`);
-			console.log(`[uploadGroupVideo] thumb fileUuid=${idxThumb?.fileUuid?.slice(0, 60)}... thumbUKey=${result.subExt?.uKey ? "set" : "EMPTY"}`);
+			this.ctx.logger.debug(`uploadGroupVideo main fileUuid=${idxMain?.fileUuid?.slice(0, 60)}... mainUKey=${result.ext?.uKey ? "set" : "EMPTY"}\nthumb fileUuid=${idxThumb?.fileUuid?.slice(0, 60)}... thumbUKey=${result.subExt?.uKey ? "set" : "EMPTY"}`);
 		}
 		const highwaySession = await this.ctx.qqProtocol.getHighwaySession();
 		const maxBlockSize = 1024 * 1024;
@@ -55449,8 +52355,7 @@ var NTFileApi = class extends Service {
 				size: index.info.fileSize,
 				ticket: highwaySession.sigSession,
 				ext: Media.NTV2RichMediaHighwayExt.encode(result.ext),
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		if (result.subExt.uKey) {
@@ -55464,8 +52369,7 @@ var NTFileApi = class extends Service {
 				size: index.info.fileSize,
 				ticket: highwaySession.sigSession,
 				ext: Media.NTV2RichMediaHighwayExt.encode(result.subExt),
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		return {
@@ -55488,8 +52392,7 @@ var NTFileApi = class extends Service {
 				size: index.info.fileSize,
 				ticket: highwaySession.sigSession,
 				ext: Media.NTV2RichMediaHighwayExt.encode(result.ext),
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		if (result.subExt.uKey) {
@@ -55503,8 +52406,7 @@ var NTFileApi = class extends Service {
 				size: index.info.fileSize,
 				ticket: highwaySession.sigSession,
 				ext: Media.NTV2RichMediaHighwayExt.encode(result.subExt),
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		return {
@@ -55557,8 +52459,7 @@ var NTFileApi = class extends Service {
 				size: result.fileSize,
 				ticket: highwaySession.sigSession,
 				ext,
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		return {
@@ -55610,8 +52511,7 @@ var NTFileApi = class extends Service {
 			size: result.fileSize,
 			ticket: highwaySession.sigSession,
 			ext,
-			server: highwaySession.highwayHostAndPorts[1][0].host,
-			port: highwaySession.highwayHostAndPorts[1][0].port
+			server: highwaySession.highwayHostAndPorts[1]
 		}).upload();
 		return {
 			fileId: result.fileId,
@@ -55634,8 +52534,7 @@ var NTFileApi = class extends Service {
 				size: index.info.fileSize,
 				ticket: highwaySession.sigSession,
 				ext: Media.NTV2RichMediaHighwayExt.encode(result.ext),
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		return {
@@ -55657,8 +52556,7 @@ var NTFileApi = class extends Service {
 				size: index.info.fileSize,
 				ticket: highwaySession.sigSession,
 				ext: Media.NTV2RichMediaHighwayExt.encode(result.ext),
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		return {
@@ -55680,8 +52578,7 @@ var NTFileApi = class extends Service {
 				size: index.info.fileSize,
 				ticket: highwaySession.sigSession,
 				ext: Media.NTV2RichMediaHighwayExt.encode(result.ext),
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		return {
@@ -55703,8 +52600,7 @@ var NTFileApi = class extends Service {
 				size: index.info.fileSize,
 				ticket: highwaySession.sigSession,
 				ext: Media.NTV2RichMediaHighwayExt.encode(result.ext),
-				server: highwaySession.highwayHostAndPorts[1][0].host,
-				port: highwaySession.highwayHostAndPorts[1][0].port
+				server: highwaySession.highwayHostAndPorts[1]
 			}).upload();
 		}
 		return {
@@ -55856,6 +52752,9 @@ var NTGroupApi = class extends Service {
 		ctx.on("nt/group-whole-mute", () => {
 			if (this.groupsCache.length > 0) this.getGroups(true);
 		});
+		ctx.on("nt/group-admin-changed", (data) => {
+			if (this.groupsCache.length > 0 && data.targetUid === selfInfo.uid) this.getGroups(true);
+		});
 	}
 	async getGroups(forceUpdate) {
 		if (forceUpdate || this.groupsCache.length === 0) {
@@ -55873,7 +52772,12 @@ var NTGroupApi = class extends Service {
 				remark: group.personInfo.remark ?? "",
 				isPin: !!group.info.topTime,
 				groupShutupExpireTime: group.info.groupShutupExpireTime ?? 0,
-				personShutupExpireTime: group.personInfo.personShutupExpireTime ?? 0
+				personShutupExpireTime: group.personInfo.personShutupExpireTime ?? 0,
+				memberRole: {
+					2: GroupMemberRole.Normal,
+					3: GroupMemberRole.Admin,
+					4: GroupMemberRole.Owner
+				}[group.personInfo.memberRole] ?? GroupMemberRole.Normal
 			}));
 		}
 		return this.groupsCache;
@@ -55896,7 +52800,8 @@ var NTGroupApi = class extends Service {
 				remark: "",
 				isPin: false,
 				groupShutupExpireTime: 0,
-				personShutupExpireTime: info.results.shutUpMeTimestamp
+				personShutupExpireTime: info.results.shutUpMeTimestamp,
+				memberRole: GroupMemberRole.Normal
 			};
 			this.groupCache.set(group.groupCode, group);
 			return group;
@@ -55906,26 +52811,33 @@ var NTGroupApi = class extends Service {
 	async getGroupMembers(groupCode, forceUpdate) {
 		if (this.refreshingMembers.has(groupCode)) await this.refreshingMembers.get(groupCode);
 		else if (forceUpdate || !this.membersCache.has(groupCode)) {
-			const { promise, resolve } = Promise.withResolvers();
+			const { promise, resolve, reject } = Promise.withResolvers();
 			this.refreshingMembers.set(groupCode, promise);
 			const members = [];
 			let cookie;
-			while (true) {
-				const res = await this.ctx.qqProtocol.fetchGroupMembers(groupCode, cookie);
-				for (const member of res.members) members.push({
-					uin: member.id.uin,
-					uid: member.id.uid,
-					nick: member.memberName,
-					cardName: member.memberCard.memberCard ?? "",
-					specialTitle: member.specialTitle ?? "",
-					level: member.level?.level ?? 0,
-					joinedAt: member.joinTimestamp,
-					lastSpokeAt: member.lastMsgTimestamp,
-					shutupExpireTime: member.shutUpTimestamp ?? 0,
-					role: member.permission ?? 0
-				});
-				cookie = res.cookie;
-				if (!cookie) break;
+			try {
+				while (true) {
+					const res = await this.ctx.qqProtocol.fetchGroupMembers(groupCode, cookie);
+					for (const member of res.members) members.push({
+						uin: member.id.uin,
+						uid: member.id.uid,
+						nick: member.memberName,
+						cardName: member.memberCard.memberCard ?? "",
+						specialTitle: member.specialTitle ?? "",
+						level: member.level?.level ?? 0,
+						joinedAt: member.joinTimestamp,
+						lastSpokeAt: member.lastMsgTimestamp,
+						shutupExpireTime: member.shutUpTimestamp ?? 0,
+						role: member.permission ?? 0
+					});
+					cookie = res.cookie;
+					if (!cookie) break;
+				}
+			} catch (e) {
+				promise.catch(noop);
+				reject(e);
+				this.refreshingMembers.delete(groupCode);
+				throw e;
 			}
 			this.membersCache.set(groupCode, members);
 			resolve();
@@ -56009,11 +52921,6 @@ var NTGroupApi = class extends Service {
 		const stat = await promises.stat(filePath);
 		const md5 = await getMd5BufferFromFile(filePath);
 		const session = await this.ctx.qqProtocol.getHighwaySession();
-		const server = session.highwayHostAndPorts[1]?.[0];
-		if (!server) return {
-			result: -1,
-			errMsg: "no highway server (type=1)"
-		};
 		const ext = Media.GroupAvatarExtra.encode({
 			type: 101,
 			groupUin: groupCodeToGroupUin(+groupCode),
@@ -56028,9 +52935,8 @@ var NTGroupApi = class extends Service {
 			sum: md5,
 			size: stat.size,
 			ticket: session.sigSession,
-			ext: Buffer.from(ext),
-			server: server.host,
-			port: server.port
+			ext,
+			server: session.highwayHostAndPorts[1]
 		};
 		try {
 			await new HighwayHttpSession(trans).upload();
@@ -56159,14 +53065,19 @@ var NTLoginApi = class extends Service {
 		this.ctx = ctx;
 	}
 	async getQuickLoginList() {
-		return { LocalLoginInfoList: selfInfo.uin ? [{
-			uin: selfInfo.uin,
-			uid: selfInfo.uid,
-			isQuickLogin: true
-		}] : [] };
+		return { LocalLoginInfoList: this.ctx.qqProtocol.listQuickLoginAccounts().map((a) => ({
+			uin: a.uin,
+			uid: a.uid,
+			nickName: a.nick,
+			faceUrl: `https://q1.qlogo.cn/g?b=qq&nk=${a.uin}&s=100`,
+			loginType: 0,
+			isQuickLogin: true,
+			isAutoLogin: false,
+			isUserLogin: false
+		})) };
 	}
 	async getLoginQrCode() {
-		return await this.ctx.qqProtocol.getDirectLoginQrCode();
+		return await this.ctx.qqProtocol.getLoginQrCode();
 	}
 };
 //#endregion
@@ -56224,7 +53135,15 @@ var MessageBuilding = class MessageBuilding {
 	}
 	async [ElementType.Face](data) {
 		const { faceElement } = data;
-		if (faceElement.faceType === 3) {
+		if (faceElement.faceType === 5) {
+			const f = faceElement;
+			const pbElem = Msg.PokeExtra.encode({ type: f.faceIndex });
+			this.outputElems.push({ commonElem: {
+				serviceType: 2,
+				pbElem,
+				businessType: f.faceIndex
+			} });
+		} else if (faceElement.faceType === 3) {
 			const f = faceElement;
 			const pbElem = Msg.LargeFaceExtra.encode({
 				aniStickerPackId: f.packId ? String(f.packId) : "1",
@@ -56703,40 +53622,28 @@ var NTMsgApi = class extends Service {
 			errMsg: "",
 			emojiId
 		};
-		const ips = body.uploadIps || [];
+		const ips = body.uploadIps;
+		body.uploadPorts;
 		if (ips.length === 0) return {
 			retCode: -1,
 			errMsg: "no upload server returned",
 			emojiId
 		};
-		const errors = [];
-		for (let i = 0; i < ips.length; i++) {
-			const server = uint32ToIPV4Addr(ips[i]);
-			try {
-				await new HighwayHttpSession({
-					uin: selfInfo.uin,
-					cmd: 9,
-					readable: createReadStream(emojiPath, { highWaterMark: 1024 * 1024 }),
-					sum: md5,
-					size: stat.size,
-					ticket: Buffer.from(body.uKey),
-					ext: Buffer.alloc(0),
-					server,
-					port: 15e3
-				}).upload();
-				return {
-					retCode: 0,
-					errMsg: "",
-					emojiId
-				};
-			} catch (e) {
-				const msg = e.message || String(e);
-				errors.push(`${server}:15000 - ${msg}`);
-			}
-		}
+		const server = [];
+		for (const [index, ip] of ips.entries()) server.push(`${uint32ToIPV4Addr(ip)}:15000`);
+		await new HighwayHttpSession({
+			uin: selfInfo.uin,
+			cmd: 9,
+			readable: createReadStream(emojiPath, { highWaterMark: 1024 * 1024 }),
+			sum: md5,
+			size: stat.size,
+			ticket: body.uKey,
+			ext: Buffer.alloc(0),
+			server
+		}).upload();
 		return {
-			retCode: -1,
-			errMsg: `所有 highway IP 都连不通: ${errors.join("; ")}`,
+			retCode: 0,
+			errMsg: "",
 			emojiId
 		};
 	}
@@ -56833,11 +53740,6 @@ var NTUserApi = class extends Service {
 		const stat = await promises.stat(filePath);
 		const md5 = await getMd5BufferFromFile(filePath);
 		const session = await this.ctx.qqProtocol.getHighwaySession();
-		const server = session.highwayHostAndPorts[1]?.[0];
-		if (!server) return {
-			result: -1,
-			errMsg: "no highway server (type=1)"
-		};
 		const trans = {
 			uin: selfInfo.uin,
 			cmd: 90,
@@ -56846,8 +53748,7 @@ var NTUserApi = class extends Service {
 			size: stat.size,
 			ticket: session.sigSession,
 			ext: Buffer.alloc(0),
-			server: server.host,
-			port: server.port
+			server: session.highwayHostAndPorts[1]
 		};
 		try {
 			await new HighwayHttpSession(trans).upload();
@@ -57265,7 +54166,7 @@ var NTWebApi = class extends Service {
 		const iBatchID = Math.floor(Date.now() / 1e3);
 		for (let i = 0; i < filePathList.length; i++) {
 			const filePath = filePathList[i];
-			const fileBuffer = await fs.readFile(filePath);
+			const fileBuffer = await fsPromise.readFile(filePath);
 			const fileSize = fileBuffer.length;
 			const fileType = await fileTypeFromBuffer(fileBuffer);
 			const timestamp = Math.floor(Date.now() / 1e3);
@@ -57450,7 +54351,7 @@ var NTWebApi = class extends Service {
 			}
 			if (sVid) {
 				const filePath = await createThumb(this.ctx, filePathList[i]);
-				const fileBuffer = await fs.readFile(filePath);
+				const fileBuffer = await fsPromise.readFile(filePath);
 				const fileSize = fileBuffer.length;
 				const timestamp = Math.floor(Date.now() / 1e3);
 				const checksum = getMd5HexFromBuffer(fileBuffer);
@@ -57638,7 +54539,7 @@ var NTWebApi = class extends Service {
 	async uploadGroupBulletinPic(groupCode, filePath) {
 		const cookieObject = await this.getCookies("qun.qq.com");
 		const bkn = this.genBkn(cookieObject.skey);
-		const buf = await fs.readFile(filePath);
+		const buf = await fsPromise.readFile(filePath);
 		const ft = await fileTypeFromBuffer(buf);
 		const formData = new FormData();
 		formData.append("bkn", bkn);
@@ -57734,7 +54635,7 @@ var reservedPorts = /* @__PURE__ */ new Set();
 var timeout;
 var getLocalHosts = () => {
 	const interfaces = os.networkInterfaces();
-	const results = new Set([void 0, "0.0.0.0"]);
+	const results = /* @__PURE__ */ new Set([void 0, "0.0.0.0"]);
 	for (const _interface of Object.values(interfaces)) for (const config of _interface) results.add(config.address);
 	return results;
 };
@@ -57873,15 +54774,15 @@ var import_dist = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((expor
 		typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : global.JSON5 = factory();
 	})(exports, (function() {
 		"use strict";
-		function createCommonjsModule(fn, module$1) {
-			return module$1 = { exports: {} }, fn(module$1, module$1.exports), module$1.exports;
+		function createCommonjsModule(fn, module$2) {
+			return module$2 = { exports: {} }, fn(module$2, module$2.exports), module$2.exports;
 		}
-		var _global = createCommonjsModule(function(module$2) {
-			var global = module$2.exports = typeof window != "undefined" && window.Math == Math ? window : typeof self != "undefined" && self.Math == Math ? self : Function("return this")();
+		var _global = createCommonjsModule(function(module$3) {
+			var global = module$3.exports = typeof window != "undefined" && window.Math == Math ? window : typeof self != "undefined" && self.Math == Math ? self : Function("return this")();
 			if (typeof __g == "number") __g = global;
 		});
-		var _core = createCommonjsModule(function(module$3) {
-			var core = module$3.exports = { version: "2.6.5" };
+		var _core = createCommonjsModule(function(module$4) {
+			var core = module$4.exports = { version: "2.6.5" };
 			if (typeof __e == "number") __e = core;
 		});
 		_core.version;
@@ -57958,10 +54859,10 @@ var import_dist = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((expor
 			return "Symbol(".concat(key === void 0 ? "" : key, ")_", (++id + px).toString(36));
 		};
 		var _library = false;
-		var _functionToString = createCommonjsModule(function(module$4) {
+		var _functionToString = createCommonjsModule(function(module$5) {
 			var SHARED = "__core-js_shared__";
 			var store = _global[SHARED] || (_global[SHARED] = {});
-			(module$4.exports = function(key, value) {
+			(module$5.exports = function(key, value) {
 				return store[key] || (store[key] = value !== void 0 ? value : {});
 			})("versions", []).push({
 				version: _core.version,
@@ -57969,14 +54870,14 @@ var import_dist = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((expor
 				copyright: "© 2019 Denis Pushkarev (zloirock.ru)"
 			});
 		})("native-function-to-string", Function.toString);
-		var _redefine = createCommonjsModule(function(module$5) {
+		var _redefine = createCommonjsModule(function(module$6) {
 			var SRC = _uid("src");
 			var TO_STRING = "toString";
 			var TPL = ("" + _functionToString).split(TO_STRING);
 			_core.inspectSource = function(it) {
 				return _functionToString.call(it);
 			};
-			(module$5.exports = function(O, key, val, safe) {
+			(module$6.exports = function(O, key, val, safe) {
 				var isFunction = typeof val == "function";
 				if (isFunction) _has(val, "name") || _hide(val, "name", key);
 				if (O[key] === val) return;
@@ -59043,7 +55944,7 @@ var Config = class extends Service {
 	async [Service.init]() {
 		return () => {
 			if (this.configPath && this.watchFileListener) {
-				fs$2.unwatchFile(this.configPath, this.watchFileListener);
+				fs.unwatchFile(this.configPath, this.watchFileListener);
 				this.watchFileListener = void 0;
 			}
 		};
@@ -59065,7 +55966,7 @@ var Config = class extends Service {
 				this.logger.info("配置重載");
 				cb(this.reloadConfig());
 			};
-			fs$2.watchFile(this.configPath, {
+			fs.watchFile(this.configPath, {
 				persistent: false,
 				interval: 1e3
 			}, this.watchFileListener);
@@ -59079,7 +55980,7 @@ var Config = class extends Service {
 	}
 	getDefaultConfig() {
 		const _defaultConfig = { ...defaultConfig };
-		const defaultConfigFromFile = fs$2.readFileSync(this.defaultConfigPath, "utf-8");
+		const defaultConfigFromFile = fs.readFileSync(this.defaultConfigPath, "utf-8");
 		try {
 			const parsedDefaultConfig = import_dist.default.parse(defaultConfigFromFile);
 			Object.assign(_defaultConfig, parsedDefaultConfig);
@@ -59090,12 +55991,12 @@ var Config = class extends Service {
 	}
 	reloadConfig() {
 		if (!this.configPath) return this.getDefaultConfig();
-		if (!fs$2.existsSync(this.configPath)) {
+		if (!fs.existsSync(this.configPath)) {
 			this.config = this.getDefaultConfig();
 			this.set(this.config);
 			return this.config;
 		} else {
-			const data = fs$2.readFileSync(this.configPath, "utf-8");
+			const data = fs.readFileSync(this.configPath, "utf-8");
 			let jsonData = defaultConfig;
 			try {
 				jsonData = import_dist.default.parse(data);
@@ -59121,7 +56022,7 @@ var Config = class extends Service {
 	writeConfig(config) {
 		if (!this.configPath) return;
 		this.skipNextWatch = true;
-		fs$2.writeFileSync(this.configPath, JSON.stringify(config, null, 2), "utf-8");
+		fs.writeFileSync(this.configPath, JSON.stringify(config, null, 2), "utf-8");
 	}
 	/**
 	* 递归清理配置对象，以 defaultConfig 为基准，删除 oldConfig 中不存在于 defaultConfig 的 key
@@ -59225,13 +56126,13 @@ var WebUITokenUtil = class {
 	}
 	getToken() {
 		if (!this.token) {
-			if (fs$2.existsSync(this.tokenPath)) this.token = fs$2.readFileSync(this.tokenPath, "utf-8").trim();
+			if (fs.existsSync(this.tokenPath)) this.token = fs.readFileSync(this.tokenPath, "utf-8").trim();
 		}
 		return this.token;
 	}
 	setToken(token) {
 		this.token = token.trim();
-		fs$2.writeFileSync(this.tokenPath, token, "utf-8");
+		fs.writeFileSync(this.tokenPath, token, "utf-8");
 	}
 };
 var webuiTokenUtil = new WebUITokenUtil(path.join(DATA_DIR, "webui_token.txt"));
@@ -59245,7 +56146,7 @@ var AuthTokenUtil = class {
 	}
 	getToken() {
 		if (!this.loaded) {
-			if (fs$2.existsSync(this.tokenPath)) this.token = fs$2.readFileSync(this.tokenPath, "utf-8").trim();
+			if (fs.existsSync(this.tokenPath)) this.token = fs.readFileSync(this.tokenPath, "utf-8").trim();
 			this.loaded = true;
 		}
 		return this.token;
@@ -59256,7 +56157,7 @@ var AuthTokenUtil = class {
 	}
 	setToken(token) {
 		this.token = token.trim();
-		fs$2.writeFileSync(this.tokenPath, this.token, "utf-8");
+		fs.writeFileSync(this.tokenPath, this.token, "utf-8");
 		this.loaded = true;
 	}
 	reload() {
@@ -59265,6 +56166,31 @@ var AuthTokenUtil = class {
 	}
 };
 var authTokenUtil = new AuthTokenUtil(path.join(DATA_DIR, "auth_token.txt"));
+var AUTH_VALIDATE_API = "https://api-auth.luckylillia.com/api/sign/info";
+/**
+* 校验 auth token 是否有效.
+* 2xx=valid, 401/403=invalid (失效/无权限), 网络失败/超时/其它状态=error (无法判定).
+* 纯 HTTP 探测, 不依赖 native sign 初始化, 未登录时也能用.
+*/
+async function validateAuthToken(token) {
+	const t = token.trim();
+	if (!t) return "invalid";
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), 15e3);
+	try {
+		const res = await fetch(AUTH_VALIDATE_API, {
+			headers: { Authorization: `Bearer ${t}` },
+			signal: controller.signal
+		});
+		if (res.ok) return "valid";
+		if (res.status === 401 || res.status === 403) return "invalid";
+		return "error";
+	} catch {
+		return "error";
+	} finally {
+		clearTimeout(timer);
+	}
+}
 //#endregion
 //#region src/webui/BE/auth.ts
 var globalLoginAttempt = {
@@ -59278,7 +56204,7 @@ function logAccess(ip, method, path, status, message) {
 	try {
 		appendFileSync(accessLogPath, logEntry);
 	} catch (err) {
-		console.error("写入访问日志失败:", err);
+		getLogger("webui-auth").error("写入访问日志失败:", err);
 	}
 }
 setInterval(() => {
@@ -59384,7 +56310,7 @@ function decodeGroupRequestFlag(flag) {
 //#region src/common/utils/environment.ts
 function isDockerEnvironment() {
 	try {
-		return existsSync("/.dockerenv");
+		return existsSync$1("/.dockerenv");
 	} catch {
 		return false;
 	}
@@ -59489,7 +56415,163 @@ function createConfigRoutes(ctx) {
 	return router;
 }
 //#endregion
+//#region src/main/qqProtocol/direct/authTokenWatcher.ts
+var started = false;
+var processing = false;
+var pending = false;
+var lastValidToken = "";
+var warnedNoToken = false;
+var retryTimer = null;
+var onValidCb = () => {};
+var log = console;
+var RETRY_MS = 15e3;
+var POLL_MS = 1e3;
+function startAuthTokenWatcher(onValid, logger) {
+	if (started) return;
+	started = true;
+	onValidCb = onValid;
+	log = logger;
+	const file = authTokenUtil.getPath();
+	processTokenFile();
+	watchFile(file, { interval: POLL_MS }, () => void processTokenFile());
+}
+function triggerAuthTokenCheck() {
+	if (started) processTokenFile();
+}
+async function processTokenFile() {
+	if (processing) {
+		pending = true;
+		return;
+	}
+	processing = true;
+	try {
+		do {
+			pending = false;
+			await processOnce();
+		} while (pending);
+	} finally {
+		processing = false;
+	}
+}
+async function processOnce() {
+	const token = authTokenUtil.reload() || (process.env.AUTH_TOKEN || "").trim();
+	if (!token) {
+		lastValidToken = "";
+		authTokenStatus.hasToken = false;
+		authTokenStatus.validation = "idle";
+		authTokenStatus.message = "";
+		if (!warnedNoToken) {
+			warnedNoToken = true;
+			log.warn("[Sign] auth_token 未配置: 请到 https://auth.luckylillia.com 获取 Auth Token, 在 WebUI 中录入或写入 data/auth_token.txt (录入后会自动校验并登录)");
+		}
+		return;
+	}
+	warnedNoToken = false;
+	authTokenStatus.hasToken = true;
+	if (token === lastValidToken && authTokenStatus.validation === "valid") return;
+	clearRetry();
+	authTokenStatus.validation = "validating";
+	authTokenStatus.message = "";
+	const result = await validateAuthToken(token);
+	if (result === "valid") {
+		authTokenStatus.validation = "valid";
+		authTokenStatus.message = "";
+		authTokenStatus.loginError = "";
+		lastValidToken = token;
+		log.info("[Sign] auth_token 校验通过, 开始登录流程");
+		try {
+			await onValidCb(token);
+		} catch {
+			lastValidToken = "";
+			scheduleRetry();
+		}
+		return;
+	}
+	lastValidToken = "";
+	if (result === "invalid") {
+		authTokenStatus.validation = "invalid";
+		authTokenStatus.message = "Auth Token 无效、已失效或无权限，请重新获取";
+		log.warn("[Sign] auth_token 无效/失效/无权限, 等待重新录入");
+	} else {
+		authTokenStatus.validation = "error";
+		authTokenStatus.message = "无法连接验证服务器（网络问题），将自动重试";
+		log.warn("[Sign] auth_token 校验网络失败, 15s 后重试");
+		scheduleRetry();
+	}
+}
+function scheduleRetry() {
+	clearRetry();
+	retryTimer = setTimeout(() => {
+		retryTimer = null;
+		if (!selfInfo.online) processTokenFile();
+	}, RETRY_MS);
+}
+function clearRetry() {
+	if (retryTimer) {
+		clearTimeout(retryTimer);
+		retryTimer = null;
+	}
+}
+//#endregion
+//#region src/webui/BE/routes/authToken.ts
+function createAuthTokenRoutes() {
+	const router = new Hono();
+	router.get("/auth-token/status", async (c) => {
+		return c.json({
+			success: true,
+			data: {
+				applicable: !isPmhqMode(),
+				online: selfInfo.online,
+				hasToken: authTokenStatus.hasToken,
+				validation: authTokenStatus.validation,
+				message: authTokenStatus.message,
+				loginError: authTokenStatus.loginError
+			}
+		});
+	});
+	router.post("/auth-token", async (c) => {
+		const body = await c.req.json().catch(() => ({}));
+		const token = typeof body.token === "string" ? body.token.trim() : "";
+		if (!token) return c.json({
+			success: false,
+			message: "Auth Token 不能为空"
+		}, 400);
+		authTokenUtil.setToken(token);
+		authTokenStatus.hasToken = true;
+		authTokenStatus.validation = "validating";
+		authTokenStatus.message = "";
+		authTokenStatus.loginError = "";
+		triggerAuthTokenCheck();
+		return c.json({
+			success: true,
+			message: "Auth Token 已保存，正在校验"
+		});
+	});
+	return router;
+}
+//#endregion
 //#region src/webui/BE/routes/dashboard.ts
+function readCpuTimes() {
+	let idle = 0;
+	let total = 0;
+	for (const c of os.cpus()) {
+		idle += c.times.idle;
+		total += c.times.user + c.times.nice + c.times.sys + c.times.idle + c.times.irq;
+	}
+	return {
+		idle,
+		total
+	};
+}
+async function sampleSystemCpuPercent(sampleMs = 150) {
+	const a = readCpuTimes();
+	await new Promise((r) => setTimeout(r, sampleMs));
+	const b = readCpuTimes();
+	const totalDelta = b.total - a.total;
+	const idleDelta = b.idle - a.idle;
+	if (totalDelta <= 0) return 0;
+	return Math.min(100, Math.max(0, (1 - idleDelta / totalDelta) * 100));
+}
 function createDashboardRoutes(ctx) {
 	const router = new Hono();
 	router.get("/dashboard/stats", async (c) => {
@@ -59510,6 +56592,10 @@ function createDashboardRoutes(ctx) {
 			const cpuUsage = process.cpuUsage();
 			const botCpuPercent = (cpuUsage.user + cpuUsage.system) / 1e6 / process.uptime() / cpuCores * 100;
 			const botMemoryPercent = memUsage.rss / botTotalMem * 100;
+			const sysTotalMem = os.totalmem();
+			const sysUsedMem = sysTotalMem - os.freemem();
+			const sysMemPercent = sysUsedMem / sysTotalMem * 100;
+			const sysCpuPercent = await sampleSystemCpuPercent();
 			return c.json({
 				success: true,
 				data: {
@@ -59519,6 +56605,7 @@ function createDashboardRoutes(ctx) {
 					messageSent: app.messageSentCount,
 					startupTime: app.startupTime,
 					lastMessageTime: app.lastMessageTime,
+					mode: isPmhqMode() ? "pmhq" : "direct",
 					bot: {
 						memory: memUsage.rss,
 						totalMemory: botTotalMem,
@@ -59530,6 +56617,13 @@ function createDashboardRoutes(ctx) {
 						totalMemory: 0,
 						memoryPercent: qqMemoryPercent,
 						cpu: qqCpu
+					},
+					system: {
+						memory: sysUsedMem,
+						totalMemory: sysTotalMem,
+						memoryPercent: sysMemPercent,
+						cpu: sysCpuPercent,
+						label: `${cpuCores} 核`
 					}
 				}
 			});
@@ -59598,16 +56692,45 @@ function createLoginRoutes(ctx) {
 			success: false,
 			message: "没有选择QQ号"
 		}, 400);
-		return c.json({
-			success: false,
-			message: "快速登录失败，直连模式自动恢复 session",
-			error: {}
-		}, 500);
+		try {
+			await ctx.qqProtocol.quickLogin(String(uin));
+			return c.json({
+				success: true,
+				data: {
+					result: "0",
+					loginErrorInfo: { errMsg: "" }
+				}
+			});
+		} catch (e) {
+			return c.json({
+				success: false,
+				message: e.message || "快速登录失败",
+				data: {
+					result: "-1",
+					loginErrorInfo: { errMsg: e.message || "快速登录失败" }
+				}
+			}, 500);
+		}
 	});
 	router.get("/login-info", (c) => {
+		let webui;
+		if (selfInfo.online && selfInfo.uin) try {
+			const p = path.join(DATA_DIR, `config_${selfInfo.uin}.json`);
+			if (existsSync(p)) {
+				const cfg = import_dist.default.parse(readFileSync(p, "utf-8"));
+				if (cfg?.webui) webui = {
+					enable: cfg.webui.enable !== false,
+					host: cfg.webui.host ?? "",
+					port: Number(cfg.webui.port) || 0
+				};
+			}
+		} catch {}
 		return c.json({
 			success: true,
-			data: selfInfo
+			data: {
+				...selfInfo,
+				webui
+			}
 		});
 	});
 	return router;
@@ -60124,7 +57247,7 @@ function createMessagesRoutes(ctx, createPicElement) {
 				message: `下载图片失败: ${response.status} ${response.statusText}`
 			}, 500);
 			const buffer = Buffer.from(await response.arrayBuffer());
-			if (!existsSync$1(TEMP_DIR)) await mkdir(TEMP_DIR, { recursive: true });
+			if (!existsSync(TEMP_DIR)) await mkdir(TEMP_DIR, { recursive: true });
 			const pathExt = parsedUrl.pathname.match(/\.([a-zA-Z0-9]{1,5})$/)?.[1] ?? "png";
 			tempPath = join(TEMP_DIR, `fav-emoji-${randomUUID()}.${pathExt}`);
 			await writeFile(tempPath, buffer);
@@ -60248,7 +57371,7 @@ function createProxyRoutes(ctx) {
 				message: "缺少文件路径参数"
 			}, 400);
 			const normalizedPath = path$1.normalize(filePath);
-			if (!existsSync$1(normalizedPath)) return c.json({
+			if (!existsSync(normalizedPath)) return c.json({
 				success: false,
 				message: "文件不存在"
 			}, 404);
@@ -61105,13 +58228,15 @@ function createWebQQRoutes(ctx, options) {
 //#region src/webui/BE/routes/email.ts
 function createEmailRoutes(ctx) {
 	const router = new Hono();
+	const getEmail = () => ctx.get("emailNotification");
 	router.get("/config", async (c) => {
 		try {
-			if (!ctx.emailNotification) return c.json({
+			const emailService = getEmail();
+			if (!emailService) return c.json({
 				success: false,
 				message: "邮件服务未初始化，请等待登录完成"
 			}, 503);
-			const config = ctx.emailNotification.getConfigManager().getConfig();
+			const config = emailService.getConfigManager().getConfig();
 			const maskedConfig = {
 				...config,
 				smtp: {
@@ -61136,11 +58261,11 @@ function createEmailRoutes(ctx) {
 	});
 	router.post("/config", async (c) => {
 		try {
-			if (!ctx.emailNotification) return c.json({
+			const emailService = getEmail();
+			if (!emailService) return c.json({
 				success: false,
 				message: "邮件服务未初始化，请等待登录完成"
 			}, 503);
-			const emailService = ctx.emailNotification;
 			const emailConfig = await c.req.json();
 			if (!emailConfig) return c.json({
 				success: false,
@@ -61170,11 +58295,11 @@ function createEmailRoutes(ctx) {
 	});
 	router.post("/test", async (c) => {
 		try {
-			if (!ctx.emailNotification) return c.json({
+			const emailService = getEmail();
+			if (!emailService) return c.json({
 				success: false,
 				message: "邮件服务未初始化，请等待登录完成"
 			}, 503);
-			const emailService = ctx.emailNotification;
 			const { config: testConfig } = await c.req.json();
 			let emailConfig;
 			if (testConfig) {
@@ -61367,14 +58492,14 @@ var tryDecodeURI = (str) => tryDecode(str, decodeURI);
 var serveStatic = (options = { root: "" }) => {
 	const root = options.root || "";
 	const optionPath = options.path;
-	if (root !== "" && !existsSync$1(root)) console.error(`serveStatic: root path '${root}' is not found, are you sure it's correct?`);
+	if (root !== "" && !existsSync(root)) console.error(`serveStatic: root path '${root}' is not found, are you sure it's correct?`);
 	return async (c, next) => {
 		if (c.finalized) return next();
 		let filename;
 		if (optionPath) filename = optionPath;
 		else try {
 			filename = tryDecodeURI(c.req.path);
-			if (/(?:^|[\/\\])\.{1,2}(?:$|[\/\\])|[\/\\]{2,}/.test(filename)) throw new Error();
+			if (/(?:^|[\/\\])\.{1,2}(?:$|[\/\\])|[\/\\]{2,}|\\/.test(filename)) throw new Error();
 		} catch {
 			await options.onNotFound?.(c.req.path, c);
 			return next();
@@ -61392,7 +58517,7 @@ var serveStatic = (options = { root: "" }) => {
 		}
 		const mimeType = getMimeType(path);
 		c.header("Content-Type", mimeType || "application/octet-stream");
-		if (options.precompressed && (!mimeType || COMPRESSIBLE_CONTENT_TYPE_REGEX.test(mimeType))) {
+		if (options.precompressed && (!mimeType || mimeType === "application/octet-stream" || COMPRESSIBLE_CONTENT_TYPE_REGEX.test(mimeType))) {
 			const acceptEncodingSet = new Set(c.req.header("Accept-Encoding")?.split(",").map((encoding) => encoding.trim()));
 			for (const encoding of ENCODINGS_ORDERED_KEYS) {
 				if (!acceptEncodingSet.has(encoding)) continue;
@@ -61439,19 +58564,29 @@ var serveStatic = (options = { root: "" }) => {
 //#endregion
 //#region src/webui/BE/server.ts
 var feDistPath = path$1.resolve(import.meta.dirname, "webui/");
+var LAZY_SERVICES = /* @__PURE__ */ new Set([
+	"ntGroupApi",
+	"ntUserApi",
+	"ntMsgApi",
+	"ntFileApi",
+	"ntFriendApi",
+	"ntSystemApi",
+	"ntWebApi",
+	"store",
+	"config",
+	"app",
+	"emailNotification"
+]);
+function lazyServiceContext(ctx) {
+	return new Proxy(ctx, { get(target, prop) {
+		if (typeof prop === "string" && LAZY_SERVICES.has(prop)) return target.get(prop);
+		const v = Reflect.get(target, prop, target);
+		return typeof v === "function" ? v.bind(target) : v;
+	} });
+}
 var WebuiServer = class extends Service {
 	config;
-	static inject = {
-		ntLoginApi: true,
-		ntFriendApi: true,
-		ntGroupApi: true,
-		ntSystemApi: true,
-		ntMsgApi: true,
-		ntUserApi: true,
-		ntFileApi: true,
-		qqProtocol: true,
-		emailNotification: false
-	};
+	static inject = ["qqProtocol", "ntLoginApi"];
 	server = null;
 	app = new Hono();
 	currentPort;
@@ -61466,7 +58601,7 @@ var WebuiServer = class extends Service {
 		super(ctx, "webuiServer");
 		this.config = config;
 		this.uploadDir = path$1.join(TEMP_DIR, "webqq-uploads");
-		if (!existsSync$1(this.uploadDir)) mkdirSync(this.uploadDir, { recursive: true });
+		if (!existsSync(this.uploadDir)) mkdirSync(this.uploadDir, { recursive: true });
 		this.initServer();
 		this.setupMessageListener();
 		this.setupConfigListener();
@@ -61484,12 +58619,14 @@ var WebuiServer = class extends Service {
 	}
 	initServer() {
 		this.app.use("/api/*", authMiddleware);
-		this.app.route("/api", createConfigRoutes(this.ctx));
-		this.app.route("/api", createLoginRoutes(this.ctx));
-		this.app.route("/api", createDashboardRoutes(this.ctx));
-		this.app.route("/api", createLogsRoutes(this.ctx));
-		this.app.route("/api/email", createEmailRoutes(this.ctx));
-		this.app.route("/api/webqq", createWebQQRoutes(this.ctx, {
+		const ctx = lazyServiceContext(this.ctx);
+		this.app.route("/api", createConfigRoutes(ctx));
+		this.app.route("/api", createAuthTokenRoutes());
+		this.app.route("/api", createLoginRoutes(ctx));
+		this.app.route("/api", createDashboardRoutes(ctx));
+		this.app.route("/api", createLogsRoutes(ctx));
+		this.app.route("/api/email", createEmailRoutes(ctx));
+		this.app.route("/api/webqq", createWebQQRoutes(ctx, {
 			uploadDir: this.uploadDir,
 			sseClients: this.sseClients,
 			createPicElement: this.createPicElement.bind(this)
@@ -61550,7 +58687,7 @@ var WebuiServer = class extends Service {
 	}
 	async fillPeerUin(message) {
 		if (message.chatType === ChatType.C2C && (!message.peerUin || message.peerUin === 0) && message.peerUid) {
-			const uin = await this.ctx.ntUserApi.getUinByUid(message.peerUid);
+			const uin = await this.ctx.get("ntUserApi")?.getUinByUid(message.peerUid);
 			if (uin) message.peerUin = uin;
 		}
 	}
@@ -61606,9 +58743,375 @@ var WebuiServer = class extends Service {
 	}
 };
 //#endregion
+//#region node_modules/nodemailer/lib/punycode/index.js
+var require_punycode = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	/** Highest positive signed 32-bit float value */
+	var maxInt = 2147483647;
+	/** Bootstring parameters */
+	var base = 36;
+	var tMin = 1;
+	var tMax = 26;
+	var skew = 38;
+	var damp = 700;
+	var initialBias = 72;
+	var initialN = 128;
+	var delimiter = "-";
+	/** Regular expressions */
+	var regexPunycode = /^xn--/;
+	var regexNonASCII = /[^\0-\x7F]/;
+	var regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g;
+	/** Error messages */
+	var errors = {
+		overflow: "Overflow: input needs wider integers to process",
+		"not-basic": "Illegal input >= 0x80 (not a basic code point)",
+		"invalid-input": "Invalid input"
+	};
+	/** Convenience shortcuts */
+	var baseMinusTMin = base - tMin;
+	var floor = Math.floor;
+	var stringFromCharCode = String.fromCharCode;
+	/**
+	* A generic error utility function.
+	* @private
+	* @param {String} type The error type.
+	* @returns {Error} Throws a `RangeError` with the applicable error message.
+	*/
+	function error(type) {
+		throw new RangeError(errors[type]);
+	}
+	/**
+	* A generic `Array#map` utility function.
+	* @private
+	* @param {Array} array The array to iterate over.
+	* @param {Function} callback The function that gets called for every array
+	* item.
+	* @returns {Array} A new array of values returned by the callback function.
+	*/
+	function map(array, callback) {
+		const result = [];
+		let length = array.length;
+		while (length--) result[length] = callback(array[length]);
+		return result;
+	}
+	/**
+	* A simple `Array#map`-like wrapper to work with domain name strings or email
+	* addresses.
+	* @private
+	* @param {String} domain The domain name or email address.
+	* @param {Function} callback The function that gets called for every
+	* character.
+	* @returns {String} A new string of characters returned by the callback
+	* function.
+	*/
+	function mapDomain(domain, callback) {
+		const parts = domain.split("@");
+		let result = "";
+		if (parts.length > 1) {
+			result = parts[0] + "@";
+			domain = parts[1];
+		}
+		domain = domain.replace(regexSeparators, ".");
+		const encoded = map(domain.split("."), callback).join(".");
+		return result + encoded;
+	}
+	/**
+	* Creates an array containing the numeric code points of each Unicode
+	* character in the string. While JavaScript uses UCS-2 internally,
+	* this function will convert a pair of surrogate halves (each of which
+	* UCS-2 exposes as separate characters) into a single code point,
+	* matching UTF-16.
+	* @see `punycode.ucs2.encode`
+	* @see <https://mathiasbynens.be/notes/javascript-encoding>
+	* @memberOf punycode.ucs2
+	* @name decode
+	* @param {String} string The Unicode input string (UCS-2).
+	* @returns {Array} The new array of code points.
+	*/
+	function ucs2decode(string) {
+		const output = [];
+		let counter = 0;
+		const length = string.length;
+		while (counter < length) {
+			const value = string.charCodeAt(counter++);
+			if (value >= 55296 && value <= 56319 && counter < length) {
+				const extra = string.charCodeAt(counter++);
+				if ((extra & 64512) == 56320) output.push(((value & 1023) << 10) + (extra & 1023) + 65536);
+				else {
+					output.push(value);
+					counter--;
+				}
+			} else output.push(value);
+		}
+		return output;
+	}
+	/**
+	* Creates a string based on an array of numeric code points.
+	* @see `punycode.ucs2.decode`
+	* @memberOf punycode.ucs2
+	* @name encode
+	* @param {Array} codePoints The array of numeric code points.
+	* @returns {String} The new Unicode string (UCS-2).
+	*/
+	var ucs2encode = (codePoints) => String.fromCodePoint(...codePoints);
+	/**
+	* Converts a basic code point into a digit/integer.
+	* @see `digitToBasic()`
+	* @private
+	* @param {Number} codePoint The basic numeric code point value.
+	* @returns {Number} The numeric value of a basic code point (for use in
+	* representing integers) in the range `0` to `base - 1`, or `base` if
+	* the code point does not represent a value.
+	*/
+	var basicToDigit = function(codePoint) {
+		if (codePoint >= 48 && codePoint < 58) return 26 + (codePoint - 48);
+		if (codePoint >= 65 && codePoint < 91) return codePoint - 65;
+		if (codePoint >= 97 && codePoint < 123) return codePoint - 97;
+		return base;
+	};
+	/**
+	* Converts a digit/integer into a basic code point.
+	* @see `basicToDigit()`
+	* @private
+	* @param {Number} digit The numeric value of a basic code point.
+	* @returns {Number} The basic code point whose value (when used for
+	* representing integers) is `digit`, which needs to be in the range
+	* `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
+	* used; else, the lowercase form is used. The behavior is undefined
+	* if `flag` is non-zero and `digit` has no uppercase form.
+	*/
+	var digitToBasic = function(digit, flag) {
+		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+	};
+	/**
+	* Bias adaptation function as per section 3.4 of RFC 3492.
+	* https://tools.ietf.org/html/rfc3492#section-3.4
+	* @private
+	*/
+	var adapt = function(delta, numPoints, firstTime) {
+		let k = 0;
+		delta = firstTime ? floor(delta / damp) : delta >> 1;
+		delta += floor(delta / numPoints);
+		for (; delta > 455; k += base) delta = floor(delta / baseMinusTMin);
+		return floor(k + 36 * delta / (delta + skew));
+	};
+	/**
+	* Converts a Punycode string of ASCII-only symbols to a string of Unicode
+	* symbols.
+	* @memberOf punycode
+	* @param {String} input The Punycode string of ASCII-only symbols.
+	* @returns {String} The resulting string of Unicode symbols.
+	*/
+	var decode = function(input) {
+		const output = [];
+		const inputLength = input.length;
+		let i = 0;
+		let n = initialN;
+		let bias = initialBias;
+		let basic = input.lastIndexOf(delimiter);
+		if (basic < 0) basic = 0;
+		for (let j = 0; j < basic; ++j) {
+			if (input.charCodeAt(j) >= 128) error("not-basic");
+			output.push(input.charCodeAt(j));
+		}
+		for (let index = basic > 0 ? basic + 1 : 0; index < inputLength;) {
+			const oldi = i;
+			for (let w = 1, k = base;; k += base) {
+				if (index >= inputLength) error("invalid-input");
+				const digit = basicToDigit(input.charCodeAt(index++));
+				if (digit >= base) error("invalid-input");
+				if (digit > floor((maxInt - i) / w)) error("overflow");
+				i += digit * w;
+				const t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+				if (digit < t) break;
+				const baseMinusT = base - t;
+				if (w > floor(maxInt / baseMinusT)) error("overflow");
+				w *= baseMinusT;
+			}
+			const out = output.length + 1;
+			bias = adapt(i - oldi, out, oldi == 0);
+			if (floor(i / out) > maxInt - n) error("overflow");
+			n += floor(i / out);
+			i %= out;
+			output.splice(i++, 0, n);
+		}
+		return String.fromCodePoint(...output);
+	};
+	/**
+	* Converts a string of Unicode symbols (e.g. a domain name label) to a
+	* Punycode string of ASCII-only symbols.
+	* @memberOf punycode
+	* @param {String} input The string of Unicode symbols.
+	* @returns {String} The resulting Punycode string of ASCII-only symbols.
+	*/
+	var encode = function(input) {
+		const output = [];
+		input = ucs2decode(input);
+		const inputLength = input.length;
+		let n = initialN;
+		let delta = 0;
+		let bias = initialBias;
+		for (const currentValue of input) if (currentValue < 128) output.push(stringFromCharCode(currentValue));
+		const basicLength = output.length;
+		let handledCPCount = basicLength;
+		if (basicLength) output.push(delimiter);
+		while (handledCPCount < inputLength) {
+			let m = maxInt;
+			for (const currentValue of input) if (currentValue >= n && currentValue < m) m = currentValue;
+			const handledCPCountPlusOne = handledCPCount + 1;
+			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) error("overflow");
+			delta += (m - n) * handledCPCountPlusOne;
+			n = m;
+			for (const currentValue of input) {
+				if (currentValue < n && ++delta > maxInt) error("overflow");
+				if (currentValue === n) {
+					let q = delta;
+					for (let k = base;; k += base) {
+						const t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+						if (q < t) break;
+						const qMinusT = q - t;
+						const baseMinusT = base - t;
+						output.push(stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0)));
+						q = floor(qMinusT / baseMinusT);
+					}
+					output.push(stringFromCharCode(digitToBasic(q, 0)));
+					bias = adapt(delta, handledCPCountPlusOne, handledCPCount === basicLength);
+					delta = 0;
+					++handledCPCount;
+				}
+			}
+			++delta;
+			++n;
+		}
+		return output.join("");
+	};
+	/**
+	* Converts a Punycode string representing a domain name or an email address
+	* to Unicode. Only the Punycoded parts of the input will be converted, i.e.
+	* it doesn't matter if you call it on a string that has already been
+	* converted to Unicode.
+	* @memberOf punycode
+	* @param {String} input The Punycoded domain name or email address to
+	* convert to Unicode.
+	* @returns {String} The Unicode representation of the given Punycode
+	* string.
+	*/
+	var toUnicode = function(input) {
+		return mapDomain(input, function(string) {
+			return regexPunycode.test(string) ? decode(string.slice(4).toLowerCase()) : string;
+		});
+	};
+	/**
+	* Converts a Unicode string representing a domain name or an email address to
+	* Punycode. Only the non-ASCII parts of the domain name will be converted,
+	* i.e. it doesn't matter if you call it with a domain that's already in
+	* ASCII.
+	* @memberOf punycode
+	* @param {String} input The domain name or email address to convert, as a
+	* Unicode string.
+	* @returns {String} The Punycode representation of the given domain name or
+	* email address.
+	*/
+	var toASCII = function(input) {
+		return mapDomain(input, function(string) {
+			return regexNonASCII.test(string) ? "xn--" + encode(string) : string;
+		});
+	};
+	module.exports = {
+		/**
+		* A string representing the current Punycode.js version number.
+		* @memberOf punycode
+		* @type String
+		*/
+		version: "2.3.1",
+		/**
+		* An object of methods to convert from JavaScript's internal character
+		* representation (UCS-2) to Unicode code points, and back.
+		* @see <https://mathiasbynens.be/notes/javascript-encoding>
+		* @memberOf punycode
+		* @type Object
+		*/
+		ucs2: {
+			decode: ucs2decode,
+			encode: ucs2encode
+		},
+		decode,
+		encode,
+		toASCII,
+		toUnicode
+	};
+}));
+//#endregion
+//#region node_modules/nodemailer/lib/shared/url.js
+var require_url = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var urllib = __require("url");
+	var punycode = require_punycode();
+	var URLImpl = typeof URL !== "undefined" && URL || urllib.URL;
+	var SLASHLESS_AUTHORITY = /^([a-zA-Z][a-zA-Z0-9+.-]*:)(?!\/\/)(.+)$/;
+	function safeDecode(str) {
+		try {
+			return decodeURIComponent(str);
+		} catch (_err) {
+			return str;
+		}
+	}
+	function normalizeHostname(raw) {
+		let hostname = raw || "";
+		if (!hostname) return "";
+		if (hostname.charAt(0) === "[" && hostname.charAt(hostname.length - 1) === "]") return hostname.slice(1, -1);
+		return punycode.toASCII(safeDecode(hostname));
+	}
+	module.exports.parse = (input, parseQueryString) => {
+		input = input || "";
+		if (!URLImpl) return urllib.parse(input, parseQueryString);
+		const slashless = SLASHLESS_AUTHORITY.exec(input);
+		const normalized = slashless ? slashless[1] + "//" + slashless[2] : input;
+		let u;
+		try {
+			u = new URLImpl(normalized);
+		} catch (_err) {
+			return urllib.parse(input, parseQueryString);
+		}
+		const hostname = normalizeHostname(u.hostname);
+		const port = u.port || null;
+		const pathname = u.pathname || null;
+		const search = u.search || null;
+		let auth = null;
+		if (u.username || u.password) auth = safeDecode(u.username) + (u.password ? ":" + safeDecode(u.password) : "");
+		let query;
+		if (parseQueryString) {
+			query = Object.create(null);
+			u.searchParams.forEach((value, key) => {
+				if (Object.prototype.hasOwnProperty.call(query, key)) if (Array.isArray(query[key])) query[key].push(value);
+				else query[key] = [query[key], value];
+				else query[key] = value;
+			});
+		} else query = search ? search.slice(1) : null;
+		return {
+			protocol: u.protocol || null,
+			host: u.host || null,
+			hostname,
+			port,
+			pathname,
+			search,
+			path: (pathname || "") + (search || "") || null,
+			href: u.href,
+			auth,
+			query
+		};
+	};
+	module.exports.resolve = (from, to) => {
+		if (!URLImpl) return urllib.resolve(from, to);
+		try {
+			return new URLImpl(to, from).href;
+		} catch (_err) {
+			return urllib.resolve(from, to);
+		}
+	};
+}));
+//#endregion
 //#region node_modules/nodemailer/lib/fetch/cookies.js
 var require_cookies = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var urllib$4 = __require("url");
+	var urllib = require_url();
 	var SESSION_TIMEOUT = 1800;
 	/**
 	* Creates a biskviit cookie jar for managing cookie values in memory
@@ -61628,7 +59131,7 @@ var require_cookies = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		* @param {String} url Current URL
 		*/
 		set(cookieStr, url) {
-			const urlparts = urllib$4.parse(url || "");
+			const urlparts = urllib.parse(url || "");
 			const cookie = this.parse(cookieStr);
 			let domain;
 			if (cookie.domain) {
@@ -61718,7 +59221,7 @@ var require_cookies = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		* @returns {Boolean} true if cookie is valid for specifiec URL
 		*/
 		match(cookie, url) {
-			const urlparts = urllib$4.parse(url || "");
+			const urlparts = urllib.parse(url || "");
 			if (urlparts.hostname !== cookie.domain && (cookie.domain.charAt(0) !== "." || ("." + urlparts.hostname).substr(-cookie.domain.length) !== cookie.domain)) return false;
 			if (this.getPath(urlparts.pathname).substr(0, cookie.path.length) !== cookie.path) return false;
 			if (cookie.secure && urlparts.protocol !== "https:") return false;
@@ -61799,7 +59302,7 @@ var package_exports = /* @__PURE__ */ __exportAll({
 var name, version$1, description, main, scripts, repository, keywords, author, license, bugs, homepage, devDependencies, engines, package_default;
 var init_package = __esmMin((() => {
 	name = "nodemailer";
-	version$1 = "8.0.10";
+	version$1 = "9.0.3";
 	description = "Easy as cake e-mail sending from your Node.js applications";
 	main = "lib/nodemailer.js";
 	scripts = {
@@ -61822,19 +59325,19 @@ var init_package = __esmMin((() => {
 	bugs = { "url": "https://github.com/nodemailer/nodemailer/issues" };
 	homepage = "https://nodemailer.com/";
 	devDependencies = {
-		"@aws-sdk/client-sesv2": "3.1037.0",
+		"@aws-sdk/client-sesv2": "3.1068.0",
 		"bunyan": "1.8.15",
 		"c8": "11.0.0",
-		"eslint": "10.2.1",
+		"eslint": "10.5.0",
 		"eslint-config-prettier": "10.1.8",
-		"globals": "17.5.0",
+		"globals": "17.6.0",
 		"libbase64": "1.3.0",
 		"libmime": "5.3.8",
 		"libqp": "2.1.1",
-		"prettier": "3.8.3",
+		"prettier": "3.8.4",
 		"proxy": "1.0.2",
 		"proxy-test-server": "1.0.0",
-		"smtp-server": "3.18.4"
+		"smtp-server": "3.19.0"
 	};
 	engines = { "node": ">=6.0.0" };
 	package_default = {
@@ -61900,8 +59403,8 @@ var require_errors = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 var require_fetch = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	var http$1 = __require("http");
 	var https$1 = __require("https");
-	var urllib$3 = __require("url");
-	var zlib = __require("zlib");
+	var urllib = require_url();
+	var zlib$5 = __require("zlib");
 	var { PassThrough: PassThrough$3 } = __require("stream");
 	var Cookies = require_cookies();
 	var packageData = (init_package(), __toCommonJS(package_exports).default);
@@ -61925,7 +59428,7 @@ var require_fetch = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			options.cookie = false;
 		}
 		const fetchRes = options.fetchRes;
-		const parsed = urllib$3.parse(url);
+		const parsed = urllib.parse(url);
 		let method = (options.method || "").toString().trim().toUpperCase() || "GET";
 		let finished = false;
 		let cookies;
@@ -61981,7 +59484,7 @@ var require_fetch = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			path: parsed.path,
 			port: parsed.port ? parsed.port : parsed.protocol === "https:" ? 443 : 80,
 			headers,
-			rejectUnauthorized: false,
+			rejectUnauthorized: true,
 			agent: false
 		};
 		if (options.tls) Object.assign(reqOptions, options.tls);
@@ -62019,7 +59522,7 @@ var require_fetch = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			switch (res.headers["content-encoding"]) {
 				case "gzip":
 				case "deflate":
-					inflate = zlib.createUnzip();
+					inflate = zlib$5.createUnzip();
 					break;
 			}
 			if (res.headers["set-cookie"]) [].concat(res.headers["set-cookie"] || []).forEach((cookie) => {
@@ -62044,7 +59547,21 @@ var require_fetch = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				}
 				options.method = "GET";
 				options.body = false;
-				return nmfetch(urllib$3.resolve(url, res.headers.location), options);
+				const redirectUrl = urllib.resolve(url, res.headers.location);
+				const redirectParsed = urllib.parse(redirectUrl);
+				const crossHost = redirectParsed.hostname !== parsed.hostname;
+				const downgrade = parsed.protocol === "https:" && redirectParsed.protocol === "http:";
+				if (options.headers && (crossHost || downgrade)) {
+					const sensitive = [
+						"authorization",
+						"cookie",
+						"proxy-authorization"
+					];
+					Object.keys(options.headers).forEach((key) => {
+						if (sensitive.includes(key.toLowerCase())) delete options.headers[key];
+					});
+				}
+				return nmfetch(redirectUrl, options);
 			}
 			fetchRes.statusCode = res.statusCode;
 			fetchRes.headers = res.headers;
@@ -62096,8 +59613,8 @@ var require_fetch = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 //#endregion
 //#region node_modules/nodemailer/lib/shared/index.js
 var require_shared = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var urllib$2 = __require("url");
-	var util$1 = __require("util");
+	var urllib = require_url();
+	var util$7 = __require("util");
 	var fs$5 = __require("fs");
 	var nmfetch = require_fetch();
 	var errors = require_errors();
@@ -62260,7 +59777,7 @@ var require_shared = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	module.exports.parseConnectionUrl = (str) => {
 		str = str || "";
 		const options = {};
-		const url = urllib$2.parse(str, true);
+		const url = urllib.parse(str, true);
 		switch (url.protocol) {
 			case "smtp:":
 				options.secure = false;
@@ -62435,6 +59952,10 @@ var require_shared = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		if (!callback) promise = new Promise((resolve, reject) => {
 			callback = module.exports.callbackPromise(resolve, reject);
 		});
+		resolveContentValue(data, key, options, callback);
+		return promise;
+	};
+	function resolveContentValue(data, key, options, callback) {
 		let content = data && data[key] && data[key].content || data[key];
 		const encoding = (typeof data[key] === "object" && data[key].encoding || "utf8").toString().toLowerCase().replace(/[-_\s]/g, "");
 		if (!content) return callback(null, content);
@@ -62451,11 +59972,13 @@ var require_shared = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 					err.code = errors.EURLACCESS;
 					callback(err);
 				});
-				return resolveStream(nmfetch(content.path || content.href), callback);
+				return resolveStream(nmfetch(content.path || content.href, {
+					headers: content.httpHeaders,
+					tls: content.tls
+				}), callback);
 			} else if (/^data:/i.test(content.path || content.href)) {
 				const parsedDataUri = module.exports.parseDataURI(content.path || content.href);
-				if (!parsedDataUri || !parsedDataUri.data) return callback(null, Buffer.from(0));
-				return callback(null, parsedDataUri.data);
+				return callback(null, parsedDataUri && parsedDataUri.data ? parsedDataUri.data : Buffer.alloc(0));
 			} else if (content.path) {
 				if (options.disableFileAccess) return setImmediate(() => {
 					const err = /* @__PURE__ */ new Error("File access rejected for " + content.path);
@@ -62471,8 +59994,7 @@ var require_shared = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			"ascii"
 		].includes(encoding)) content = Buffer.from(data[key].content, encoding);
 		setImmediate(() => callback(null, content));
-		return promise;
-	};
+	}
 	/**
 	* Copies properties from source objects to target objects
 	*/
@@ -62553,7 +60075,7 @@ var require_shared = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				if (entry.sid) prefix = "[" + entry.sid + "] " + prefix;
 				if (entry.cid) prefix = "[#" + entry.cid + "] " + prefix;
 			}
-			message = util$1.format(message, ...args);
+			message = util$7.format(message, ...args);
 			message.split(/\r?\n/).forEach((line) => {
 				console.log("[%s] %s %s", (/* @__PURE__ */ new Date()).toISOString().substr(0, 19).replace(/T/, " "), levelNames.get(level), prefix + line);
 			});
@@ -62571,7 +60093,7 @@ var require_mime_types = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	var path$3 = __require("path");
 	var defaultMimeType = "application/octet-stream";
 	var defaultExtension = "bin";
-	var mimeTypes = new Map([
+	var mimeTypes = /* @__PURE__ */ new Map([
 		["application/acad", "dwg"],
 		["application/applixware", "aw"],
 		["application/arj", "arj"],
@@ -63833,7 +61355,7 @@ var require_mime_types = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		["xgl/drawing", "xgz"],
 		["xgl/movie", "xmz"]
 	]);
-	var extensions = new Map([
+	var extensions = /* @__PURE__ */ new Map([
 		["123", "application/vnd.lotus-1-2-3"],
 		["323", "text/h323"],
 		["*", "application/octet-stream"],
@@ -65068,7 +62590,7 @@ var require_mime_types = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		},
 		detectExtension(mimeType) {
 			if (!mimeType) return defaultExtension;
-			const parts = (mimeType || "").toLowerCase().trim().split("/");
+			const parts = mimeType.toLowerCase().trim().split("/");
 			const rootType = parts.shift().trim();
 			const subType = parts.join("/").trim();
 			if (mimeTypes.has(rootType + "/" + subType)) {
@@ -65081,304 +62603,6 @@ var require_mime_types = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				default: return "bin";
 			}
 		}
-	};
-}));
-//#endregion
-//#region node_modules/nodemailer/lib/punycode/index.js
-var require_punycode = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	/** Highest positive signed 32-bit float value */
-	var maxInt = 2147483647;
-	/** Bootstring parameters */
-	var base = 36;
-	var tMin = 1;
-	var tMax = 26;
-	var skew = 38;
-	var damp = 700;
-	var initialBias = 72;
-	var initialN = 128;
-	var delimiter = "-";
-	/** Regular expressions */
-	var regexPunycode = /^xn--/;
-	var regexNonASCII = /[^\0-\x7F]/;
-	var regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g;
-	/** Error messages */
-	var errors = {
-		overflow: "Overflow: input needs wider integers to process",
-		"not-basic": "Illegal input >= 0x80 (not a basic code point)",
-		"invalid-input": "Invalid input"
-	};
-	/** Convenience shortcuts */
-	var baseMinusTMin = base - tMin;
-	var floor = Math.floor;
-	var stringFromCharCode = String.fromCharCode;
-	/**
-	* A generic error utility function.
-	* @private
-	* @param {String} type The error type.
-	* @returns {Error} Throws a `RangeError` with the applicable error message.
-	*/
-	function error(type) {
-		throw new RangeError(errors[type]);
-	}
-	/**
-	* A generic `Array#map` utility function.
-	* @private
-	* @param {Array} array The array to iterate over.
-	* @param {Function} callback The function that gets called for every array
-	* item.
-	* @returns {Array} A new array of values returned by the callback function.
-	*/
-	function map(array, callback) {
-		const result = [];
-		let length = array.length;
-		while (length--) result[length] = callback(array[length]);
-		return result;
-	}
-	/**
-	* A simple `Array#map`-like wrapper to work with domain name strings or email
-	* addresses.
-	* @private
-	* @param {String} domain The domain name or email address.
-	* @param {Function} callback The function that gets called for every
-	* character.
-	* @returns {String} A new string of characters returned by the callback
-	* function.
-	*/
-	function mapDomain(domain, callback) {
-		const parts = domain.split("@");
-		let result = "";
-		if (parts.length > 1) {
-			result = parts[0] + "@";
-			domain = parts[1];
-		}
-		domain = domain.replace(regexSeparators, ".");
-		const encoded = map(domain.split("."), callback).join(".");
-		return result + encoded;
-	}
-	/**
-	* Creates an array containing the numeric code points of each Unicode
-	* character in the string. While JavaScript uses UCS-2 internally,
-	* this function will convert a pair of surrogate halves (each of which
-	* UCS-2 exposes as separate characters) into a single code point,
-	* matching UTF-16.
-	* @see `punycode.ucs2.encode`
-	* @see <https://mathiasbynens.be/notes/javascript-encoding>
-	* @memberOf punycode.ucs2
-	* @name decode
-	* @param {String} string The Unicode input string (UCS-2).
-	* @returns {Array} The new array of code points.
-	*/
-	function ucs2decode(string) {
-		const output = [];
-		let counter = 0;
-		const length = string.length;
-		while (counter < length) {
-			const value = string.charCodeAt(counter++);
-			if (value >= 55296 && value <= 56319 && counter < length) {
-				const extra = string.charCodeAt(counter++);
-				if ((extra & 64512) == 56320) output.push(((value & 1023) << 10) + (extra & 1023) + 65536);
-				else {
-					output.push(value);
-					counter--;
-				}
-			} else output.push(value);
-		}
-		return output;
-	}
-	/**
-	* Creates a string based on an array of numeric code points.
-	* @see `punycode.ucs2.decode`
-	* @memberOf punycode.ucs2
-	* @name encode
-	* @param {Array} codePoints The array of numeric code points.
-	* @returns {String} The new Unicode string (UCS-2).
-	*/
-	var ucs2encode = (codePoints) => String.fromCodePoint(...codePoints);
-	/**
-	* Converts a basic code point into a digit/integer.
-	* @see `digitToBasic()`
-	* @private
-	* @param {Number} codePoint The basic numeric code point value.
-	* @returns {Number} The numeric value of a basic code point (for use in
-	* representing integers) in the range `0` to `base - 1`, or `base` if
-	* the code point does not represent a value.
-	*/
-	var basicToDigit = function(codePoint) {
-		if (codePoint >= 48 && codePoint < 58) return 26 + (codePoint - 48);
-		if (codePoint >= 65 && codePoint < 91) return codePoint - 65;
-		if (codePoint >= 97 && codePoint < 123) return codePoint - 97;
-		return base;
-	};
-	/**
-	* Converts a digit/integer into a basic code point.
-	* @see `basicToDigit()`
-	* @private
-	* @param {Number} digit The numeric value of a basic code point.
-	* @returns {Number} The basic code point whose value (when used for
-	* representing integers) is `digit`, which needs to be in the range
-	* `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
-	* used; else, the lowercase form is used. The behavior is undefined
-	* if `flag` is non-zero and `digit` has no uppercase form.
-	*/
-	var digitToBasic = function(digit, flag) {
-		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
-	};
-	/**
-	* Bias adaptation function as per section 3.4 of RFC 3492.
-	* https://tools.ietf.org/html/rfc3492#section-3.4
-	* @private
-	*/
-	var adapt = function(delta, numPoints, firstTime) {
-		let k = 0;
-		delta = firstTime ? floor(delta / damp) : delta >> 1;
-		delta += floor(delta / numPoints);
-		for (; delta > 455; k += base) delta = floor(delta / baseMinusTMin);
-		return floor(k + 36 * delta / (delta + skew));
-	};
-	/**
-	* Converts a Punycode string of ASCII-only symbols to a string of Unicode
-	* symbols.
-	* @memberOf punycode
-	* @param {String} input The Punycode string of ASCII-only symbols.
-	* @returns {String} The resulting string of Unicode symbols.
-	*/
-	var decode = function(input) {
-		const output = [];
-		const inputLength = input.length;
-		let i = 0;
-		let n = initialN;
-		let bias = initialBias;
-		let basic = input.lastIndexOf(delimiter);
-		if (basic < 0) basic = 0;
-		for (let j = 0; j < basic; ++j) {
-			if (input.charCodeAt(j) >= 128) error("not-basic");
-			output.push(input.charCodeAt(j));
-		}
-		for (let index = basic > 0 ? basic + 1 : 0; index < inputLength;) {
-			const oldi = i;
-			for (let w = 1, k = base;; k += base) {
-				if (index >= inputLength) error("invalid-input");
-				const digit = basicToDigit(input.charCodeAt(index++));
-				if (digit >= base) error("invalid-input");
-				if (digit > floor((maxInt - i) / w)) error("overflow");
-				i += digit * w;
-				const t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
-				if (digit < t) break;
-				const baseMinusT = base - t;
-				if (w > floor(maxInt / baseMinusT)) error("overflow");
-				w *= baseMinusT;
-			}
-			const out = output.length + 1;
-			bias = adapt(i - oldi, out, oldi == 0);
-			if (floor(i / out) > maxInt - n) error("overflow");
-			n += floor(i / out);
-			i %= out;
-			output.splice(i++, 0, n);
-		}
-		return String.fromCodePoint(...output);
-	};
-	/**
-	* Converts a string of Unicode symbols (e.g. a domain name label) to a
-	* Punycode string of ASCII-only symbols.
-	* @memberOf punycode
-	* @param {String} input The string of Unicode symbols.
-	* @returns {String} The resulting Punycode string of ASCII-only symbols.
-	*/
-	var encode = function(input) {
-		const output = [];
-		input = ucs2decode(input);
-		const inputLength = input.length;
-		let n = initialN;
-		let delta = 0;
-		let bias = initialBias;
-		for (const currentValue of input) if (currentValue < 128) output.push(stringFromCharCode(currentValue));
-		const basicLength = output.length;
-		let handledCPCount = basicLength;
-		if (basicLength) output.push(delimiter);
-		while (handledCPCount < inputLength) {
-			let m = maxInt;
-			for (const currentValue of input) if (currentValue >= n && currentValue < m) m = currentValue;
-			const handledCPCountPlusOne = handledCPCount + 1;
-			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) error("overflow");
-			delta += (m - n) * handledCPCountPlusOne;
-			n = m;
-			for (const currentValue of input) {
-				if (currentValue < n && ++delta > maxInt) error("overflow");
-				if (currentValue === n) {
-					let q = delta;
-					for (let k = base;; k += base) {
-						const t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
-						if (q < t) break;
-						const qMinusT = q - t;
-						const baseMinusT = base - t;
-						output.push(stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0)));
-						q = floor(qMinusT / baseMinusT);
-					}
-					output.push(stringFromCharCode(digitToBasic(q, 0)));
-					bias = adapt(delta, handledCPCountPlusOne, handledCPCount === basicLength);
-					delta = 0;
-					++handledCPCount;
-				}
-			}
-			++delta;
-			++n;
-		}
-		return output.join("");
-	};
-	/**
-	* Converts a Punycode string representing a domain name or an email address
-	* to Unicode. Only the Punycoded parts of the input will be converted, i.e.
-	* it doesn't matter if you call it on a string that has already been
-	* converted to Unicode.
-	* @memberOf punycode
-	* @param {String} input The Punycoded domain name or email address to
-	* convert to Unicode.
-	* @returns {String} The Unicode representation of the given Punycode
-	* string.
-	*/
-	var toUnicode = function(input) {
-		return mapDomain(input, function(string) {
-			return regexPunycode.test(string) ? decode(string.slice(4).toLowerCase()) : string;
-		});
-	};
-	/**
-	* Converts a Unicode string representing a domain name or an email address to
-	* Punycode. Only the non-ASCII parts of the domain name will be converted,
-	* i.e. it doesn't matter if you call it with a domain that's already in
-	* ASCII.
-	* @memberOf punycode
-	* @param {String} input The domain name or email address to convert, as a
-	* Unicode string.
-	* @returns {String} The Punycode representation of the given domain name or
-	* email address.
-	*/
-	var toASCII = function(input) {
-		return mapDomain(input, function(string) {
-			return regexNonASCII.test(string) ? "xn--" + encode(string) : string;
-		});
-	};
-	module.exports = {
-		/**
-		* A string representing the current Punycode.js version number.
-		* @memberOf punycode
-		* @type String
-		*/
-		version: "2.3.1",
-		/**
-		* An object of methods to convert from JavaScript's internal character
-		* representation (UCS-2) to Unicode code points, and back.
-		* @see <https://mathiasbynens.be/notes/javascript-encoding>
-		* @memberOf punycode
-		* @type Object
-		*/
-		ucs2: {
-			decode: ucs2decode,
-			encode: ucs2encode
-		},
-		decode,
-		encode,
-		toASCII,
-		toUnicode
 	};
 }));
 //#endregion
@@ -66154,6 +63378,7 @@ var require_addressparser = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 			this.operatorExpecting = "";
 			this.node = null;
 			this.escaped = false;
+			this.inDomainLiteral = false;
 			this.list = [];
 			/**
 			* Operator tokens and which tokens are expected to end the sequence
@@ -66191,6 +63416,10 @@ var require_addressparser = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 		* @param {String} chr Character from the address field
 		*/
 		checkChar(chr, nextChr) {
+			if (!this.escaped && !this.operatorExpecting) {
+				if (!this.inDomainLiteral && chr === "[") this.inDomainLiteral = true;
+				else if (this.inDomainLiteral && (chr === "]" || chr === "," || chr === ";")) this.inDomainLiteral = false;
+			}
 			if (this.escaped) {} else if (chr === this.operatorExpecting) {
 				this.node = {
 					type: "operator",
@@ -66209,7 +63438,7 @@ var require_addressparser = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 				this.operatorExpecting = "";
 				this.escaped = false;
 				return;
-			} else if (!this.operatorExpecting && chr in this.operators) {
+			} else if (!this.operatorExpecting && !this.inDomainLiteral && chr in this.operators) {
 				this.node = {
 					type: "operator",
 					value: chr
@@ -67123,7 +64352,10 @@ var require_mime_node = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 					});
 					return contentStream;
 				}
-				return nmfetch(content.href, { headers: content.httpHeaders });
+				return nmfetch(content.href, {
+					headers: content.httpHeaders,
+					tls: content.tls
+				});
 			}
 			contentStream = new PassThrough$2();
 			setImmediate(() => {
@@ -67351,7 +64583,11 @@ var require_mail_composer = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 			this._useRelated = !!(this._htmlNode && this._attachments.related.length);
 			this._useAlternative = this._alternatives.length > 1;
 			this._useMixed = this._attachments.attached.length > 1 || this._alternatives.length && this._attachments.attached.length === 1;
-			if (this.mail.raw) this.message = new MimeNode("message/rfc822", { newline: this.mail.newline }).setRaw(this.mail.raw);
+			if (this.mail.raw) this.message = new MimeNode("message/rfc822", {
+				newline: this.mail.newline,
+				disableUrlAccess: this.mail.disableUrlAccess,
+				disableFileAccess: this.mail.disableFileAccess
+			}).setRaw(this.mail.raw);
 			else if (this._useMixed) this.message = this._createMixed();
 			else if (this._useAlternative) this.message = this._createAlternative();
 			else if (this._useRelated) this.message = this._createRelated();
@@ -67387,7 +64623,7 @@ var require_mail_composer = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 		* @returns {Object} An object of arrays (`related` and `attached`)
 		*/
 		getAttachments(findRelated) {
-			let icalEvent, eventObject;
+			let eventObject;
 			const attachments = [].concat(this.mail.attachments || []).map((attachment, i) => {
 				if (/^data:/i.test(attachment.path || attachment.href)) attachment = this._processDataUrl(attachment);
 				const contentType = attachment.contentType || mimeFuncs.detectMimeType(attachment.filename || attachment.path || attachment.href || "bin");
@@ -67417,7 +64653,8 @@ var require_mail_composer = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 				else if (attachment.path) data.content = { path: attachment.path };
 				else if (attachment.href) data.content = {
 					href: attachment.href,
-					httpHeaders: attachment.httpHeaders
+					httpHeaders: attachment.httpHeaders,
+					tls: attachment.tls
 				};
 				else data.content = attachment.content || "";
 				if (attachment.encoding) data.encoding = attachment.encoding;
@@ -67425,9 +64662,7 @@ var require_mail_composer = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 				return data;
 			});
 			if (this.mail.icalEvent) {
-				if (typeof this.mail.icalEvent === "object" && (this.mail.icalEvent.content || this.mail.icalEvent.path || this.mail.icalEvent.href || this.mail.icalEvent.raw)) icalEvent = this.mail.icalEvent;
-				else icalEvent = { content: this.mail.icalEvent };
-				eventObject = Object.assign({}, icalEvent);
+				eventObject = Object.assign({}, this._getIcalEvent());
 				eventObject.contentType = "application/ics";
 				if (!eventObject.headers) eventObject.headers = {};
 				eventObject.filename = eventObject.filename || "invite.ics";
@@ -67444,13 +64679,49 @@ var require_mail_composer = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 			};
 		}
 		/**
+		* Returns the icalEvent value with `path`/`href`/data uri input normalized into
+		* a `content` entry, the same way as for regular attachments. The same event is
+		* included twice (as a text/calendar alternative and as an application/ics
+		* attachment), so the shared content object is marked to be resolved just once
+		* and the buffered result is reused by the second node.
+		*
+		* @returns {Object} Normalized icalEvent data
+		*/
+		_getIcalEvent() {
+			if (!this._icalEvent) {
+				let icalEvent;
+				if (typeof this.mail.icalEvent === "object" && (this.mail.icalEvent.content || this.mail.icalEvent.path || this.mail.icalEvent.href || this.mail.icalEvent.raw)) icalEvent = Object.assign({}, this.mail.icalEvent);
+				else icalEvent = { content: this.mail.icalEvent };
+				if (/^data:/i.test(icalEvent.path || icalEvent.href)) icalEvent = this._processDataUrl(icalEvent);
+				if (/^https?:\/\//i.test(icalEvent.path)) {
+					icalEvent.href = icalEvent.path;
+					icalEvent.path = void 0;
+				}
+				if (!icalEvent.raw) {
+					if (icalEvent.path) {
+						icalEvent.content = { path: icalEvent.path };
+						icalEvent.path = void 0;
+					} else if (icalEvent.href) {
+						icalEvent.content = {
+							href: icalEvent.href,
+							httpHeaders: icalEvent.httpHeaders
+						};
+						icalEvent.href = void 0;
+					}
+				}
+				if (icalEvent.content && typeof icalEvent.content === "object") icalEvent.content._resolve = true;
+				this._icalEvent = icalEvent;
+			}
+			return this._icalEvent;
+		}
+		/**
 		* List alternatives. Resulting objects can be used as input for MimeNode nodes
 		*
 		* @returns {Array} An array of alternative elements. Includes the `text` and `html` values as well
 		*/
 		getAlternatives() {
 			const alternatives = [];
-			let text, html, watchHtml, amp, icalEvent, eventObject;
+			let text, html, watchHtml, amp, eventObject;
 			if (this.mail.text) {
 				if (typeof this.mail.text === "object" && (this.mail.text.content || this.mail.text.path || this.mail.text.href || this.mail.text.raw)) text = this.mail.text;
 				else text = { content: this.mail.text };
@@ -67467,10 +64738,7 @@ var require_mail_composer = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 				amp.contentType = "text/x-amp-html; charset=utf-8";
 			}
 			if (this.mail.icalEvent) {
-				if (typeof this.mail.icalEvent === "object" && (this.mail.icalEvent.content || this.mail.icalEvent.path || this.mail.icalEvent.href || this.mail.icalEvent.raw)) icalEvent = this.mail.icalEvent;
-				else icalEvent = { content: this.mail.icalEvent };
-				eventObject = Object.assign({}, icalEvent);
-				if (eventObject.content && typeof eventObject.content === "object") eventObject.content._resolve = true;
+				eventObject = Object.assign({}, this._getIcalEvent());
 				eventObject.filename = false;
 				eventObject.contentType = "text/calendar; charset=utf-8; method=" + (eventObject.method || "PUBLISH").toString().trim().toUpperCase();
 				if (!eventObject.headers) eventObject.headers = {};
@@ -67792,7 +65060,7 @@ var require_relaxed_body = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			options = options || {};
 			this.chunkBuffer = [];
 			this.chunkBufferLen = 0;
-			this.bodyHash = crypto$7.createHash(options.hashAlgo || "sha1");
+			this.bodyHash = crypto$7.createHash(options.hashAlgo || "sha256");
 			this.remainder = "";
 			this.byteLength = 0;
 			this.debug = options.debug;
@@ -68116,8 +65384,9 @@ var require_http_proxy_client = /* @__PURE__ */ __commonJSMin(((exports, module)
 	*/
 	var net$3 = __require("net");
 	var tls$1 = __require("tls");
-	var urllib$1 = __require("url");
+	var urllib = require_url();
 	var errors = require_errors();
+	var MAX_RESPONSE_HEADER_BYTES = 64 * 1024;
 	/**
 	* Establishes proxied connection to destinationPort
 	*
@@ -68128,17 +65397,29 @@ var require_http_proxy_client = /* @__PURE__ */ __commonJSMin(((exports, module)
 	* @param {String} proxyUrl proxy configuration, etg "http://proxy.host:3128/"
 	* @param {Number} destinationPort Port to open in destination host
 	* @param {String} destinationHost Destination hostname
+	* @param {Object} [tlsOptions] Optional TLS options for an HTTPS proxy (e.g. { rejectUnauthorized: false })
 	* @param {Function} callback Callback to run with the rocket object once connection is established
 	*/
-	function httpProxyClient(proxyUrl, destinationPort, destinationHost, callback) {
-		const proxy = urllib$1.parse(proxyUrl);
-		const options = {
+	function httpProxyClient(proxyUrl, destinationPort, destinationHost, tlsOptions, callback) {
+		if (typeof tlsOptions === "function") {
+			callback = tlsOptions;
+			tlsOptions = {};
+		}
+		tlsOptions = tlsOptions || {};
+		destinationPort = Number(destinationPort) || 0;
+		if (!destinationPort || /[\r\n]/.test(destinationHost)) {
+			const err = /* @__PURE__ */ new Error("Invalid proxy destination");
+			err.code = errors.EPROXY;
+			return setImmediate(() => callback(err));
+		}
+		const proxy = urllib.parse(proxyUrl);
+		const connectOptions = {
 			host: proxy.hostname,
 			port: Number(proxy.port) ? Number(proxy.port) : proxy.protocol === "https:" ? 443 : 80
 		};
 		let connect;
 		if (proxy.protocol === "https:") {
-			options.rejectUnauthorized = false;
+			connectOptions.rejectUnauthorized = tlsOptions.rejectUnauthorized !== false;
 			connect = tls$1.connect.bind(tls$1);
 		} else connect = net$3.connect.bind(net$3);
 		let socket;
@@ -68156,7 +65437,7 @@ var require_http_proxy_client = /* @__PURE__ */ __commonJSMin(((exports, module)
 			err.code = "ETIMEDOUT";
 			tempSocketErr(err);
 		};
-		socket = connect(options, () => {
+		socket = connect(connectOptions, () => {
 			if (finished) return;
 			const reqHeaders = {
 				Host: destinationHost + ":" + destinationPort,
@@ -68189,6 +65470,12 @@ var require_http_proxy_client = /* @__PURE__ */ __commonJSMin(((exports, module)
 					socket.removeListener("timeout", timeoutErr);
 					socket.setTimeout(0);
 					return callback(null, socket);
+				}
+				if (headers.length > MAX_RESPONSE_HEADER_BYTES) {
+					socket.removeListener("data", onSocketData);
+					const err = /* @__PURE__ */ new Error("Proxy response headers too large");
+					err.code = errors.EPROXY;
+					return tempSocketErr(err);
 				}
 			};
 			socket.on("data", onSocketData);
@@ -68391,7 +65678,7 @@ var require_mail_message = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 								let comment = (value.comment || "").toString().replace(/\r?\n|\r/g, " ");
 								if (mimeFuncs.isPlainText(comment)) comment = "\"" + comment + "\"";
 								else comment = mimeFuncs.encodeWord(comment);
-								return (value.comment ? comment + " " : "") + this._formatListUrl(value.url).replace(/^<[^:]+\/{,2}/, "");
+								return (value.comment ? comment + " " : "") + this._formatListUrl(value.url).replace(/^<[^:]+:\/{0,2}/, "<");
 							}
 							let comment = (value.comment || "").toString().replace(/\r?\n|\r/g, " ");
 							if (!mimeFuncs.isPlainText(comment)) comment = mimeFuncs.encodeWord(comment);
@@ -68421,8 +65708,8 @@ var require_mailer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	var DKIM = require_dkim();
 	var httpProxyClient = require_http_proxy_client();
 	var errors = require_errors();
-	var util = __require("util");
-	var urllib = __require("url");
+	var util$6 = __require("util");
+	var urllib = require_url();
 	var packageData = (init_package(), __toCommonJS(package_exports).default);
 	var MailMessage = require_mail_message();
 	var net$2 = __require("net");
@@ -68568,7 +65855,7 @@ var require_mailer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			return promise;
 		}
 		getVersionString() {
-			return util.format("%s (%s; +%s; %s/%s)", packageData.name, packageData.version, packageData.homepage, this.transporter.name, this.transporter.version);
+			return util$6.format("%s (%s; +%s; %s/%s)", packageData.name, packageData.version, packageData.homepage, this.transporter.name, this.transporter.version);
 		}
 		_processPlugins(step, mail, callback) {
 			step = (step || "").toString();
@@ -68611,7 +65898,7 @@ var require_mailer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				switch (protocol) {
 					case "http":
 					case "https":
-						httpProxyClient(proxy.href, options.port, options.host, (err, socket) => {
+						httpProxyClient(proxy.href, options.port, options.host, this.options.tls || {}, (err, socket) => {
 							if (err) return callback(err);
 							return callback(null, { connection: socket });
 						});
@@ -68825,9 +66112,9 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 	*  * **requireTLS** - forces the client to use STARTTLS
 	*  * **name** - the name of the client server
 	*  * **localAddress** - outbound address to bind to (see: http://nodejs.org/api/net.html#net_net_connect_options_connectionlistener)
-	*  * **greetingTimeout** - Time to wait in ms until greeting message is received from the server (defaults to 10000)
-	*  * **connectionTimeout** - how many milliseconds to wait for the connection to establish
-	*  * **socketTimeout** - Time of inactivity until the connection is closed (defaults to 1 hour)
+	*  * **greetingTimeout** - Time to wait in ms until greeting message is received from the server (defaults to 30 seconds)
+	*  * **connectionTimeout** - how many milliseconds to wait for the connection to establish (defaults to 2 minutes)
+	*  * **socketTimeout** - Time of inactivity until the connection is closed (defaults to 10 minutes)
 	*  * **dnsTimeout** - Time to wait in ms for the DNS requests to be resolved (defaults to 30 seconds)
 	*  * **lmtp** - if true, uses LMTP instead of SMTP protocol
 	*  * **logger** - bunyan compatible logger interface
@@ -69013,6 +66300,13 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 					try {
 						this._socket.connect(this.port, this.host, () => {
 							this._socket.setKeepAlive(true);
+							if (this.secureConnection && !this.alreadySecured) return this._upgradeConnection((err) => {
+								if (err) {
+									this._onError(/* @__PURE__ */ new Error("Error initiating TLS - " + (err.message || err)), "ETLS", false, "CONN");
+									return;
+								}
+								this._onConnect();
+							});
 							this._onConnect();
 						});
 						this._setupConnectionHandlers();
@@ -69059,6 +66353,7 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 		* @param {Boolean} secure Whether to use TLS
 		*/
 		_connectToHost(opts, secure) {
+			if (this._destroyed || this._closing) return;
 			this._connectionAttemptId++;
 			const currentAttemptId = this._connectionAttemptId;
 			const connectFn = secure ? tls.connect : net$1.connect;
@@ -69104,6 +66399,7 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 			if (this._socket) {
 				try {
 					this._socket.removeListener("error", this._onConnectionSocketError);
+					this._socket.on("error", TEARDOWN_NOOP);
 					this._socket.destroy();
 				} catch (_E) {}
 				this._socket = null;
@@ -69302,6 +66598,8 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 		* @param {Function} callback Callback to return once connection is reset
 		*/
 		reset(callback) {
+			const isDestroyedMessage = this._isDestroyedMessage("reset");
+			if (isDestroyedMessage) return callback(this._formatError(isDestroyedMessage, "ECONNECTION", false, "API"));
 			this._sendCommand("RSET");
 			this._responseActions.push((str) => {
 				if (str.charAt(0) !== "2") return callback(this._formatError("Could not reset session state. response=" + str, "EPROTOCOL", str, "RSET"));
@@ -69334,6 +66632,7 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 			this._socket.removeListener("close", this._onSocketClose);
 			this._socket.removeListener("end", this._onSocketEnd);
 			this._socket.removeListener("error", this._onConnectionSocketError);
+			this._socket.removeListener("error", this._onSocketError);
 			this._socket.on("error", this._onSocketError);
 			this._socket.on("data", this._onSocketData);
 			this._socket.once("close", this._onSocketClose);
@@ -69354,7 +66653,7 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 		*/
 		_onData(chunk) {
 			if (this._destroyed || !chunk || !chunk.length) return;
-			let data = (chunk || "").toString("binary");
+			let data = chunk.toString("binary");
 			let lines = (this._remainder + data).split(/\r?\n/);
 			let lastline;
 			this._remainder = lines.pop();
@@ -69448,6 +66747,7 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 		_destroy() {
 			if (this._destroyed) return;
 			this._destroyed = true;
+			this.destroyed = true;
 			this.emit("end");
 		}
 		/**
@@ -69457,6 +66757,8 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 		*        has been secured
 		*/
 		_upgradeConnection(callback) {
+			this._remainder = "";
+			this._responseQueue = [];
 			this._socket.removeListener("data", this._onSocketData);
 			this._socket.removeListener("timeout", this._onSocketTimeout);
 			const socketPlain = this._socket;
@@ -69469,6 +66771,7 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 				socketPlain.removeListener("close", this._onSocketClose);
 				socketPlain.removeListener("end", this._onSocketEnd);
 				socketPlain.removeListener("error", this._onSocketError);
+				socketPlain.removeListener("error", this._onConnectionSocketError);
 			};
 			this.upgrading = true;
 			try {
@@ -69492,15 +66795,20 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 		}
 		/**
 		* Processes queued responses from the server
-		*
-		* @param {Boolean} force If true, ignores _processing flag
 		*/
 		_processResponse() {
 			if (!this._responseQueue.length) return false;
-			let str = this.lastServerResponse = decodeServerResponse((this._responseQueue.shift() || "").toString());
-			if (/^\d+-/.test(str.split("\n").pop())) return;
+			const raw = (this._responseQueue.shift() || "").toString();
+			if (!raw.trim()) {
+				setImmediate(() => this._processResponse());
+				return;
+			}
+			let str = this.lastServerResponse = decodeServerResponse(raw);
+			if (/^\d+-/.test(str.split("\n").pop())) {
+				this._responseQueue.unshift(raw);
+				return;
+			}
 			if (this.options.debug || this.options.transactionLog) this.logger.debug({ tnx: "server" }, str.replace(/\r?\n$/, ""));
-			if (!str.trim()) setImmediate(() => this._processResponse());
 			const action = this._responseActions.shift();
 			if (typeof action === "function") {
 				action.call(this, str);
@@ -69550,6 +66858,10 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 			} catch (err) {
 				return callback(this._formatError("Invalid DSN " + err.message, "EENVELOPE", false, "API"));
 			}
+			if (this._envelope.requireTLSExtensionEnabled) {
+				if (!this.secure) return callback(this._formatError("REQUIRETLS can only be used over TLS connections (RFC 8689)", "EREQUIRETLS", false, "MAIL FROM"));
+				if (!this._supportedExtensions.includes("REQUIRETLS")) return callback(this._formatError("Server does not support REQUIRETLS extension (RFC 8689)", "EREQUIRETLS", false, "MAIL FROM"));
+			}
 			this._responseActions.push((str) => {
 				this._actionMAIL(str, callback);
 			});
@@ -69569,11 +66881,7 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 				if (this._envelope.dsn.ret) args.push("RET=" + shared.encodeXText(this._envelope.dsn.ret));
 				if (this._envelope.dsn.envid) args.push("ENVID=" + shared.encodeXText(this._envelope.dsn.envid));
 			}
-			if (this._envelope.requireTLSExtensionEnabled) {
-				if (!this.secure) return callback(this._formatError("REQUIRETLS can only be used over TLS connections (RFC 8689)", "EREQUIRETLS", false, "MAIL FROM"));
-				if (!this._supportedExtensions.includes("REQUIRETLS")) return callback(this._formatError("Server does not support REQUIRETLS extension (RFC 8689)", "EREQUIRETLS", false, "MAIL FROM"));
-				args.push("REQUIRETLS");
-			}
+			if (this._envelope.requireTLSExtensionEnabled) args.push("REQUIRETLS");
 			this._sendCommand("MAIL FROM:<" + this._envelope.from + ">" + (args.length ? " " + args.join(" ") : ""));
 		}
 		_setDsnEnvelope(params) {
@@ -70033,7 +67341,7 @@ var require_smtp_connection = /* @__PURE__ */ __commonJSMin(((exports, module) =
 //#endregion
 //#region node_modules/nodemailer/lib/xoauth2/index.js
 var require_xoauth2 = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var { Stream } = __require("stream");
+	var { Stream: Stream$3 } = __require("stream");
 	var nmfetch = require_fetch();
 	var crypto$2 = __require("crypto");
 	var shared = require_shared();
@@ -70067,7 +67375,7 @@ var require_xoauth2 = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	* @param {Function} options.provisionCallback Function to run when a new access token is required
 	* @param {Object} options.tls Optional TLS options forwarded to the HTTPS token request. Defaults to strict cert validation; supply { rejectUnauthorized: false } only for self-hosted OAuth providers on private CAs.
 	*/
-	var XOAuth2 = class extends Stream {
+	var XOAuth2 = class extends Stream$3 {
 		constructor(options, logger) {
 			super();
 			this.options = options || {};
@@ -71691,8 +68999,11 @@ var require_smtp_transport = /* @__PURE__ */ __commonJSMin(((exports, module) =>
 			return setImmediate(() => callback(null, false));
 		}
 		getAuth(authOpts) {
-			if (!authOpts) return this.auth;
-			const authData = Object.assign({}, this.options.auth && typeof this.options.auth === "object" ? this.options.auth : {}, authOpts && typeof authOpts === "object" ? authOpts : {});
+			if (!authOpts) {
+				if (this.auth && this.auth.oauth2 && this.mailer) this.auth.oauth2.provisionCallback = this.mailer.get("oauth2_provision_cb") || this.auth.oauth2.provisionCallback;
+				return this.auth;
+			}
+			const authData = Object.assign({}, this.options.auth && typeof this.options.auth === "object" ? this.options.auth : {}, typeof authOpts === "object" ? authOpts : {});
 			if (Object.keys(authData).length === 0) return false;
 			switch ((authData.type || "").toString().toUpperCase()) {
 				case "OAUTH2": {
@@ -71916,6 +69227,8 @@ var require_sendmail_transport = /* @__PURE__ */ __commonJSMin(((exports, module
 	var packageData = (init_package(), __toCommonJS(package_exports).default);
 	var shared = require_shared();
 	var errors = require_errors();
+	var LeWindows = require_le_windows();
+	var LeUnix = require_le_unix();
 	/**
 	* Generates a Transport object for Sendmail
 	*
@@ -71943,6 +69256,12 @@ var require_sendmail_transport = /* @__PURE__ */ __commonJSMin(((exports, module
 				if (options.path) this.path = options.path;
 				if (Array.isArray(options.args)) this.args = options.args;
 			}
+			this.winbreak = [
+				"win",
+				"windows",
+				"dos",
+				"\r\n"
+			].includes((options.newline || "").toString().toLowerCase());
 		}
 		/**
 		* <p>Compiles a mailcomposer message and forwards it to handler that sends it.</p>
@@ -72020,7 +69339,12 @@ var require_sendmail_transport = /* @__PURE__ */ __commonJSMin(((exports, module
 					messageId
 				}, "Sending message %s to <%s>", messageId, recipients.join(", "));
 				const sourceStream = mail.message.createReadStream();
-				sourceStream.once("error", (err) => {
+				let stream = sourceStream;
+				if (this.options.newline) {
+					stream = sourceStream.pipe(this.winbreak ? new LeWindows() : new LeUnix());
+					sourceStream.once("error", (err) => stream.emit("error", err));
+				}
+				stream.once("error", (err) => {
 					this.logger.error({
 						err,
 						tnx: "stdin",
@@ -72029,7 +69353,7 @@ var require_sendmail_transport = /* @__PURE__ */ __commonJSMin(((exports, module
 					sendmail.kill("SIGINT");
 					callback(err);
 				});
-				sourceStream.pipe(sendmail.stdin);
+				stream.pipe(sendmail.stdin);
 			} else {
 				const err = /* @__PURE__ */ new Error("sendmail was not found");
 				err.code = errors.ESENDMAIL;
@@ -72044,6 +69368,8 @@ var require_sendmail_transport = /* @__PURE__ */ __commonJSMin(((exports, module
 var require_stream_transport = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	var packageData = (init_package(), __toCommonJS(package_exports).default);
 	var shared = require_shared();
+	var LeWindows = require_le_windows();
+	var LeUnix = require_le_unix();
 	/**
 	* Generates a Transport object for streaming
 	*
@@ -72089,6 +69415,11 @@ var require_stream_transport = /* @__PURE__ */ __commonJSMin(((exports, module) 
 				let stream;
 				try {
 					stream = mail.message.createReadStream();
+					if (this.options.newline) {
+						const sourceStream = stream;
+						stream = sourceStream.pipe(this.winbreak ? new LeWindows() : new LeUnix());
+						sourceStream.once("error", (err) => stream.emit("error", err));
+					}
 				} catch (E) {
 					this.logger.error({
 						err: E,
@@ -72202,8 +69533,18 @@ var require_ses_transport = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 	var EventEmitter$1 = __require("events");
 	var packageData = (init_package(), __toCommonJS(package_exports).default);
 	var shared = require_shared();
+	var errors = require_errors();
 	var LeWindows = require_le_windows();
 	var MimeNode = require_mime_node();
+	/**
+	* Tags AWS SDK rejections that carry no `code` property (SDK v3 errors only
+	* have a `name`) with the generic SES transport error code, keeping the
+	* original error object intact
+	*/
+	function tagSesError(err) {
+		if (err && typeof err === "object" && !err.code) err.code = errors.ESES;
+		return err;
+	}
 	/**
 	* Generates a Transport object for AWS SES
 	*
@@ -72221,7 +69562,7 @@ var require_ses_transport = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 			this.logger = shared.getLogger(this.options, { component: this.options.component || "ses-transport" });
 		}
 		getRegion(cb) {
-			if (this.ses.sesClient.config && typeof this.ses.sesClient.config.region === "function") return this.ses.sesClient.config.region().then((region) => cb(null, region)).catch((err) => cb(err));
+			if (this.ses.sesClient.config && typeof this.ses.sesClient.config.region === "function") return this.ses.sesClient.config.region().then((region) => cb(null, region), (err) => cb(err));
 			return cb(null, false);
 		}
 		/**
@@ -72279,10 +69620,22 @@ var require_ses_transport = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 				}, mail.data.ses || {});
 				this.getRegion((err, region) => {
 					if (err || !region) region = "us-east-1";
-					const command = new this.ses.SendEmailCommand(sesMessage);
-					this.ses.sesClient.send(command).then((data) => {
+					let sendPromise;
+					try {
+						const command = new this.ses.SendEmailCommand(sesMessage);
+						sendPromise = this.ses.sesClient.send(command);
+					} catch (err) {
+						tagSesError(err);
+						this.logger.error({
+							err,
+							tnx: "send"
+						}, "Send error for %s: %s", messageId, err.message);
+						setImmediate(() => callback(err));
+						return;
+					}
+					sendPromise.then((data) => {
 						if (region === "us-east-1") region = "email";
-						callback(null, {
+						const info = {
 							envelope: {
 								from: envelope.from,
 								to: envelope.to
@@ -72290,13 +69643,15 @@ var require_ses_transport = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 							messageId: "<" + data.MessageId + (!/@/.test(data.MessageId) ? "@" + region + ".amazonses.com" : "") + ">",
 							response: data.MessageId,
 							raw
-						});
+						};
+						setImmediate(() => callback(null, info));
 					}).catch((err) => {
+						tagSesError(err);
 						this.logger.error({
 							err,
 							tnx: "send"
 						}, "Send error for %s: %s", messageId, err.message);
-						callback(err);
+						setImmediate(() => callback(err));
 					});
 				});
 			}));
@@ -72312,7 +69667,7 @@ var require_ses_transport = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 				callback = shared.callbackPromise(resolve, reject);
 			});
 			const cb = (err) => {
-				if (err && !["InvalidParameterValue", "MessageRejected"].includes(err.code || err.Code || err.name)) return callback(err);
+				if (err && !["InvalidParameterValue", "MessageRejected"].includes(err.code || err.Code || err.name)) return callback(tagSesError(err));
 				return callback(null, true);
 			};
 			const sesMessage = {
@@ -72320,10 +69675,16 @@ var require_ses_transport = /* @__PURE__ */ __commonJSMin(((exports, module) => 
 				FromEmailAddress: "invalid@invalid",
 				Destination: { ToAddresses: ["invalid@invalid"] }
 			};
-			this.getRegion((err, region) => {
-				if (err || !region) region = "us-east-1";
-				const command = new this.ses.SendEmailCommand(sesMessage);
-				this.ses.sesClient.send(command).then((data) => cb(null, data)).catch((err) => cb(err));
+			this.getRegion(() => {
+				let sendPromise;
+				try {
+					const command = new this.ses.SendEmailCommand(sesMessage);
+					sendPromise = this.ses.sesClient.send(command);
+				} catch (err) {
+					setImmediate(() => cb(err));
+					return;
+				}
+				sendPromise.then(() => setImmediate(() => cb(null))).catch((err) => setImmediate(() => cb(err)));
 			});
 			return promise;
 		}
@@ -72431,11 +69792,13 @@ var import_nodemailer = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin((
 	module.exports.getTestMessageUrl = function(info) {
 		if (!info || !info.response) return false;
 		const infoProps = /* @__PURE__ */ new Map();
-		info.response.replace(/\[([^\]]+)\]$/, (m, props) => {
-			props.replace(/\b([A-Z0-9]+)=([^\s]+)/g, (m, key, value) => {
+		const response = info.response.toString();
+		if (response.length > 2 && response.charAt(response.length - 1) === "]") {
+			const open = response.indexOf("[", response.lastIndexOf("]", response.length - 2) + 1);
+			if (open >= 0 && open < response.length - 2) response.substring(open + 1, response.length - 1).replace(/\b([A-Z0-9]+)=([^\s]+)/g, (m, key, value) => {
 				infoProps.set(key, value);
 			});
-		});
+		}
 		if (infoProps.has("STATUS") && infoProps.has("MSGID")) return (testAccount.web || ETHEREAL_WEB) + "/message/" + infoProps.get("MSGID");
 		return false;
 	};
@@ -72629,7 +69992,7 @@ var EmailConfigManager = class {
 	}
 	async loadConfig() {
 		try {
-			if (!existsSync$1(this.configPath)) {
+			if (!existsSync(this.configPath)) {
 				this.logger?.info("[EmailConfig] Configuration file not found, creating default");
 				await this.createDefaultConfig();
 				return { ...DEFAULT_CONFIG$1 };
@@ -72645,7 +70008,7 @@ var EmailConfigManager = class {
 	async saveConfig(config) {
 		try {
 			const dir = dirname(this.configPath);
-			if (!existsSync$1(dir)) await mkdir(dir, { recursive: true });
+			if (!existsSync(dir)) await mkdir(dir, { recursive: true });
 			await writeFile(this.configPath, JSON.stringify(config, null, 2), "utf-8");
 			this.config = config;
 			this.logger?.info("[EmailConfig] Configuration saved successfully");
@@ -72806,6 +70169,7 @@ function deepConvertMap(obj) {
 }
 //#endregion
 //#region src/main/qqProtocol/direct/connection.ts
+var logger$4 = getLogger("qq-conn");
 var TcpConnection = class extends EventEmitter {
 	socket = null;
 	buffer = Buffer.alloc(0);
@@ -72822,10 +70186,10 @@ var TcpConnection = class extends EventEmitter {
 		return new Promise((resolve, reject) => {
 			this.socket = new Socket();
 			this.socket.setKeepAlive(true, 3e4);
-			console.log(`[QQ Server] Connecting to ${addr.address}:${port} (${host})...`);
+			logger$4.info(`[QQ Server] Connecting to ${addr.address}:${port} (${host})...`);
 			this.socket.on("connect", () => {
 				this.connected = true;
-				console.log(`[QQ Server] Connected to ${addr.address}:${port}`);
+				logger$4.info(`[QQ Server] Connected to ${addr.address}:${port}`);
 				this.emit("connected");
 				resolve();
 			});
@@ -73297,13 +70661,21 @@ function generateEcdhKeyPair() {
 //#region src/main/qqProtocol/direct/sign-proxy/index.ts
 var here = dirname(fileURLToPath(import.meta.url));
 var requireBin = createRequire(import.meta.url);
+function isMusl() {
+	if (process.platform !== "linux") return false;
+	try {
+		const report = process.report?.getReport?.() ?? {};
+		if (report.header && "glibcVersionRuntime" in report.header) return !report.header.glibcVersionRuntime;
+	} catch {}
+	return existsSync("/etc/alpine-release") || existsSync("/lib/ld-musl-x86_64.so.1") || existsSync("/lib/ld-musl-aarch64.so.1");
+}
 function pickTriple() {
 	const p = process.platform;
 	const a = process.arch;
 	if (p === "win32" && a === "x64") return "win-x64";
 	if (p === "win32" && a === "arm64") return "win-arm64";
-	if (p === "linux" && a === "x64") return "linux-x64";
-	if (p === "linux" && a === "arm64") return "linux-arm64";
+	if (p === "linux" && a === "x64") return isMusl() ? "linux-x64-musl" : "linux-x64-glibc";
+	if (p === "linux" && a === "arm64") return isMusl() ? "linux-arm64-musl" : "linux-arm64-glibc";
 	if (p === "darwin" && a === "x64") return "darwin-x64";
 	if (p === "darwin" && a === "arm64") return "darwin-arm64";
 	throw new Error(`sign-proxy: unsupported platform ${p}-${a}; rebuild lucky-lillia-sign-proxy on this target and drop the .node into ${here}`);
@@ -73332,13 +70704,13 @@ function pickVersion() {
 function ensureLoadablePath(srcPath, version, triple) {
 	const cacheRoot = join(tmpdir(), "lucky-lillia-sign-proxy");
 	const cachedPath = join(cacheRoot, `sign-proxy.${triple}.${version}.node`);
-	if (existsSync$1(cachedPath)) return cachedPath;
+	if (existsSync(cachedPath)) return cachedPath;
 	try {
 		mkdirSync(cacheRoot, { recursive: true });
 		copyFileSync(srcPath, cachedPath);
 		return cachedPath;
 	} catch (e) {
-		console.warn(`[sign-proxy] hot-update copy failed (${e.message}); falling back to ${srcPath}`);
+		getLogger("sign-proxy").warn(`[sign-proxy] hot-update copy failed (${e.message}); falling back to ${srcPath}`);
 		return srcPath;
 	}
 }
@@ -73353,14 +70725,15 @@ try {
 }
 var init = native.init;
 native.ping;
-native.setAuthToken;
+var setAuthToken = native.setAuthToken;
 var setMachineGuid = native.setMachineGuid;
-var preflight = native.preflight;
+native.preflight;
 var signRequest = native.signRequest;
 var acquireSignToken$1 = native.acquireSignToken;
 native.postEnvelope;
 //#endregion
 //#region src/main/qqProtocol/direct/sign.ts
+var logger$3 = getLogger("sign");
 var inited = false;
 async function setupSign(opts) {
 	if (opts.machineGuid.length !== 16) throw new Error(`setupSign expected 16B machineGuid, got ${opts.machineGuid.length}B`);
@@ -73372,43 +70745,31 @@ async function setupSign(opts) {
 	}, opts.sendPacket, opts.logger ?? defaultLogger);
 	inited = true;
 }
-/** 运行中切换 16B device GUID. 老版 .node 没这个 export 时 warn 并 noop. */
 function setSignMachineGuid(guid) {
 	if (guid.length !== 16) {
-		console.warn(`[Sign] setSignMachineGuid expected 16B GUID, got ${guid.length}B -- skip`);
+		logger$3.warn(`[Sign] setSignMachineGuid expected 16B GUID, got ${guid.length}B -- skip`);
 		return;
 	}
 	if (!inited) return;
 	if (typeof setMachineGuid !== "function") {
-		console.warn("[Sign] sign-proxy 未导出 setMachineGuid (老版 .node), GUID 切换不会生效.");
+		logger$3.warn("[Sign] sign-proxy 未导出 setMachineGuid (老版 .node), GUID 切换不会生效.");
 		return;
 	}
 	try {
 		setMachineGuid(guid.toString("hex"));
 	} catch (e) {
-		console.warn(`[Sign] setMachineGuid failed: ${e.message}`);
+		logger$3.warn(`[Sign] setMachineGuid failed: ${e.message}`);
 	}
 }
 function defaultLogger(log) {
-	(log.level === "error" ? console.error : console.warn)(`[Sign/${log.level}] ${log.message}`);
+	(log.level === "error" ? logger$3.error : logger$3.warn)(`[Sign/${log.level}] ${log.message}`);
 }
-async function preflightSign(logger = console) {
-	if (!inited) return "sign not initialized";
-	let reason;
-	try {
-		reason = await preflight();
-	} catch (e) {
-		const msg = e.message;
-		logger.error(`[Sign Preflight] native call failed: ${msg}`);
-		return `native: ${msg}`;
-	}
-	if (!reason) return null;
-	logger.error(`[Sign Preflight] ${reason}`);
-	return reason;
+async function updateAuthToken(authToken) {
+	if (inited) await setAuthToken(authToken);
 }
 async function requestSign(cmd, src, seq, guid, qua, uin, protocolToken12B) {
 	if (!inited) {
-		console.error("[Sign] sign 未初始化 (auth_token 未配?); set data/auth_token.txt or AUTH_TOKEN env.");
+		logger$3.error("[Sign] sign 未初始化 (auth_token 未配?); set data/auth_token.txt or AUTH_TOKEN env.");
 		return null;
 	}
 	try {
@@ -73421,7 +70782,7 @@ async function requestSign(cmd, src, seq, guid, qua, uin, protocolToken12B) {
 			uin: uin ?? 0,
 			protocolTokenHex: protocolToken12B ? Buffer.from(protocolToken12B, "utf-8").toString("hex") : ""
 		});
-		if (process.env.DEBUG_SIGN) console.log(`[Sign] ${cmd} seq=${seq}: sign=${r.sign.length}B token=${r.token.length}B extra=${r.extra.length}B`);
+		logger$3.debug(`${cmd} seq=${seq}: sign=${r.sign.length}B token=${r.token.length}B extra=${r.extra.length}B`);
 		return {
 			sign: r.sign,
 			token: r.token,
@@ -73450,43 +70811,45 @@ function formatNativeSignError(cmd, qua, e) {
 		const detail = m[2];
 		switch (code) {
 			case 401:
-				console.error(`[Sign] Unauthorized (cmd=${cmd}): ${detail}. auth_token 无效或已撤销, 到 manager 重新生成`);
+				logger$3.error(`[Sign] Unauthorized (cmd=${cmd}): ${detail}. auth_token 无效或已撤销, 到 manager 重新生成`);
 				return;
 			case 403:
-				console.error(`[Sign] Forbidden (cmd=${cmd}): ${detail}. 当前 QQ 不在 token 的 uin 白名单, 到 manager 添加`);
+				logger$3.error(`[Sign] Forbidden (cmd=${cmd}): ${detail}`);
+				authTokenStatus.loginError = detail || "auth_token 无权限 (HTTP 403)";
 				return;
 			case 502:
-				console.error(`[Sign] Bad Gateway (cmd=${cmd}): ${detail}. 上游 sign-service 进程不可用`);
+				logger$3.error(`[Sign] Bad Gateway (cmd=${cmd}): ${detail}. 上游 sign-service 进程不可用`);
 				return;
 			case 503:
-				console.error(`[Sign] Service Unavailable (cmd=${cmd}): ${detail}. 没有匹配的 sign 后端 (qua=${qua ?? "<empty>"})`);
+				logger$3.error(`[Sign] Service Unavailable (cmd=${cmd}): ${detail}. 没有匹配的 sign 后端 (qua=${qua ?? "<empty>"})`);
 				return;
 			default:
-				console.error(`[Sign] HTTP ${code} (cmd=${cmd}): ${detail}`);
+				logger$3.error(`[Sign] HTTP ${code} (cmd=${cmd}): ${detail}`);
 				return;
 		}
 	}
 	if (msg.startsWith("network:")) {
-		console.error(`[Sign] Network error (cmd=${cmd}): ${msg.slice(9)}`);
+		logger$3.error(`[Sign] Network error (cmd=${cmd}): ${msg.slice(9)}`);
 		return;
 	}
 	if (msg === "not initialized; call init() first") {
-		console.error(`[Sign] ${msg} (cmd=${cmd})`);
+		logger$3.error(`[Sign] ${msg} (cmd=${cmd})`);
 		return;
 	}
 	if (msg.startsWith("malformed response:")) {
-		console.error(`[Sign] Failed to parse response (cmd=${cmd}): ${msg.slice(20)}`);
+		logger$3.error(`[Sign] Failed to parse response (cmd=${cmd}): ${msg.slice(20)}`);
 		return;
 	}
 	if (msg.startsWith("server returned non-zero code:")) {
 		const code = msg.slice(31);
-		console.error(`[Sign] Server returned non-zero code ${code} (cmd=${cmd})`);
+		logger$3.error(`[Sign] Server returned non-zero code ${code} (cmd=${cmd})`);
 		return;
 	}
-	console.error(`[Sign] ${msg} (cmd=${cmd})`);
+	logger$3.error(`[Sign] ${msg} (cmd=${cmd})`);
 }
 //#endregion
 //#region src/main/qqProtocol/direct/client.ts
+var logger$2 = getLogger("direct");
 var DEFAULT_CONFIG = {
 	appId: AppInfo.appId,
 	subAppId: AppInfo.subAppId,
@@ -73501,7 +70864,6 @@ var DirectProtocolClient = class extends EventEmitter {
 	guid;
 	seq = Math.random() * 16777215 >>> 0;
 	session = null;
-	signPreflighted = false;
 	signSetupDone = false;
 	pendingPackets = /* @__PURE__ */ new Map();
 	signTokenRefreshInflight = null;
@@ -73534,18 +70896,13 @@ var DirectProtocolClient = class extends EventEmitter {
 			uin: this.config.uin,
 			sendPacket: async ({ cmd, body }) => {
 				const resp = (await this.sendCommand(cmd, Buffer.from(body))).payload;
-				if (process.env.DEBUG_SIGN) console.log(`[Sign relay] ${cmd}: req=${body.length}B resp=${resp.length}B hex=${resp.toString("hex")}`);
+				logger$2.debug(`[relay] ${cmd}: req=${body.length}B resp=${resp.length}B hex=%h`, resp);
 				return resp;
 			}
 		});
 	}
 	async connect() {
 		await this.ensureSignSetup();
-		if (!this.signPreflighted && this.config.authToken) {
-			this.signPreflighted = true;
-			const reason = await preflightSign();
-			if (reason) throw new Error(`sign preflight failed: ${reason}`);
-		}
 		await this.conn.connect({ useIPv6: this.config.useIPv6 });
 		this.emit("connected");
 		await this.sendHeartbeat();
@@ -73599,7 +70956,7 @@ var DirectProtocolClient = class extends EventEmitter {
 			buildVer: this.config.buildVer
 		};
 	}
-	SIGN_ALLOWLIST = new Set([
+	SIGN_ALLOWLIST = /* @__PURE__ */ new Set([
 		"AvatarInfoSvr.QQHeadUrlReq",
 		"CertifiedAccountSvc.certified_account_read.GetFollowList",
 		"ConfigPushSvc.PushResp",
@@ -74139,17 +71496,15 @@ var DirectProtocolClient = class extends EventEmitter {
 		const enc = encryptType ?? (this.session ? EncryptType.EncryptD2Key : EncryptType.EncryptEmpty);
 		let signResult = null;
 		if (this.config.authToken && this.SIGN_ALLOWLIST.has(cmd)) {
-			const uin = this.session?.uin ? Number(this.session.uin) : void 0;
+			const uin = this.session?.uin ? Number(this.session.uin) : this.config.uin || void 0;
 			await this.ensureSignTokenFresh(uin);
 			signResult = await requestSign(cmd, payload, seq, this.guid, AppInfo.qua, uin, this.session?.signToken12B);
 			if (signResult?.token.length === 0) signResult.token = Buffer.from(this.session?.signToken12B ?? "");
-			if (process.env.DEBUG_SIGN) console.log(`[Sign] ${cmd} seq=${seq}: result=${signResult ? `sign=${signResult.sign.length}B token=${signResult.token.length}B extra=${signResult.extra.length}B` : "null"}`);
+			logger$2.debug(`[sign] ${cmd} seq=${seq}: result=${signResult ? `sign=${signResult.sign.length}B token=${signResult.token.length}B extra=${signResult.extra.length}B` : "null"}`);
 			if (!signResult) throw new Error(`sign failed for ${cmd}; see [Sign] log above`);
 		}
 		const packet = buildServicePacket(seq, cmd, ctx, payload, enc, signResult);
-		if (process.env.DEBUG_SIGN) {
-			if (cmd.includes("o3.ecdh_access") || cmd === "wtlogin.login" || cmd === "wtlogin.trans_emp") console.log(`[Bot SSO send] ${cmd} seq=${seq} frame=${packet.length}B hex=${packet.toString("hex")}`);
-		}
+		if (cmd.includes("o3.ecdh_access") || cmd === "wtlogin.login" || cmd === "wtlogin.trans_emp") logger$2.debug(`[SSO send] ${cmd} seq=${seq} frame=${packet.length}B hex=%h`, packet);
 		return new Promise((resolve, reject) => {
 			const timer = setTimeout(() => {
 				this.pendingPackets.delete(seq);
@@ -74191,6 +71546,16 @@ var DirectProtocolClient = class extends EventEmitter {
 	setGuid(guid) {
 		this.guid = guid;
 		setSignMachineGuid(guid);
+	}
+	/**
+	* 复用同一 client 时热更新配置 (换 token / 换账号 uin). native sign 是进程单例, relay 只绑首个
+	* client, 所以不能靠重建 client 换配置 -- 只能在活着的这一个上原地更新. 见 direct-mode doInitDirectClient.
+	*/
+	setAuthToken(token) {
+		this.config.authToken = token;
+	}
+	setUin(uin) {
+		this.config.uin = uin;
 	}
 	getSession() {
 		return this.session;
@@ -74241,10 +71606,10 @@ var DirectProtocolClient = class extends EventEmitter {
 				if (this.session) {
 					this.session.signToken12B = token;
 					this.session.signTokenExpiresAt = Date.now() + ttlSecs * 1e3;
-					console.log(`[SignToken] acquired "${token}" ttl=${ttlSecs}s`);
+					logger$2.info(`[SignToken] acquired "${token}" ttl=${ttlSecs}s`);
 				}
 			} catch (e) {
-				console.warn(`[SignToken] acquire failed: ${e.message}`);
+				logger$2.warn(`[SignToken] acquire failed: ${e.message}`);
 			} finally {
 				this.signTokenRefreshInflight = null;
 			}
@@ -74319,6 +71684,7 @@ function writeBytes16(data) {
 }
 //#endregion
 //#region src/main/qqProtocol/direct/login.ts
+var logger$1 = getLogger("login");
 var QrCodeState = /* @__PURE__ */ function(QrCodeState) {
 	QrCodeState[QrCodeState["Confirmed"] = 0] = "Confirmed";
 	QrCodeState[QrCodeState["Expired"] = 17] = "Expired";
@@ -74789,9 +72155,8 @@ function parseLoginResponse(data, shareKey, tgtgtKey) {
 	const d2Key = nestedTlvs.get(773) || Buffer.alloc(16);
 	const tgt = nestedTlvs.get(266) || Buffer.alloc(0);
 	const tempPassword = nestedTlvs.get(262) || Buffer.alloc(0);
-	if (process.env.DEBUG_A2KEY) {
-		const seenIds = Array.from(nestedTlvs.keys()).sort((a, b) => a - b).map((x) => "0x" + x.toString(16));
-		console.log(`[A2Key probe] nested TLVs in 0x119: ${seenIds.join(", ")}`);
+	{
+		const lines = [`nested TLVs in 0x119: ${Array.from(nestedTlvs.keys()).sort((a, b) => a - b).map((x) => "0x" + x.toString(16)).join(", ")}`];
 		for (const cand of [
 			268,
 			269,
@@ -74803,8 +72168,9 @@ function parseLoginResponse(data, shareKey, tgtgtKey) {
 			366
 		]) {
 			const v = nestedTlvs.get(cand);
-			if (v) console.log(`  TLV 0x${cand.toString(16)}: ${v.length}B = ${v.subarray(0, Math.min(32, v.length)).toString("hex")}${v.length > 32 ? "..." : ""}`);
+			if (v) lines.push(`  TLV 0x${cand.toString(16)}: ${v.length}B = ${v.subarray(0, Math.min(32, v.length)).toString("hex")}${v.length > 32 ? "..." : ""}`);
 		}
+		logger$1.debug(lines.join("\n"));
 	}
 	const a2Key = nestedTlvs.get(269) || Buffer.alloc(16);
 	let nick = "", age = 0, gender = 0;
@@ -75038,7 +72404,7 @@ function startHeartbeat(client) {
 		try {
 			await sendHeartbeat(client);
 		} catch (e) {
-			console.error("[Heartbeat] Failed:", e.message);
+			getLogger("heartbeat").error("[Heartbeat] Failed:", e.message);
 		}
 	}, 4.5 * 60 * 1e3);
 	return () => clearInterval(timer);
@@ -75050,7 +72416,8 @@ function getMachineKey() {
 	if (_machineKey) return _machineKey;
 	let machineId = "";
 	try {
-		if (process.platform === "win32") {
+		if (isDockerEnvironment()) machineId = loadMachineGuidSync().toString("hex");
+		else if (process.platform === "win32") {
 			const m = execSync("reg query \"HKLM\\SOFTWARE\\Microsoft\\Cryptography\" /v MachineGuid", {
 				encoding: "utf-8",
 				windowsHide: true
@@ -75090,13 +72457,15 @@ function decryptSensitive(b64) {
 	return JSON.parse(plain);
 }
 /**
-* 从 process.argv 里解析 `-q <uin>` 或 `--qq=<uin>`。
-* 用于多账号场景：指定一个 uin 后会读写对应的 qq-session-<uin>.json。
+* 从 process.argv 里解析指定 uin. 支持 4 种写法:
+*   -q <uin> / -q=<uin> / --qq <uin> / --qq=<uin>
+* 用于多账号场景: 指定一个 uin 后会读写对应的 qq-session-<uin>.json。
 */
 function getSpecifiedUin(argv = process.argv) {
 	for (let i = 0; i < argv.length; i++) {
 		const a = argv[i];
-		if (a === "-q" && i + 1 < argv.length) return argv[i + 1];
+		if ((a === "-q" || a === "--qq") && i + 1 < argv.length) return argv[i + 1];
+		if (a.startsWith("-q=")) return a.slice(3);
 		if (a.startsWith("--qq=")) return a.slice(5);
 	}
 }
@@ -75127,16 +72496,16 @@ function saveSession(session, tgtgtKey, guid, tempPassword, nick = "") {
 	writeFileSync(getSessionFilePathForUin(session.uin), JSON.stringify(data, null, 2));
 }
 /**
-* 加载 session：
-* - 没传 `-q` → 返回 null，调用方走扫码登录
-* - 传了 `-q <uin>` 且 qq-session-<uin>.json 存在 → 解密敏感字段后返回该 session
-* - 文件不存在 / 解析失败 / 解密失败 (换机器) → 返回 null，调用方走扫码登录
+* 加载 session:
+* - 传了 uin (WebUI 快速登录) 或 argv 里有 -q <uin> → 尝试对应 qq-session-<uin>.json
+* - 两者都没有 → 返回 null, 调用方走扫码登录
+* - 文件不存在 / 解析失败 / 解密失败 (换机器) → 返回 null
 */
-function loadSession() {
-	const specifiedUin = getSpecifiedUin();
+function loadSession(uinArg) {
+	const specifiedUin = uinArg || getSpecifiedUin();
 	if (!specifiedUin) return null;
 	const path = getSessionFilePathForUin(specifiedUin);
-	if (!existsSync$1(path)) return null;
+	if (!existsSync(path)) return null;
 	try {
 		const raw = readFileSync(path, "utf-8");
 		const data = JSON.parse(raw);
@@ -75157,6 +72526,35 @@ function loadSession() {
 		return null;
 	}
 }
+/**
+* 扫 data/qq-session-*.json, 返回可用快速登录账号的明文元数据 (uin/uid/nick).
+* 只列**有 enc** 的 session (旧明文/无凭证的一律跳过, 快速登录用不上); 不做实际解密,
+* 换机后不能 quick-login 但会展示 -- 用户选到后 registerOnline 阶段会失败并 fallback 扫码.
+*/
+function listAvailableSessions() {
+	let entries;
+	try {
+		entries = readdirSync(DATA_DIR);
+	} catch {
+		return [];
+	}
+	const out = [];
+	for (const name of entries) {
+		if (!/^qq-session-(\d+)\.json$/.exec(name)) continue;
+		try {
+			const raw = readFileSync(join(DATA_DIR, name), "utf-8");
+			const data = JSON.parse(raw);
+			if (!data.enc || !data.uin) continue;
+			out.push({
+				uin: data.uin,
+				uid: data.uid || "",
+				nick: data.nick || "",
+				savedAt: data.savedAt || 0
+			});
+		} catch {}
+	}
+	return out.sort((a, b) => b.savedAt - a.savedAt);
+}
 function persistedToSessionInfo(persisted) {
 	return {
 		uin: persisted.uin,
@@ -75170,137 +72568,80 @@ function persistedToSessionInfo(persisted) {
 	};
 }
 //#endregion
-//#region src/main/llbot-ipc.ts
-var loginState = { state: "initializing" };
-var server = null;
-function setLoginState(patch) {
-	loginState = {
-		...loginState,
-		...patch
-	};
-}
-function getCurrentLoginState() {
-	return loginState;
-}
-function startIpcServer() {
-	const pipeName = process.env.LL_IPC_PIPE;
-	if (!pipeName) return;
-	if (server) return;
-	server = net.createServer((socket) => {
-		socket.setEncoding("utf8");
-		let buffer = "";
-		socket.on("data", (chunk) => {
-			buffer += chunk;
-			let idx;
-			while ((idx = buffer.indexOf("\n")) >= 0) {
-				const line = buffer.slice(0, idx);
-				buffer = buffer.slice(idx + 1);
-				if (line.trim()) handleLine(socket, line);
-			}
-		});
-		socket.on("error", () => {});
-	});
-	let listenPath;
-	if (process.platform === "win32") listenPath = `\\\\.\\pipe\\${pipeName}`;
-	else {
-		listenPath = pipeName;
-		try {
-			fs$2.unlinkSync(listenPath);
-		} catch {}
-	}
-	server.listen(listenPath, () => {
-		console.log(`[LL_IPC] listening on ${listenPath}`);
-	});
-	server.on("error", (e) => {
-		console.warn(`[LL_IPC] server error: ${e.message}`);
-	});
-	if (process.platform !== "win32") {
-		const cleanup = () => {
-			try {
-				fs$2.unlinkSync(listenPath);
-			} catch {}
-		};
-		process.once("exit", cleanup);
-		process.once("SIGINT", () => {
-			cleanup();
-			process.exit(0);
-		});
-		process.once("SIGTERM", () => {
-			cleanup();
-			process.exit(0);
-		});
-	}
-}
-function handleLine(socket, line) {
-	let msg;
-	try {
-		msg = JSON.parse(line);
-	} catch {
-		return;
-	}
-	if (msg.type !== "request" || !msg.id || !msg.method) return;
-	let response;
-	if (msg.method === "get_login_state") response = {
-		type: "response",
-		id: msg.id,
-		data: loginState
-	};
-	else response = {
-		type: "response",
-		id: msg.id,
-		error: `unknown method: ${msg.method}`
-	};
-	if (!socket.destroyed) socket.write(JSON.stringify(response) + "\n");
-}
-//#endregion
 //#region src/main/qqProtocol/base.ts
+/**
+* QQProtocolBase: PMHQ / Direct 两模式共享的抽象层.
+* - sendPB/get_is_connected/start/getLoginQrCode 是 abstract, 由子类按各自传输实现.
+* - sendOidb / onDisconnect / maybeEmitOnline / msgPBMap 是通用工具, 在这里定型.
+* - 具体实现: PmhqQQProtocol (WS+HTTP) / DirectQQProtocol (native sign + TCP).
+*/
 var QQProtocolBase = class extends Service {
 	ctx;
 	static inject = ["config"];
-	reconnectTimer;
-	httpUrl = "http://127.0.0.1:13000";
-	wsUrl = "ws://127.0.0.1:13000/ws";
-	ws;
-	resListeners = /* @__PURE__ */ new Map();
 	disconnectCallbacks = /* @__PURE__ */ new Map();
 	lastConnectedTime = Date.now();
 	disconnectCheckTimer;
-	hasConnectedOnce = false;
-	hasLoggedConnectionError = false;
 	msgPBMap = /* @__PURE__ */ new Map();
 	logger;
-	pmhqProbeToken = 0;
 	onlineEmitted = false;
-	directClient = null;
-	directQrResult = null;
-	directPollResult = null;
-	directStopHeartbeat = null;
 	constructor(ctx) {
 		super(ctx, "qqProtocol");
 		this.ctx = ctx;
 		this.logger = ctx.logger("qq-protocol");
-		const { pmhqHost, pmhqPort } = this.getPMHQHostPort();
-		this.httpUrl = `http://${pmhqHost}:${pmhqPort}/`;
-		this.wsUrl = `ws://${pmhqHost}:${pmhqPort}/ws`;
-		if (isPmhqMode()) this.connectWebSocket().then();
+	}
+	/**
+	* 列出本地可快速登录的账号. **仅 Direct 模式实现** -- 直连持有 data/qq-session-*.json 是唯一可靠来源.
+	* PMHQ 模式下 QQ NT 已登过, WebUI 不复用它的快速登录列表(那是 Desktop 的路径), 走 base 默认返空,
+	* FE 拿到空列表会自动切扫码模式. 别在 PMHQ 里补真正的实现.
+	*/
+	listQuickLoginAccounts() {
+		return [];
+	}
+	/**
+	* 以指定 uin 快速登录. **仅 Direct 模式实现** -- 依赖 qq-session-<uin>.json 的加密凭证.
+	* PMHQ 走 base 默认直接抛; 上层路由收到 500 后 FE 会 fallback 到扫码.
+	*/
+	async quickLogin(_uin) {
+		throw new Error("quickLogin not supported in this mode");
+	}
+	async [Service.init]() {
+		await this.start();
+		this.startDisconnectMonitoring();
+	}
+	async sendOidb(command, subCommand, body, cmdSuffix) {
+		const reqBytes = Oidb.Base.encode({
+			command,
+			subCommand,
+			body
+		});
+		const cmd = cmdSuffix ?? `OidbSvcTrpcTcp.0x${command.toString(16)}_${subCommand}`;
+		const resp = await this.sendPB(cmd, reqBytes);
+		const decoded = Oidb.Base.decode(Buffer.from(resp.pb, "hex"));
+		return {
+			errorCode: decoded.errorCode,
+			errorMsg: decoded.errorMsg
+		};
 	}
 	maybeEmitOnline() {
 		if (this.onlineEmitted) return;
 		if (!selfInfo.online) return;
 		if (!selfInfo.uid && !selfInfo.uin) return;
 		this.onlineEmitted = true;
+		authTokenStatus.loginError = "";
 		this.ctx.parallel("qq/online");
 	}
 	/**
 	* emit qq/online 之后 ntUserApi 才会随插件加载. 用 ctx.inject 等它 ready 再拉一次 nick;
-	* 拿到就写 selfInfo.nick, 失败就 warn 一下留空。
+	* 拿到就写 selfInfo.nick, 失败就 warn 一下留空。子类在登录成功后调用。
+	* guardToken/guardCheck 用于避免拿到 nick 时会话已换代(重复登录/换号)后错误写回。
 	*/
-	scheduleFetchSelfNick(myToken) {
+	scheduleFetchSelfNick(guardCheck) {
 		this.ctx.inject(["ntUserApi"], async (ctx) => {
-			if (this.pmhqProbeToken !== myToken) return;
+			if (guardCheck && !guardCheck()) return;
 			try {
 				const nick = await ctx.ntUserApi.getSelfNick(false);
 				this.logger.info(`getSelfNick -> ${JSON.stringify(nick)}`);
+				if (guardCheck && !guardCheck()) return;
 				if (nick) {
 					selfInfo.nick = nick;
 					ctx.parallel("llbot/self-nick-changed", { nick });
@@ -75310,10 +72651,100 @@ var QQProtocolBase = class extends Service {
 			}
 		});
 	}
+	onDisconnect(timeout, callback) {
+		const id = randomUUID();
+		this.disconnectCallbacks.set(id, {
+			timeout,
+			callback,
+			triggered: false
+		});
+		return id;
+	}
+	offDisconnect(id) {
+		this.disconnectCallbacks.delete(id);
+	}
+	/** 由子类在 start() 完成后调用 (基类 Service.init 里已代为调用一次). 幂等. */
+	startDisconnectMonitoring() {
+		if (this.disconnectCheckTimer) return;
+		this.disconnectCheckTimer = setInterval(() => {
+			if (this.get_is_connected()) {
+				this.lastConnectedTime = Date.now();
+				for (const info of this.disconnectCallbacks.values()) info.triggered = false;
+			} else {
+				const disconnectedDuration = Date.now() - this.lastConnectedTime;
+				for (const info of this.disconnectCallbacks.values()) if (!info.triggered && disconnectedDuration >= info.timeout) {
+					info.triggered = true;
+					this.logger.warn(`[Protocol] Triggering disconnect callback, duration: ${disconnectedDuration}ms, timeout: ${info.timeout}ms`);
+					try {
+						info.callback(disconnectedDuration);
+					} catch (e) {
+						this.logger.error("disconnect callback error", e);
+					}
+				}
+			}
+		}, 5e3);
+	}
+};
+//#endregion
+//#region src/main/qqProtocol/pmhq.ts
+/**
+* PMHQ 模式实现: WS(优先) + HTTP 回退 与 PMHQ dll 通信.
+* QQ NT 早已登录, LLBot 寄生其上; 靠 /health 轮询拿 uin/uid.
+*/
+var PmhqQQProtocol = class extends QQProtocolBase {
+	reconnectTimer;
+	httpUrl;
+	wsUrl;
+	ws;
+	resListeners = /* @__PURE__ */ new Map();
+	hasConnectedOnce = false;
+	hasLoggedConnectionError = false;
+	pmhqProbeToken = 0;
+	constructor(ctx) {
+		super(ctx);
+		const { pmhqHost, pmhqPort } = this.getPMHQHostPort();
+		this.httpUrl = `http://${pmhqHost}:${pmhqPort}/`;
+		this.wsUrl = `ws://${pmhqHost}:${pmhqPort}/ws`;
+	}
+	async start() {
+		this.addResListener((data) => {
+			if (data?.type === "recv" && data.data?.cmd && data.data?.pb) {
+				const payload = Buffer.from(data.data.pb, "hex");
+				this.ctx.parallel("qq/raw", {
+					cmd: data.data.cmd,
+					payload
+				});
+			}
+		});
+		await this.connectWebSocket();
+	}
+	get_is_connected() {
+		return !!this.ws && this.ws.readyState === WebSocket.OPEN;
+	}
+	async sendPB(cmd, pb, timeout = 15e3) {
+		const hex = Buffer.isBuffer(pb) ? pb.toString("hex") : pb;
+		if (this.ws?.readyState === WebSocket.OPEN) return this.unwrapPmhqRes(await this.wsSend({
+			type: "send",
+			data: {
+				cmd,
+				pb: hex
+			}
+		}, timeout), cmd);
+		return this.unwrapPmhqRes(await this.httpSend({
+			type: "send",
+			data: {
+				cmd,
+				pb: hex
+			}
+		}), cmd);
+	}
+	async getLoginQrCode() {
+		throw new Error("PMHQ 模式不支持扫码登录 (QQ NT 已完成登录)");
+	}
 	/**
-	* PMHQ 模式下 LLBot 是寄生在 QQ NT 上的，QQ NT 早就登录过了，开机时的 InfoSyncPush 也早处理完。
-	* LLBot 想要群最新 seq（拉历史用）就得自己主动触发一次：发 SsoInfoSync，server 看到注册请求就回一发 InfoSyncPush。
-	* isFirstRegisterProxyOnline=0 + 派生 guid（基于 uid，每个号固定）尽量避免和 QQ NT 的注册项冲突。
+	* PMHQ 模式下 LLBot 是寄生在 QQ NT 上的, QQ NT 早就登录过了, 开机时的 InfoSyncPush 也早处理完.
+	* LLBot 想要群最新 seq (拉历史用) 就得自己主动触发一次: 发 SsoInfoSync, server 看到注册请求就回一发 InfoSyncPush.
+	* isFirstRegisterProxyOnline=0 + 派生 guid (基于 uid, 每个号固定) 尽量避免和 QQ NT 的注册项冲突.
 	*/
 	async triggerInfoSyncPush() {
 		const seed = selfInfo.uid || selfInfo.uin || "llbot";
@@ -75332,10 +72763,10 @@ var QQProtocolBase = class extends Service {
 		if (wasOnline) this.ctx.parallel("protocol/disconnect");
 	}
 	/**
-	* PMHQ 模式：轮询 /health 拿 self uin/uid（DLL 从 QQ 内存直接读 uin,
-	* injector 侧扫 recv pb 抠 uid, 都写到 /health）。拿到 uin+uid 立即 emit online,
-	* nick 通过 scheduleFetchSelfNick 异步等 ntUserApi 服务 ready 后再拉。
-	* 重连后会被 onopen 再次调用，所以必须先 reset 旧状态再启动新一轮。
+	* PMHQ 模式: 轮询 /health 拿 self uin/uid (DLL 从 QQ 内存直接读 uin,
+	* injector 侧扫 recv pb 抠 uid, 都写到 /health). 拿到 uin+uid 立即 emit online,
+	* nick 通过 scheduleFetchSelfNick 异步等 ntUserApi 服务 ready 后再拉.
+	* 重连后会被 onopen 再次调用, 所以必须先 reset 旧状态再启动新一轮.
 	*/
 	startPmhqLoginProbe() {
 		this.resetPmhqState();
@@ -75355,7 +72786,7 @@ var QQProtocolBase = class extends Service {
 					if (!selfInfo.online) this.logger.info("QQ 登录成功");
 					selfInfo.online = true;
 					this.maybeEmitOnline();
-					this.scheduleFetchSelfNick(myToken);
+					this.scheduleFetchSelfNick(() => this.pmhqProbeToken === myToken);
 				} else if (!warnedNotLoggedIn) {
 					this.logger.info("QQ 未登录，等待登录中...");
 					warnedNotLoggedIn = true;
@@ -75372,42 +72803,6 @@ var QQProtocolBase = class extends Service {
 			setTimeout(probe, 600);
 		};
 		probe();
-	}
-	get_is_connected() {
-		if (this.directClient) return this.directClient.isLoggedIn;
-		return this.ws && this.ws.readyState === WebSocket.OPEN;
-	}
-	onDisconnect(timeout, callback) {
-		const id = randomUUID();
-		this.disconnectCallbacks.set(id, {
-			timeout,
-			callback,
-			triggered: false
-		});
-		return id;
-	}
-	offDisconnect(id) {
-		this.disconnectCallbacks.delete(id);
-	}
-	startDisconnectMonitoring() {
-		if (this.disconnectCheckTimer) return;
-		this.disconnectCheckTimer = setInterval(() => {
-			if (this.get_is_connected()) {
-				this.lastConnectedTime = Date.now();
-				for (const info of this.disconnectCallbacks.values()) info.triggered = false;
-			} else {
-				const disconnectedDuration = Date.now() - this.lastConnectedTime;
-				for (const info of this.disconnectCallbacks.values()) if (!info.triggered && disconnectedDuration >= info.timeout) {
-					info.triggered = true;
-					this.logger.warn(`[PMHQ] Triggering disconnect callback, duration: ${disconnectedDuration}ms, timeout: ${info.timeout}ms`);
-					try {
-						info.callback(disconnectedDuration);
-					} catch (e) {
-						this.logger.error("PMHQ disconnect callback error", e);
-					}
-				}
-			}
-		}, 5e3);
 	}
 	getPMHQHostPort() {
 		let pmhqPort = "13000";
@@ -75483,7 +72878,7 @@ var QQProtocolBase = class extends Service {
 			this.hasLoggedConnectionError = false;
 			if (!this.hasConnectedOnce) {
 				this.hasConnectedOnce = true;
-				this.startDisconnectMonitoring();
+				this.lastConnectedTime = Date.now();
 			}
 			this.startPmhqLoginProbe();
 		};
@@ -75538,10 +72933,10 @@ var QQProtocolBase = class extends Service {
 		return result;
 	}
 	/**
-	* 解包 PMHQ active-send 响应。echo 只用于关联请求, 不能"echo 匹配就算成功":
-	* PMHQ 即使发包失败 / QQ 未登录, 也会回一条 echo 匹配但 code 非 0 的响应。
-	* 成败一律看 code: 0 = QQ 真回包(已登录); 非 0(-100 未登录/KernelMsgService 缺失/管道未连,
-	* 或 QQ app error) 一律抛错, 不让上层拿空 pb 去 decode。
+	* 解包 PMHQ active-send 响应. echo 只用于关联请求, 不能"echo 匹配就算成功":
+	* PMHQ 即使发包失败 / QQ 未登录, 也会回一条 echo 匹配但 code 非 0 的响应.
+	* 成败一律看 code: 0 = QQ 真回包 (已登录); 非 0 (-100 未登录/KernelMsgService 缺失/管道未连,
+	* 或 QQ app error) 一律抛错, 不让上层拿空 pb 去 decode.
 	*/
 	unwrapPmhqRes(res, cmd) {
 		if (res.code != null && res.code !== 0) {
@@ -75551,88 +72946,4688 @@ var QQProtocolBase = class extends Service {
 		}
 		return res.data;
 	}
-	async sendPB(cmd, pb, timeout = 15e3) {
-		if (this.directClient?.isLoggedIn) {
-			const buf = Buffer.isBuffer(pb) ? pb : Buffer.from(pb, "hex");
-			return {
-				cmd,
-				pb: (await this.directClient.sendCommand(cmd, buf, void 0, timeout)).payload.toString("hex")
-			};
+};
+//#endregion
+//#region node_modules/qrcode/lib/can-promise.js
+var require_can_promise = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	module.exports = function() {
+		return typeof Promise === "function" && Promise.prototype && Promise.prototype.then;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/utils.js
+var require_utils$1 = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var toSJISFunction;
+	var CODEWORDS_COUNT = [
+		0,
+		26,
+		44,
+		70,
+		100,
+		134,
+		172,
+		196,
+		242,
+		292,
+		346,
+		404,
+		466,
+		532,
+		581,
+		655,
+		733,
+		815,
+		901,
+		991,
+		1085,
+		1156,
+		1258,
+		1364,
+		1474,
+		1588,
+		1706,
+		1828,
+		1921,
+		2051,
+		2185,
+		2323,
+		2465,
+		2611,
+		2761,
+		2876,
+		3034,
+		3196,
+		3362,
+		3532,
+		3706
+	];
+	/**
+	* Returns the QR Code size for the specified version
+	*
+	* @param  {Number} version QR Code version
+	* @return {Number}         size of QR code
+	*/
+	exports.getSymbolSize = function getSymbolSize(version) {
+		if (!version) throw new Error("\"version\" cannot be null or undefined");
+		if (version < 1 || version > 40) throw new Error("\"version\" should be in range from 1 to 40");
+		return version * 4 + 17;
+	};
+	/**
+	* Returns the total number of codewords used to store data and EC information.
+	*
+	* @param  {Number} version QR Code version
+	* @return {Number}         Data length in bits
+	*/
+	exports.getSymbolTotalCodewords = function getSymbolTotalCodewords(version) {
+		return CODEWORDS_COUNT[version];
+	};
+	/**
+	* Encode data with Bose-Chaudhuri-Hocquenghem
+	*
+	* @param  {Number} data Value to encode
+	* @return {Number}      Encoded value
+	*/
+	exports.getBCHDigit = function(data) {
+		let digit = 0;
+		while (data !== 0) {
+			digit++;
+			data >>>= 1;
 		}
-		const hex = Buffer.isBuffer(pb) ? pb.toString("hex") : pb;
-		if (this.ws?.readyState === WebSocket.OPEN) return this.unwrapPmhqRes(await this.wsSend({
-			type: "send",
-			data: {
-				cmd,
-				pb: hex
-			}
-		}, timeout), cmd);
-		return this.unwrapPmhqRes(await this.httpSend({
-			type: "send",
-			data: {
-				cmd,
-				pb: hex
-			}
-		}), cmd);
+		return digit;
+	};
+	exports.setToSJISFunction = function setToSJISFunction(f) {
+		if (typeof f !== "function") throw new Error("\"toSJISFunc\" is not a valid function.");
+		toSJISFunction = f;
+	};
+	exports.isKanjiModeEnabled = function() {
+		return typeof toSJISFunction !== "undefined";
+	};
+	exports.toSJIS = function toSJIS(kanji) {
+		return toSJISFunction(kanji);
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/error-correction-level.js
+var require_error_correction_level = /* @__PURE__ */ __commonJSMin(((exports) => {
+	exports.L = { bit: 1 };
+	exports.M = { bit: 0 };
+	exports.Q = { bit: 3 };
+	exports.H = { bit: 2 };
+	function fromString(string) {
+		if (typeof string !== "string") throw new Error("Param is not a string");
+		switch (string.toLowerCase()) {
+			case "l":
+			case "low": return exports.L;
+			case "m":
+			case "medium": return exports.M;
+			case "q":
+			case "quartile": return exports.Q;
+			case "h":
+			case "high": return exports.H;
+			default: throw new Error("Unknown EC Level: " + string);
+		}
+	}
+	exports.isValid = function isValid(level) {
+		return level && typeof level.bit !== "undefined" && level.bit >= 0 && level.bit < 4;
+	};
+	exports.from = function from(value, defaultValue) {
+		if (exports.isValid(value)) return value;
+		try {
+			return fromString(value);
+		} catch (e) {
+			return defaultValue;
+		}
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/bit-buffer.js
+var require_bit_buffer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	function BitBuffer() {
+		this.buffer = [];
+		this.length = 0;
+	}
+	BitBuffer.prototype = {
+		get: function(index) {
+			const bufIndex = Math.floor(index / 8);
+			return (this.buffer[bufIndex] >>> 7 - index % 8 & 1) === 1;
+		},
+		put: function(num, length) {
+			for (let i = 0; i < length; i++) this.putBit((num >>> length - i - 1 & 1) === 1);
+		},
+		getLengthInBits: function() {
+			return this.length;
+		},
+		putBit: function(bit) {
+			const bufIndex = Math.floor(this.length / 8);
+			if (this.buffer.length <= bufIndex) this.buffer.push(0);
+			if (bit) this.buffer[bufIndex] |= 128 >>> this.length % 8;
+			this.length++;
+		}
+	};
+	module.exports = BitBuffer;
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/bit-matrix.js
+var require_bit_matrix = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	/**
+	* Helper class to handle QR Code symbol modules
+	*
+	* @param {Number} size Symbol size
+	*/
+	function BitMatrix(size) {
+		if (!size || size < 1) throw new Error("BitMatrix size must be defined and greater than 0");
+		this.size = size;
+		this.data = new Uint8Array(size * size);
+		this.reservedBit = new Uint8Array(size * size);
 	}
 	/**
-	* 发送 OIDB 命令，自动 encode Oidb.Base、发送、decode 响应。
+	* Set bit value at specified location
+	* If reserved flag is set, this bit will be ignored during masking process
+	*
+	* @param {Number}  row
+	* @param {Number}  col
+	* @param {Boolean} value
+	* @param {Boolean} reserved
 	*/
-	async sendOidb(command, subCommand, body, cmdSuffix) {
-		const reqBytes = Oidb.Base.encode({
-			command,
-			subCommand,
-			body
+	BitMatrix.prototype.set = function(row, col, value, reserved) {
+		const index = row * this.size + col;
+		this.data[index] = value;
+		if (reserved) this.reservedBit[index] = true;
+	};
+	/**
+	* Returns bit value at specified location
+	*
+	* @param  {Number}  row
+	* @param  {Number}  col
+	* @return {Boolean}
+	*/
+	BitMatrix.prototype.get = function(row, col) {
+		return this.data[row * this.size + col];
+	};
+	/**
+	* Applies xor operator at specified location
+	* (used during masking process)
+	*
+	* @param {Number}  row
+	* @param {Number}  col
+	* @param {Boolean} value
+	*/
+	BitMatrix.prototype.xor = function(row, col, value) {
+		this.data[row * this.size + col] ^= value;
+	};
+	/**
+	* Check if bit at specified location is reserved
+	*
+	* @param {Number}   row
+	* @param {Number}   col
+	* @return {Boolean}
+	*/
+	BitMatrix.prototype.isReserved = function(row, col) {
+		return this.reservedBit[row * this.size + col];
+	};
+	module.exports = BitMatrix;
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/alignment-pattern.js
+var require_alignment_pattern = /* @__PURE__ */ __commonJSMin(((exports) => {
+	/**
+	* Alignment pattern are fixed reference pattern in defined positions
+	* in a matrix symbology, which enables the decode software to re-synchronise
+	* the coordinate mapping of the image modules in the event of moderate amounts
+	* of distortion of the image.
+	*
+	* Alignment patterns are present only in QR Code symbols of version 2 or larger
+	* and their number depends on the symbol version.
+	*/
+	var getSymbolSize = require_utils$1().getSymbolSize;
+	/**
+	* Calculate the row/column coordinates of the center module of each alignment pattern
+	* for the specified QR Code version.
+	*
+	* The alignment patterns are positioned symmetrically on either side of the diagonal
+	* running from the top left corner of the symbol to the bottom right corner.
+	*
+	* Since positions are simmetrical only half of the coordinates are returned.
+	* Each item of the array will represent in turn the x and y coordinate.
+	* @see {@link getPositions}
+	*
+	* @param  {Number} version QR Code version
+	* @return {Array}          Array of coordinate
+	*/
+	exports.getRowColCoords = function getRowColCoords(version) {
+		if (version === 1) return [];
+		const posCount = Math.floor(version / 7) + 2;
+		const size = getSymbolSize(version);
+		const intervals = size === 145 ? 26 : Math.ceil((size - 13) / (2 * posCount - 2)) * 2;
+		const positions = [size - 7];
+		for (let i = 1; i < posCount - 1; i++) positions[i] = positions[i - 1] - intervals;
+		positions.push(6);
+		return positions.reverse();
+	};
+	/**
+	* Returns an array containing the positions of each alignment pattern.
+	* Each array's element represent the center point of the pattern as (x, y) coordinates
+	*
+	* Coordinates are calculated expanding the row/column coordinates returned by {@link getRowColCoords}
+	* and filtering out the items that overlaps with finder pattern
+	*
+	* @example
+	* For a Version 7 symbol {@link getRowColCoords} returns values 6, 22 and 38.
+	* The alignment patterns, therefore, are to be centered on (row, column)
+	* positions (6,22), (22,6), (22,22), (22,38), (38,22), (38,38).
+	* Note that the coordinates (6,6), (6,38), (38,6) are occupied by finder patterns
+	* and are not therefore used for alignment patterns.
+	*
+	* let pos = getPositions(7)
+	* // [[6,22], [22,6], [22,22], [22,38], [38,22], [38,38]]
+	*
+	* @param  {Number} version QR Code version
+	* @return {Array}          Array of coordinates
+	*/
+	exports.getPositions = function getPositions(version) {
+		const coords = [];
+		const pos = exports.getRowColCoords(version);
+		const posLength = pos.length;
+		for (let i = 0; i < posLength; i++) for (let j = 0; j < posLength; j++) {
+			if (i === 0 && j === 0 || i === 0 && j === posLength - 1 || i === posLength - 1 && j === 0) continue;
+			coords.push([pos[i], pos[j]]);
+		}
+		return coords;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/finder-pattern.js
+var require_finder_pattern = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var getSymbolSize = require_utils$1().getSymbolSize;
+	var FINDER_PATTERN_SIZE = 7;
+	/**
+	* Returns an array containing the positions of each finder pattern.
+	* Each array's element represent the top-left point of the pattern as (x, y) coordinates
+	*
+	* @param  {Number} version QR Code version
+	* @return {Array}          Array of coordinates
+	*/
+	exports.getPositions = function getPositions(version) {
+		const size = getSymbolSize(version);
+		return [
+			[0, 0],
+			[size - FINDER_PATTERN_SIZE, 0],
+			[0, size - FINDER_PATTERN_SIZE]
+		];
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/mask-pattern.js
+var require_mask_pattern = /* @__PURE__ */ __commonJSMin(((exports) => {
+	/**
+	* Data mask pattern reference
+	* @type {Object}
+	*/
+	exports.Patterns = {
+		PATTERN000: 0,
+		PATTERN001: 1,
+		PATTERN010: 2,
+		PATTERN011: 3,
+		PATTERN100: 4,
+		PATTERN101: 5,
+		PATTERN110: 6,
+		PATTERN111: 7
+	};
+	/**
+	* Weighted penalty scores for the undesirable features
+	* @type {Object}
+	*/
+	var PenaltyScores = {
+		N1: 3,
+		N2: 3,
+		N3: 40,
+		N4: 10
+	};
+	/**
+	* Check if mask pattern value is valid
+	*
+	* @param  {Number}  mask    Mask pattern
+	* @return {Boolean}         true if valid, false otherwise
+	*/
+	exports.isValid = function isValid(mask) {
+		return mask != null && mask !== "" && !isNaN(mask) && mask >= 0 && mask <= 7;
+	};
+	/**
+	* Returns mask pattern from a value.
+	* If value is not valid, returns undefined
+	*
+	* @param  {Number|String} value        Mask pattern value
+	* @return {Number}                     Valid mask pattern or undefined
+	*/
+	exports.from = function from(value) {
+		return exports.isValid(value) ? parseInt(value, 10) : void 0;
+	};
+	/**
+	* Find adjacent modules in row/column with the same color
+	* and assign a penalty value.
+	*
+	* Points: N1 + i
+	* i is the amount by which the number of adjacent modules of the same color exceeds 5
+	*/
+	exports.getPenaltyN1 = function getPenaltyN1(data) {
+		const size = data.size;
+		let points = 0;
+		let sameCountCol = 0;
+		let sameCountRow = 0;
+		let lastCol = null;
+		let lastRow = null;
+		for (let row = 0; row < size; row++) {
+			sameCountCol = sameCountRow = 0;
+			lastCol = lastRow = null;
+			for (let col = 0; col < size; col++) {
+				let module$1 = data.get(row, col);
+				if (module$1 === lastCol) sameCountCol++;
+				else {
+					if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5);
+					lastCol = module$1;
+					sameCountCol = 1;
+				}
+				module$1 = data.get(col, row);
+				if (module$1 === lastRow) sameCountRow++;
+				else {
+					if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5);
+					lastRow = module$1;
+					sameCountRow = 1;
+				}
+			}
+			if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5);
+			if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5);
+		}
+		return points;
+	};
+	/**
+	* Find 2x2 blocks with the same color and assign a penalty value
+	*
+	* Points: N2 * (m - 1) * (n - 1)
+	*/
+	exports.getPenaltyN2 = function getPenaltyN2(data) {
+		const size = data.size;
+		let points = 0;
+		for (let row = 0; row < size - 1; row++) for (let col = 0; col < size - 1; col++) {
+			const last = data.get(row, col) + data.get(row, col + 1) + data.get(row + 1, col) + data.get(row + 1, col + 1);
+			if (last === 4 || last === 0) points++;
+		}
+		return points * PenaltyScores.N2;
+	};
+	/**
+	* Find 1:1:3:1:1 ratio (dark:light:dark:light:dark) pattern in row/column,
+	* preceded or followed by light area 4 modules wide
+	*
+	* Points: N3 * number of pattern found
+	*/
+	exports.getPenaltyN3 = function getPenaltyN3(data) {
+		const size = data.size;
+		let points = 0;
+		let bitsCol = 0;
+		let bitsRow = 0;
+		for (let row = 0; row < size; row++) {
+			bitsCol = bitsRow = 0;
+			for (let col = 0; col < size; col++) {
+				bitsCol = bitsCol << 1 & 2047 | data.get(row, col);
+				if (col >= 10 && (bitsCol === 1488 || bitsCol === 93)) points++;
+				bitsRow = bitsRow << 1 & 2047 | data.get(col, row);
+				if (col >= 10 && (bitsRow === 1488 || bitsRow === 93)) points++;
+			}
+		}
+		return points * PenaltyScores.N3;
+	};
+	/**
+	* Calculate proportion of dark modules in entire symbol
+	*
+	* Points: N4 * k
+	*
+	* k is the rating of the deviation of the proportion of dark modules
+	* in the symbol from 50% in steps of 5%
+	*/
+	exports.getPenaltyN4 = function getPenaltyN4(data) {
+		let darkCount = 0;
+		const modulesCount = data.data.length;
+		for (let i = 0; i < modulesCount; i++) darkCount += data.data[i];
+		return Math.abs(Math.ceil(darkCount * 100 / modulesCount / 5) - 10) * PenaltyScores.N4;
+	};
+	/**
+	* Return mask value at given position
+	*
+	* @param  {Number} maskPattern Pattern reference value
+	* @param  {Number} i           Row
+	* @param  {Number} j           Column
+	* @return {Boolean}            Mask value
+	*/
+	function getMaskAt(maskPattern, i, j) {
+		switch (maskPattern) {
+			case exports.Patterns.PATTERN000: return (i + j) % 2 === 0;
+			case exports.Patterns.PATTERN001: return i % 2 === 0;
+			case exports.Patterns.PATTERN010: return j % 3 === 0;
+			case exports.Patterns.PATTERN011: return (i + j) % 3 === 0;
+			case exports.Patterns.PATTERN100: return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0;
+			case exports.Patterns.PATTERN101: return i * j % 2 + i * j % 3 === 0;
+			case exports.Patterns.PATTERN110: return (i * j % 2 + i * j % 3) % 2 === 0;
+			case exports.Patterns.PATTERN111: return (i * j % 3 + (i + j) % 2) % 2 === 0;
+			default: throw new Error("bad maskPattern:" + maskPattern);
+		}
+	}
+	/**
+	* Apply a mask pattern to a BitMatrix
+	*
+	* @param  {Number}    pattern Pattern reference number
+	* @param  {BitMatrix} data    BitMatrix data
+	*/
+	exports.applyMask = function applyMask(pattern, data) {
+		const size = data.size;
+		for (let col = 0; col < size; col++) for (let row = 0; row < size; row++) {
+			if (data.isReserved(row, col)) continue;
+			data.xor(row, col, getMaskAt(pattern, row, col));
+		}
+	};
+	/**
+	* Returns the best mask pattern for data
+	*
+	* @param  {BitMatrix} data
+	* @return {Number} Mask pattern reference number
+	*/
+	exports.getBestMask = function getBestMask(data, setupFormatFunc) {
+		const numPatterns = Object.keys(exports.Patterns).length;
+		let bestPattern = 0;
+		let lowerPenalty = Infinity;
+		for (let p = 0; p < numPatterns; p++) {
+			setupFormatFunc(p);
+			exports.applyMask(p, data);
+			const penalty = exports.getPenaltyN1(data) + exports.getPenaltyN2(data) + exports.getPenaltyN3(data) + exports.getPenaltyN4(data);
+			exports.applyMask(p, data);
+			if (penalty < lowerPenalty) {
+				lowerPenalty = penalty;
+				bestPattern = p;
+			}
+		}
+		return bestPattern;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/error-correction-code.js
+var require_error_correction_code = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var ECLevel = require_error_correction_level();
+	var EC_BLOCKS_TABLE = [
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		2,
+		2,
+		1,
+		2,
+		2,
+		4,
+		1,
+		2,
+		4,
+		4,
+		2,
+		4,
+		4,
+		4,
+		2,
+		4,
+		6,
+		5,
+		2,
+		4,
+		6,
+		6,
+		2,
+		5,
+		8,
+		8,
+		4,
+		5,
+		8,
+		8,
+		4,
+		5,
+		8,
+		11,
+		4,
+		8,
+		10,
+		11,
+		4,
+		9,
+		12,
+		16,
+		4,
+		9,
+		16,
+		16,
+		6,
+		10,
+		12,
+		18,
+		6,
+		10,
+		17,
+		16,
+		6,
+		11,
+		16,
+		19,
+		6,
+		13,
+		18,
+		21,
+		7,
+		14,
+		21,
+		25,
+		8,
+		16,
+		20,
+		25,
+		8,
+		17,
+		23,
+		25,
+		9,
+		17,
+		23,
+		34,
+		9,
+		18,
+		25,
+		30,
+		10,
+		20,
+		27,
+		32,
+		12,
+		21,
+		29,
+		35,
+		12,
+		23,
+		34,
+		37,
+		12,
+		25,
+		34,
+		40,
+		13,
+		26,
+		35,
+		42,
+		14,
+		28,
+		38,
+		45,
+		15,
+		29,
+		40,
+		48,
+		16,
+		31,
+		43,
+		51,
+		17,
+		33,
+		45,
+		54,
+		18,
+		35,
+		48,
+		57,
+		19,
+		37,
+		51,
+		60,
+		19,
+		38,
+		53,
+		63,
+		20,
+		40,
+		56,
+		66,
+		21,
+		43,
+		59,
+		70,
+		22,
+		45,
+		62,
+		74,
+		24,
+		47,
+		65,
+		77,
+		25,
+		49,
+		68,
+		81
+	];
+	var EC_CODEWORDS_TABLE = [
+		7,
+		10,
+		13,
+		17,
+		10,
+		16,
+		22,
+		28,
+		15,
+		26,
+		36,
+		44,
+		20,
+		36,
+		52,
+		64,
+		26,
+		48,
+		72,
+		88,
+		36,
+		64,
+		96,
+		112,
+		40,
+		72,
+		108,
+		130,
+		48,
+		88,
+		132,
+		156,
+		60,
+		110,
+		160,
+		192,
+		72,
+		130,
+		192,
+		224,
+		80,
+		150,
+		224,
+		264,
+		96,
+		176,
+		260,
+		308,
+		104,
+		198,
+		288,
+		352,
+		120,
+		216,
+		320,
+		384,
+		132,
+		240,
+		360,
+		432,
+		144,
+		280,
+		408,
+		480,
+		168,
+		308,
+		448,
+		532,
+		180,
+		338,
+		504,
+		588,
+		196,
+		364,
+		546,
+		650,
+		224,
+		416,
+		600,
+		700,
+		224,
+		442,
+		644,
+		750,
+		252,
+		476,
+		690,
+		816,
+		270,
+		504,
+		750,
+		900,
+		300,
+		560,
+		810,
+		960,
+		312,
+		588,
+		870,
+		1050,
+		336,
+		644,
+		952,
+		1110,
+		360,
+		700,
+		1020,
+		1200,
+		390,
+		728,
+		1050,
+		1260,
+		420,
+		784,
+		1140,
+		1350,
+		450,
+		812,
+		1200,
+		1440,
+		480,
+		868,
+		1290,
+		1530,
+		510,
+		924,
+		1350,
+		1620,
+		540,
+		980,
+		1440,
+		1710,
+		570,
+		1036,
+		1530,
+		1800,
+		570,
+		1064,
+		1590,
+		1890,
+		600,
+		1120,
+		1680,
+		1980,
+		630,
+		1204,
+		1770,
+		2100,
+		660,
+		1260,
+		1860,
+		2220,
+		720,
+		1316,
+		1950,
+		2310,
+		750,
+		1372,
+		2040,
+		2430
+	];
+	/**
+	* Returns the number of error correction block that the QR Code should contain
+	* for the specified version and error correction level.
+	*
+	* @param  {Number} version              QR Code version
+	* @param  {Number} errorCorrectionLevel Error correction level
+	* @return {Number}                      Number of error correction blocks
+	*/
+	exports.getBlocksCount = function getBlocksCount(version, errorCorrectionLevel) {
+		switch (errorCorrectionLevel) {
+			case ECLevel.L: return EC_BLOCKS_TABLE[(version - 1) * 4 + 0];
+			case ECLevel.M: return EC_BLOCKS_TABLE[(version - 1) * 4 + 1];
+			case ECLevel.Q: return EC_BLOCKS_TABLE[(version - 1) * 4 + 2];
+			case ECLevel.H: return EC_BLOCKS_TABLE[(version - 1) * 4 + 3];
+			default: return;
+		}
+	};
+	/**
+	* Returns the number of error correction codewords to use for the specified
+	* version and error correction level.
+	*
+	* @param  {Number} version              QR Code version
+	* @param  {Number} errorCorrectionLevel Error correction level
+	* @return {Number}                      Number of error correction codewords
+	*/
+	exports.getTotalCodewordsCount = function getTotalCodewordsCount(version, errorCorrectionLevel) {
+		switch (errorCorrectionLevel) {
+			case ECLevel.L: return EC_CODEWORDS_TABLE[(version - 1) * 4 + 0];
+			case ECLevel.M: return EC_CODEWORDS_TABLE[(version - 1) * 4 + 1];
+			case ECLevel.Q: return EC_CODEWORDS_TABLE[(version - 1) * 4 + 2];
+			case ECLevel.H: return EC_CODEWORDS_TABLE[(version - 1) * 4 + 3];
+			default: return;
+		}
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/galois-field.js
+var require_galois_field = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var EXP_TABLE = /* @__PURE__ */ new Uint8Array(512);
+	var LOG_TABLE = /* @__PURE__ */ new Uint8Array(256);
+	(function initTables() {
+		let x = 1;
+		for (let i = 0; i < 255; i++) {
+			EXP_TABLE[i] = x;
+			LOG_TABLE[x] = i;
+			x <<= 1;
+			if (x & 256) x ^= 285;
+		}
+		for (let i = 255; i < 512; i++) EXP_TABLE[i] = EXP_TABLE[i - 255];
+	})();
+	/**
+	* Returns log value of n inside Galois Field
+	*
+	* @param  {Number} n
+	* @return {Number}
+	*/
+	exports.log = function log(n) {
+		if (n < 1) throw new Error("log(" + n + ")");
+		return LOG_TABLE[n];
+	};
+	/**
+	* Returns anti-log value of n inside Galois Field
+	*
+	* @param  {Number} n
+	* @return {Number}
+	*/
+	exports.exp = function exp(n) {
+		return EXP_TABLE[n];
+	};
+	/**
+	* Multiplies two number inside Galois Field
+	*
+	* @param  {Number} x
+	* @param  {Number} y
+	* @return {Number}
+	*/
+	exports.mul = function mul(x, y) {
+		if (x === 0 || y === 0) return 0;
+		return EXP_TABLE[LOG_TABLE[x] + LOG_TABLE[y]];
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/polynomial.js
+var require_polynomial = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var GF = require_galois_field();
+	/**
+	* Multiplies two polynomials inside Galois Field
+	*
+	* @param  {Uint8Array} p1 Polynomial
+	* @param  {Uint8Array} p2 Polynomial
+	* @return {Uint8Array}    Product of p1 and p2
+	*/
+	exports.mul = function mul(p1, p2) {
+		const coeff = new Uint8Array(p1.length + p2.length - 1);
+		for (let i = 0; i < p1.length; i++) for (let j = 0; j < p2.length; j++) coeff[i + j] ^= GF.mul(p1[i], p2[j]);
+		return coeff;
+	};
+	/**
+	* Calculate the remainder of polynomials division
+	*
+	* @param  {Uint8Array} divident Polynomial
+	* @param  {Uint8Array} divisor  Polynomial
+	* @return {Uint8Array}          Remainder
+	*/
+	exports.mod = function mod(divident, divisor) {
+		let result = new Uint8Array(divident);
+		while (result.length - divisor.length >= 0) {
+			const coeff = result[0];
+			for (let i = 0; i < divisor.length; i++) result[i] ^= GF.mul(divisor[i], coeff);
+			let offset = 0;
+			while (offset < result.length && result[offset] === 0) offset++;
+			result = result.slice(offset);
+		}
+		return result;
+	};
+	/**
+	* Generate an irreducible generator polynomial of specified degree
+	* (used by Reed-Solomon encoder)
+	*
+	* @param  {Number} degree Degree of the generator polynomial
+	* @return {Uint8Array}    Buffer containing polynomial coefficients
+	*/
+	exports.generateECPolynomial = function generateECPolynomial(degree) {
+		let poly = new Uint8Array([1]);
+		for (let i = 0; i < degree; i++) poly = exports.mul(poly, new Uint8Array([1, GF.exp(i)]));
+		return poly;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/reed-solomon-encoder.js
+var require_reed_solomon_encoder = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var Polynomial = require_polynomial();
+	function ReedSolomonEncoder(degree) {
+		this.genPoly = void 0;
+		this.degree = degree;
+		if (this.degree) this.initialize(this.degree);
+	}
+	/**
+	* Initialize the encoder.
+	* The input param should correspond to the number of error correction codewords.
+	*
+	* @param  {Number} degree
+	*/
+	ReedSolomonEncoder.prototype.initialize = function initialize(degree) {
+		this.degree = degree;
+		this.genPoly = Polynomial.generateECPolynomial(this.degree);
+	};
+	/**
+	* Encodes a chunk of data
+	*
+	* @param  {Uint8Array} data Buffer containing input data
+	* @return {Uint8Array}      Buffer containing encoded data
+	*/
+	ReedSolomonEncoder.prototype.encode = function encode(data) {
+		if (!this.genPoly) throw new Error("Encoder not initialized");
+		const paddedData = new Uint8Array(data.length + this.degree);
+		paddedData.set(data);
+		const remainder = Polynomial.mod(paddedData, this.genPoly);
+		const start = this.degree - remainder.length;
+		if (start > 0) {
+			const buff = new Uint8Array(this.degree);
+			buff.set(remainder, start);
+			return buff;
+		}
+		return remainder;
+	};
+	module.exports = ReedSolomonEncoder;
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/version-check.js
+var require_version_check = /* @__PURE__ */ __commonJSMin(((exports) => {
+	/**
+	* Check if QR Code version is valid
+	*
+	* @param  {Number}  version QR Code version
+	* @return {Boolean}         true if valid version, false otherwise
+	*/
+	exports.isValid = function isValid(version) {
+		return !isNaN(version) && version >= 1 && version <= 40;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/regex.js
+var require_regex = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var numeric = "[0-9]+";
+	var alphanumeric = "[A-Z $%*+\\-./:]+";
+	var kanji = "(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";
+	kanji = kanji.replace(/u/g, "\\u");
+	var byte = "(?:(?![A-Z0-9 $%*+\\-./:]|" + kanji + ")(?:.|[\r\n]))+";
+	exports.KANJI = new RegExp(kanji, "g");
+	exports.BYTE_KANJI = /* @__PURE__ */ new RegExp("[^A-Z0-9 $%*+\\-./:]+", "g");
+	exports.BYTE = new RegExp(byte, "g");
+	exports.NUMERIC = new RegExp(numeric, "g");
+	exports.ALPHANUMERIC = new RegExp(alphanumeric, "g");
+	var TEST_KANJI = new RegExp("^" + kanji + "$");
+	var TEST_NUMERIC = /* @__PURE__ */ new RegExp("^[0-9]+$");
+	var TEST_ALPHANUMERIC = /* @__PURE__ */ new RegExp("^[A-Z0-9 $%*+\\-./:]+$");
+	exports.testKanji = function testKanji(str) {
+		return TEST_KANJI.test(str);
+	};
+	exports.testNumeric = function testNumeric(str) {
+		return TEST_NUMERIC.test(str);
+	};
+	exports.testAlphanumeric = function testAlphanumeric(str) {
+		return TEST_ALPHANUMERIC.test(str);
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/mode.js
+var require_mode = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var VersionCheck = require_version_check();
+	var Regex = require_regex();
+	/**
+	* Numeric mode encodes data from the decimal digit set (0 - 9)
+	* (byte values 30HEX to 39HEX).
+	* Normally, 3 data characters are represented by 10 bits.
+	*
+	* @type {Object}
+	*/
+	exports.NUMERIC = {
+		id: "Numeric",
+		bit: 1,
+		ccBits: [
+			10,
+			12,
+			14
+		]
+	};
+	/**
+	* Alphanumeric mode encodes data from a set of 45 characters,
+	* i.e. 10 numeric digits (0 - 9),
+	*      26 alphabetic characters (A - Z),
+	*   and 9 symbols (SP, $, %, *, +, -, ., /, :).
+	* Normally, two input characters are represented by 11 bits.
+	*
+	* @type {Object}
+	*/
+	exports.ALPHANUMERIC = {
+		id: "Alphanumeric",
+		bit: 2,
+		ccBits: [
+			9,
+			11,
+			13
+		]
+	};
+	/**
+	* In byte mode, data is encoded at 8 bits per character.
+	*
+	* @type {Object}
+	*/
+	exports.BYTE = {
+		id: "Byte",
+		bit: 4,
+		ccBits: [
+			8,
+			16,
+			16
+		]
+	};
+	/**
+	* The Kanji mode efficiently encodes Kanji characters in accordance with
+	* the Shift JIS system based on JIS X 0208.
+	* The Shift JIS values are shifted from the JIS X 0208 values.
+	* JIS X 0208 gives details of the shift coded representation.
+	* Each two-byte character value is compacted to a 13-bit binary codeword.
+	*
+	* @type {Object}
+	*/
+	exports.KANJI = {
+		id: "Kanji",
+		bit: 8,
+		ccBits: [
+			8,
+			10,
+			12
+		]
+	};
+	/**
+	* Mixed mode will contain a sequences of data in a combination of any of
+	* the modes described above
+	*
+	* @type {Object}
+	*/
+	exports.MIXED = { bit: -1 };
+	/**
+	* Returns the number of bits needed to store the data length
+	* according to QR Code specifications.
+	*
+	* @param  {Mode}   mode    Data mode
+	* @param  {Number} version QR Code version
+	* @return {Number}         Number of bits
+	*/
+	exports.getCharCountIndicator = function getCharCountIndicator(mode, version) {
+		if (!mode.ccBits) throw new Error("Invalid mode: " + mode);
+		if (!VersionCheck.isValid(version)) throw new Error("Invalid version: " + version);
+		if (version >= 1 && version < 10) return mode.ccBits[0];
+		else if (version < 27) return mode.ccBits[1];
+		return mode.ccBits[2];
+	};
+	/**
+	* Returns the most efficient mode to store the specified data
+	*
+	* @param  {String} dataStr Input data string
+	* @return {Mode}           Best mode
+	*/
+	exports.getBestModeForData = function getBestModeForData(dataStr) {
+		if (Regex.testNumeric(dataStr)) return exports.NUMERIC;
+		else if (Regex.testAlphanumeric(dataStr)) return exports.ALPHANUMERIC;
+		else if (Regex.testKanji(dataStr)) return exports.KANJI;
+		else return exports.BYTE;
+	};
+	/**
+	* Return mode name as string
+	*
+	* @param {Mode} mode Mode object
+	* @returns {String}  Mode name
+	*/
+	exports.toString = function toString(mode) {
+		if (mode && mode.id) return mode.id;
+		throw new Error("Invalid mode");
+	};
+	/**
+	* Check if input param is a valid mode object
+	*
+	* @param   {Mode}    mode Mode object
+	* @returns {Boolean} True if valid mode, false otherwise
+	*/
+	exports.isValid = function isValid(mode) {
+		return mode && mode.bit && mode.ccBits;
+	};
+	/**
+	* Get mode object from its name
+	*
+	* @param   {String} string Mode name
+	* @returns {Mode}          Mode object
+	*/
+	function fromString(string) {
+		if (typeof string !== "string") throw new Error("Param is not a string");
+		switch (string.toLowerCase()) {
+			case "numeric": return exports.NUMERIC;
+			case "alphanumeric": return exports.ALPHANUMERIC;
+			case "kanji": return exports.KANJI;
+			case "byte": return exports.BYTE;
+			default: throw new Error("Unknown mode: " + string);
+		}
+	}
+	/**
+	* Returns mode from a value.
+	* If value is not a valid mode, returns defaultValue
+	*
+	* @param  {Mode|String} value        Encoding mode
+	* @param  {Mode}        defaultValue Fallback value
+	* @return {Mode}                     Encoding mode
+	*/
+	exports.from = function from(value, defaultValue) {
+		if (exports.isValid(value)) return value;
+		try {
+			return fromString(value);
+		} catch (e) {
+			return defaultValue;
+		}
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/version.js
+var require_version = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var Utils = require_utils$1();
+	var ECCode = require_error_correction_code();
+	var ECLevel = require_error_correction_level();
+	var Mode = require_mode();
+	var VersionCheck = require_version_check();
+	var G18 = 7973;
+	var G18_BCH = Utils.getBCHDigit(G18);
+	function getBestVersionForDataLength(mode, length, errorCorrectionLevel) {
+		for (let currentVersion = 1; currentVersion <= 40; currentVersion++) if (length <= exports.getCapacity(currentVersion, errorCorrectionLevel, mode)) return currentVersion;
+	}
+	function getReservedBitsCount(mode, version) {
+		return Mode.getCharCountIndicator(mode, version) + 4;
+	}
+	function getTotalBitsFromDataArray(segments, version) {
+		let totalBits = 0;
+		segments.forEach(function(data) {
+			const reservedBits = getReservedBitsCount(data.mode, version);
+			totalBits += reservedBits + data.getBitsLength();
 		});
-		const cmd = cmdSuffix ?? `OidbSvcTrpcTcp.0x${command.toString(16)}_${subCommand}`;
-		const resp = await this.sendPB(cmd, reqBytes);
-		const decoded = Oidb.Base.decode(Buffer.from(resp.pb, "hex"));
+		return totalBits;
+	}
+	function getBestVersionForMixedData(segments, errorCorrectionLevel) {
+		for (let currentVersion = 1; currentVersion <= 40; currentVersion++) if (getTotalBitsFromDataArray(segments, currentVersion) <= exports.getCapacity(currentVersion, errorCorrectionLevel, Mode.MIXED)) return currentVersion;
+	}
+	/**
+	* Returns version number from a value.
+	* If value is not a valid version, returns defaultValue
+	*
+	* @param  {Number|String} value        QR Code version
+	* @param  {Number}        defaultValue Fallback value
+	* @return {Number}                     QR Code version number
+	*/
+	exports.from = function from(value, defaultValue) {
+		if (VersionCheck.isValid(value)) return parseInt(value, 10);
+		return defaultValue;
+	};
+	/**
+	* Returns how much data can be stored with the specified QR code version
+	* and error correction level
+	*
+	* @param  {Number} version              QR Code version (1-40)
+	* @param  {Number} errorCorrectionLevel Error correction level
+	* @param  {Mode}   mode                 Data mode
+	* @return {Number}                      Quantity of storable data
+	*/
+	exports.getCapacity = function getCapacity(version, errorCorrectionLevel, mode) {
+		if (!VersionCheck.isValid(version)) throw new Error("Invalid QR Code version");
+		if (typeof mode === "undefined") mode = Mode.BYTE;
+		const dataTotalCodewordsBits = (Utils.getSymbolTotalCodewords(version) - ECCode.getTotalCodewordsCount(version, errorCorrectionLevel)) * 8;
+		if (mode === Mode.MIXED) return dataTotalCodewordsBits;
+		const usableBits = dataTotalCodewordsBits - getReservedBitsCount(mode, version);
+		switch (mode) {
+			case Mode.NUMERIC: return Math.floor(usableBits / 10 * 3);
+			case Mode.ALPHANUMERIC: return Math.floor(usableBits / 11 * 2);
+			case Mode.KANJI: return Math.floor(usableBits / 13);
+			case Mode.BYTE:
+			default: return Math.floor(usableBits / 8);
+		}
+	};
+	/**
+	* Returns the minimum version needed to contain the amount of data
+	*
+	* @param  {Segment} data                    Segment of data
+	* @param  {Number} [errorCorrectionLevel=H] Error correction level
+	* @param  {Mode} mode                       Data mode
+	* @return {Number}                          QR Code version
+	*/
+	exports.getBestVersionForData = function getBestVersionForData(data, errorCorrectionLevel) {
+		let seg;
+		const ecl = ECLevel.from(errorCorrectionLevel, ECLevel.M);
+		if (Array.isArray(data)) {
+			if (data.length > 1) return getBestVersionForMixedData(data, ecl);
+			if (data.length === 0) return 1;
+			seg = data[0];
+		} else seg = data;
+		return getBestVersionForDataLength(seg.mode, seg.getLength(), ecl);
+	};
+	/**
+	* Returns version information with relative error correction bits
+	*
+	* The version information is included in QR Code symbols of version 7 or larger.
+	* It consists of an 18-bit sequence containing 6 data bits,
+	* with 12 error correction bits calculated using the (18, 6) Golay code.
+	*
+	* @param  {Number} version QR Code version
+	* @return {Number}         Encoded version info bits
+	*/
+	exports.getEncodedBits = function getEncodedBits(version) {
+		if (!VersionCheck.isValid(version) || version < 7) throw new Error("Invalid QR Code version");
+		let d = version << 12;
+		while (Utils.getBCHDigit(d) - G18_BCH >= 0) d ^= G18 << Utils.getBCHDigit(d) - G18_BCH;
+		return version << 12 | d;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/format-info.js
+var require_format_info = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var Utils = require_utils$1();
+	var G15 = 1335;
+	var G15_MASK = 21522;
+	var G15_BCH = Utils.getBCHDigit(G15);
+	/**
+	* Returns format information with relative error correction bits
+	*
+	* The format information is a 15-bit sequence containing 5 data bits,
+	* with 10 error correction bits calculated using the (15, 5) BCH code.
+	*
+	* @param  {Number} errorCorrectionLevel Error correction level
+	* @param  {Number} mask                 Mask pattern
+	* @return {Number}                      Encoded format information bits
+	*/
+	exports.getEncodedBits = function getEncodedBits(errorCorrectionLevel, mask) {
+		const data = errorCorrectionLevel.bit << 3 | mask;
+		let d = data << 10;
+		while (Utils.getBCHDigit(d) - G15_BCH >= 0) d ^= G15 << Utils.getBCHDigit(d) - G15_BCH;
+		return (data << 10 | d) ^ G15_MASK;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/numeric-data.js
+var require_numeric_data = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var Mode = require_mode();
+	function NumericData(data) {
+		this.mode = Mode.NUMERIC;
+		this.data = data.toString();
+	}
+	NumericData.getBitsLength = function getBitsLength(length) {
+		return 10 * Math.floor(length / 3) + (length % 3 ? length % 3 * 3 + 1 : 0);
+	};
+	NumericData.prototype.getLength = function getLength() {
+		return this.data.length;
+	};
+	NumericData.prototype.getBitsLength = function getBitsLength() {
+		return NumericData.getBitsLength(this.data.length);
+	};
+	NumericData.prototype.write = function write(bitBuffer) {
+		let i, group, value;
+		for (i = 0; i + 3 <= this.data.length; i += 3) {
+			group = this.data.substr(i, 3);
+			value = parseInt(group, 10);
+			bitBuffer.put(value, 10);
+		}
+		const remainingNum = this.data.length - i;
+		if (remainingNum > 0) {
+			group = this.data.substr(i);
+			value = parseInt(group, 10);
+			bitBuffer.put(value, remainingNum * 3 + 1);
+		}
+	};
+	module.exports = NumericData;
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/alphanumeric-data.js
+var require_alphanumeric_data = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var Mode = require_mode();
+	/**
+	* Array of characters available in alphanumeric mode
+	*
+	* As per QR Code specification, to each character
+	* is assigned a value from 0 to 44 which in this case coincides
+	* with the array index
+	*
+	* @type {Array}
+	*/
+	var ALPHA_NUM_CHARS = [
+		"0",
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		"A",
+		"B",
+		"C",
+		"D",
+		"E",
+		"F",
+		"G",
+		"H",
+		"I",
+		"J",
+		"K",
+		"L",
+		"M",
+		"N",
+		"O",
+		"P",
+		"Q",
+		"R",
+		"S",
+		"T",
+		"U",
+		"V",
+		"W",
+		"X",
+		"Y",
+		"Z",
+		" ",
+		"$",
+		"%",
+		"*",
+		"+",
+		"-",
+		".",
+		"/",
+		":"
+	];
+	function AlphanumericData(data) {
+		this.mode = Mode.ALPHANUMERIC;
+		this.data = data;
+	}
+	AlphanumericData.getBitsLength = function getBitsLength(length) {
+		return 11 * Math.floor(length / 2) + 6 * (length % 2);
+	};
+	AlphanumericData.prototype.getLength = function getLength() {
+		return this.data.length;
+	};
+	AlphanumericData.prototype.getBitsLength = function getBitsLength() {
+		return AlphanumericData.getBitsLength(this.data.length);
+	};
+	AlphanumericData.prototype.write = function write(bitBuffer) {
+		let i;
+		for (i = 0; i + 2 <= this.data.length; i += 2) {
+			let value = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
+			value += ALPHA_NUM_CHARS.indexOf(this.data[i + 1]);
+			bitBuffer.put(value, 11);
+		}
+		if (this.data.length % 2) bitBuffer.put(ALPHA_NUM_CHARS.indexOf(this.data[i]), 6);
+	};
+	module.exports = AlphanumericData;
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/byte-data.js
+var require_byte_data = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var Mode = require_mode();
+	function ByteData(data) {
+		this.mode = Mode.BYTE;
+		if (typeof data === "string") this.data = new TextEncoder().encode(data);
+		else this.data = new Uint8Array(data);
+	}
+	ByteData.getBitsLength = function getBitsLength(length) {
+		return length * 8;
+	};
+	ByteData.prototype.getLength = function getLength() {
+		return this.data.length;
+	};
+	ByteData.prototype.getBitsLength = function getBitsLength() {
+		return ByteData.getBitsLength(this.data.length);
+	};
+	ByteData.prototype.write = function(bitBuffer) {
+		for (let i = 0, l = this.data.length; i < l; i++) bitBuffer.put(this.data[i], 8);
+	};
+	module.exports = ByteData;
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/kanji-data.js
+var require_kanji_data = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var Mode = require_mode();
+	var Utils = require_utils$1();
+	function KanjiData(data) {
+		this.mode = Mode.KANJI;
+		this.data = data;
+	}
+	KanjiData.getBitsLength = function getBitsLength(length) {
+		return length * 13;
+	};
+	KanjiData.prototype.getLength = function getLength() {
+		return this.data.length;
+	};
+	KanjiData.prototype.getBitsLength = function getBitsLength() {
+		return KanjiData.getBitsLength(this.data.length);
+	};
+	KanjiData.prototype.write = function(bitBuffer) {
+		let i;
+		for (i = 0; i < this.data.length; i++) {
+			let value = Utils.toSJIS(this.data[i]);
+			if (value >= 33088 && value <= 40956) value -= 33088;
+			else if (value >= 57408 && value <= 60351) value -= 49472;
+			else throw new Error("Invalid SJIS character: " + this.data[i] + "\nMake sure your charset is UTF-8");
+			value = (value >>> 8 & 255) * 192 + (value & 255);
+			bitBuffer.put(value, 13);
+		}
+	};
+	module.exports = KanjiData;
+}));
+//#endregion
+//#region node_modules/dijkstrajs/dijkstra.js
+var require_dijkstra = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	/******************************************************************************
+	* Created 2008-08-19.
+	*
+	* Dijkstra path-finding functions. Adapted from the Dijkstar Python project.
+	*
+	* Copyright (C) 2008
+	*   Wyatt Baldwin <self@wyattbaldwin.com>
+	*   All rights reserved
+	*
+	* Licensed under the MIT license.
+	*
+	*   http://www.opensource.org/licenses/mit-license.php
+	*
+	* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	* THE SOFTWARE.
+	*****************************************************************************/
+	var dijkstra = {
+		single_source_shortest_paths: function(graph, s, d) {
+			var predecessors = {};
+			var costs = {};
+			costs[s] = 0;
+			var open = dijkstra.PriorityQueue.make();
+			open.push(s, 0);
+			var closest, u, v, cost_of_s_to_u, adjacent_nodes, cost_of_e, cost_of_s_to_u_plus_cost_of_e, cost_of_s_to_v, first_visit;
+			while (!open.empty()) {
+				closest = open.pop();
+				u = closest.value;
+				cost_of_s_to_u = closest.cost;
+				adjacent_nodes = graph[u] || {};
+				for (v in adjacent_nodes) if (adjacent_nodes.hasOwnProperty(v)) {
+					cost_of_e = adjacent_nodes[v];
+					cost_of_s_to_u_plus_cost_of_e = cost_of_s_to_u + cost_of_e;
+					cost_of_s_to_v = costs[v];
+					first_visit = typeof costs[v] === "undefined";
+					if (first_visit || cost_of_s_to_v > cost_of_s_to_u_plus_cost_of_e) {
+						costs[v] = cost_of_s_to_u_plus_cost_of_e;
+						open.push(v, cost_of_s_to_u_plus_cost_of_e);
+						predecessors[v] = u;
+					}
+				}
+			}
+			if (typeof d !== "undefined" && typeof costs[d] === "undefined") {
+				var msg = [
+					"Could not find a path from ",
+					s,
+					" to ",
+					d,
+					"."
+				].join("");
+				throw new Error(msg);
+			}
+			return predecessors;
+		},
+		extract_shortest_path_from_predecessor_list: function(predecessors, d) {
+			var nodes = [];
+			var u = d;
+			while (u) {
+				nodes.push(u);
+				predecessors[u];
+				u = predecessors[u];
+			}
+			nodes.reverse();
+			return nodes;
+		},
+		find_path: function(graph, s, d) {
+			var predecessors = dijkstra.single_source_shortest_paths(graph, s, d);
+			return dijkstra.extract_shortest_path_from_predecessor_list(predecessors, d);
+		},
+		/**
+		* A very naive priority queue implementation.
+		*/
+		PriorityQueue: {
+			make: function(opts) {
+				var T = dijkstra.PriorityQueue, t = {}, key;
+				opts = opts || {};
+				for (key in T) if (T.hasOwnProperty(key)) t[key] = T[key];
+				t.queue = [];
+				t.sorter = opts.sorter || T.default_sorter;
+				return t;
+			},
+			default_sorter: function(a, b) {
+				return a.cost - b.cost;
+			},
+			/**
+			* Add a new item to the queue and ensure the highest priority element
+			* is at the front of the queue.
+			*/
+			push: function(value, cost) {
+				var item = {
+					value,
+					cost
+				};
+				this.queue.push(item);
+				this.queue.sort(this.sorter);
+			},
+			/**
+			* Return the highest priority element in the queue.
+			*/
+			pop: function() {
+				return this.queue.shift();
+			},
+			empty: function() {
+				return this.queue.length === 0;
+			}
+		}
+	};
+	if (typeof module !== "undefined") module.exports = dijkstra;
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/segments.js
+var require_segments = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var Mode = require_mode();
+	var NumericData = require_numeric_data();
+	var AlphanumericData = require_alphanumeric_data();
+	var ByteData = require_byte_data();
+	var KanjiData = require_kanji_data();
+	var Regex = require_regex();
+	var Utils = require_utils$1();
+	var dijkstra = require_dijkstra();
+	/**
+	* Returns UTF8 byte length
+	*
+	* @param  {String} str Input string
+	* @return {Number}     Number of byte
+	*/
+	function getStringByteLength(str) {
+		return unescape(encodeURIComponent(str)).length;
+	}
+	/**
+	* Get a list of segments of the specified mode
+	* from a string
+	*
+	* @param  {Mode}   mode Segment mode
+	* @param  {String} str  String to process
+	* @return {Array}       Array of object with segments data
+	*/
+	function getSegments(regex, mode, str) {
+		const segments = [];
+		let result;
+		while ((result = regex.exec(str)) !== null) segments.push({
+			data: result[0],
+			index: result.index,
+			mode,
+			length: result[0].length
+		});
+		return segments;
+	}
+	/**
+	* Extracts a series of segments with the appropriate
+	* modes from a string
+	*
+	* @param  {String} dataStr Input string
+	* @return {Array}          Array of object with segments data
+	*/
+	function getSegmentsFromString(dataStr) {
+		const numSegs = getSegments(Regex.NUMERIC, Mode.NUMERIC, dataStr);
+		const alphaNumSegs = getSegments(Regex.ALPHANUMERIC, Mode.ALPHANUMERIC, dataStr);
+		let byteSegs;
+		let kanjiSegs;
+		if (Utils.isKanjiModeEnabled()) {
+			byteSegs = getSegments(Regex.BYTE, Mode.BYTE, dataStr);
+			kanjiSegs = getSegments(Regex.KANJI, Mode.KANJI, dataStr);
+		} else {
+			byteSegs = getSegments(Regex.BYTE_KANJI, Mode.BYTE, dataStr);
+			kanjiSegs = [];
+		}
+		return numSegs.concat(alphaNumSegs, byteSegs, kanjiSegs).sort(function(s1, s2) {
+			return s1.index - s2.index;
+		}).map(function(obj) {
+			return {
+				data: obj.data,
+				mode: obj.mode,
+				length: obj.length
+			};
+		});
+	}
+	/**
+	* Returns how many bits are needed to encode a string of
+	* specified length with the specified mode
+	*
+	* @param  {Number} length String length
+	* @param  {Mode} mode     Segment mode
+	* @return {Number}        Bit length
+	*/
+	function getSegmentBitsLength(length, mode) {
+		switch (mode) {
+			case Mode.NUMERIC: return NumericData.getBitsLength(length);
+			case Mode.ALPHANUMERIC: return AlphanumericData.getBitsLength(length);
+			case Mode.KANJI: return KanjiData.getBitsLength(length);
+			case Mode.BYTE: return ByteData.getBitsLength(length);
+		}
+	}
+	/**
+	* Merges adjacent segments which have the same mode
+	*
+	* @param  {Array} segs Array of object with segments data
+	* @return {Array}      Array of object with segments data
+	*/
+	function mergeSegments(segs) {
+		return segs.reduce(function(acc, curr) {
+			const prevSeg = acc.length - 1 >= 0 ? acc[acc.length - 1] : null;
+			if (prevSeg && prevSeg.mode === curr.mode) {
+				acc[acc.length - 1].data += curr.data;
+				return acc;
+			}
+			acc.push(curr);
+			return acc;
+		}, []);
+	}
+	/**
+	* Generates a list of all possible nodes combination which
+	* will be used to build a segments graph.
+	*
+	* Nodes are divided by groups. Each group will contain a list of all the modes
+	* in which is possible to encode the given text.
+	*
+	* For example the text '12345' can be encoded as Numeric, Alphanumeric or Byte.
+	* The group for '12345' will contain then 3 objects, one for each
+	* possible encoding mode.
+	*
+	* Each node represents a possible segment.
+	*
+	* @param  {Array} segs Array of object with segments data
+	* @return {Array}      Array of object with segments data
+	*/
+	function buildNodes(segs) {
+		const nodes = [];
+		for (let i = 0; i < segs.length; i++) {
+			const seg = segs[i];
+			switch (seg.mode) {
+				case Mode.NUMERIC:
+					nodes.push([
+						seg,
+						{
+							data: seg.data,
+							mode: Mode.ALPHANUMERIC,
+							length: seg.length
+						},
+						{
+							data: seg.data,
+							mode: Mode.BYTE,
+							length: seg.length
+						}
+					]);
+					break;
+				case Mode.ALPHANUMERIC:
+					nodes.push([seg, {
+						data: seg.data,
+						mode: Mode.BYTE,
+						length: seg.length
+					}]);
+					break;
+				case Mode.KANJI:
+					nodes.push([seg, {
+						data: seg.data,
+						mode: Mode.BYTE,
+						length: getStringByteLength(seg.data)
+					}]);
+					break;
+				case Mode.BYTE: nodes.push([{
+					data: seg.data,
+					mode: Mode.BYTE,
+					length: getStringByteLength(seg.data)
+				}]);
+			}
+		}
+		return nodes;
+	}
+	/**
+	* Builds a graph from a list of nodes.
+	* All segments in each node group will be connected with all the segments of
+	* the next group and so on.
+	*
+	* At each connection will be assigned a weight depending on the
+	* segment's byte length.
+	*
+	* @param  {Array} nodes    Array of object with segments data
+	* @param  {Number} version QR Code version
+	* @return {Object}         Graph of all possible segments
+	*/
+	function buildGraph(nodes, version) {
+		const table = {};
+		const graph = { start: {} };
+		let prevNodeIds = ["start"];
+		for (let i = 0; i < nodes.length; i++) {
+			const nodeGroup = nodes[i];
+			const currentNodeIds = [];
+			for (let j = 0; j < nodeGroup.length; j++) {
+				const node = nodeGroup[j];
+				const key = "" + i + j;
+				currentNodeIds.push(key);
+				table[key] = {
+					node,
+					lastCount: 0
+				};
+				graph[key] = {};
+				for (let n = 0; n < prevNodeIds.length; n++) {
+					const prevNodeId = prevNodeIds[n];
+					if (table[prevNodeId] && table[prevNodeId].node.mode === node.mode) {
+						graph[prevNodeId][key] = getSegmentBitsLength(table[prevNodeId].lastCount + node.length, node.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node.mode);
+						table[prevNodeId].lastCount += node.length;
+					} else {
+						if (table[prevNodeId]) table[prevNodeId].lastCount = node.length;
+						graph[prevNodeId][key] = getSegmentBitsLength(node.length, node.mode) + 4 + Mode.getCharCountIndicator(node.mode, version);
+					}
+				}
+			}
+			prevNodeIds = currentNodeIds;
+		}
+		for (let n = 0; n < prevNodeIds.length; n++) graph[prevNodeIds[n]].end = 0;
 		return {
-			errorCode: decoded.errorCode,
-			errorMsg: decoded.errorMsg
+			map: graph,
+			table
 		};
 	}
-	startHook() {
-		this.addResListener((data) => {
-			if (data?.type === "recv" && data.data?.cmd && data.data?.pb) {
-				const payload = Buffer.from(data.data.pb, "hex");
-				this.ctx.parallel("qq/raw", {
-					cmd: data.data.cmd,
-					payload
-				});
+	/**
+	* Builds a segment from a specified data and mode.
+	* If a mode is not specified, the more suitable will be used.
+	*
+	* @param  {String} data             Input data
+	* @param  {Mode | String} modesHint Data mode
+	* @return {Segment}                 Segment
+	*/
+	function buildSingleSegment(data, modesHint) {
+		let mode;
+		const bestMode = Mode.getBestModeForData(data);
+		mode = Mode.from(modesHint, bestMode);
+		if (mode !== Mode.BYTE && mode.bit < bestMode.bit) throw new Error("\"" + data + "\" cannot be encoded with mode " + Mode.toString(mode) + ".\n Suggested mode is: " + Mode.toString(bestMode));
+		if (mode === Mode.KANJI && !Utils.isKanjiModeEnabled()) mode = Mode.BYTE;
+		switch (mode) {
+			case Mode.NUMERIC: return new NumericData(data);
+			case Mode.ALPHANUMERIC: return new AlphanumericData(data);
+			case Mode.KANJI: return new KanjiData(data);
+			case Mode.BYTE: return new ByteData(data);
+		}
+	}
+	/**
+	* Builds a list of segments from an array.
+	* Array can contain Strings or Objects with segment's info.
+	*
+	* For each item which is a string, will be generated a segment with the given
+	* string and the more appropriate encoding mode.
+	*
+	* For each item which is an object, will be generated a segment with the given
+	* data and mode.
+	* Objects must contain at least the property "data".
+	* If property "mode" is not present, the more suitable mode will be used.
+	*
+	* @param  {Array} array Array of objects with segments data
+	* @return {Array}       Array of Segments
+	*/
+	exports.fromArray = function fromArray(array) {
+		return array.reduce(function(acc, seg) {
+			if (typeof seg === "string") acc.push(buildSingleSegment(seg, null));
+			else if (seg.data) acc.push(buildSingleSegment(seg.data, seg.mode));
+			return acc;
+		}, []);
+	};
+	/**
+	* Builds an optimized sequence of segments from a string,
+	* which will produce the shortest possible bitstream.
+	*
+	* @param  {String} data    Input string
+	* @param  {Number} version QR Code version
+	* @return {Array}          Array of segments
+	*/
+	exports.fromString = function fromString(data, version) {
+		const graph = buildGraph(buildNodes(getSegmentsFromString(data, Utils.isKanjiModeEnabled())), version);
+		const path = dijkstra.find_path(graph.map, "start", "end");
+		const optimizedSegs = [];
+		for (let i = 1; i < path.length - 1; i++) optimizedSegs.push(graph.table[path[i]].node);
+		return exports.fromArray(mergeSegments(optimizedSegs));
+	};
+	/**
+	* Splits a string in various segments with the modes which
+	* best represent their content.
+	* The produced segments are far from being optimized.
+	* The output of this function is only used to estimate a QR Code version
+	* which may contain the data.
+	*
+	* @param  {string} data Input string
+	* @return {Array}       Array of segments
+	*/
+	exports.rawSplit = function rawSplit(data) {
+		return exports.fromArray(getSegmentsFromString(data, Utils.isKanjiModeEnabled()));
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/core/qrcode.js
+var require_qrcode = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var Utils = require_utils$1();
+	var ECLevel = require_error_correction_level();
+	var BitBuffer = require_bit_buffer();
+	var BitMatrix = require_bit_matrix();
+	var AlignmentPattern = require_alignment_pattern();
+	var FinderPattern = require_finder_pattern();
+	var MaskPattern = require_mask_pattern();
+	var ECCode = require_error_correction_code();
+	var ReedSolomonEncoder = require_reed_solomon_encoder();
+	var Version = require_version();
+	var FormatInfo = require_format_info();
+	var Mode = require_mode();
+	var Segments = require_segments();
+	/**
+	* QRCode for JavaScript
+	*
+	* modified by Ryan Day for nodejs support
+	* Copyright (c) 2011 Ryan Day
+	*
+	* Licensed under the MIT license:
+	*   http://www.opensource.org/licenses/mit-license.php
+	*
+	//---------------------------------------------------------------------
+	// QRCode for JavaScript
+	//
+	// Copyright (c) 2009 Kazuhiko Arase
+	//
+	// URL: http://www.d-project.com/
+	//
+	// Licensed under the MIT license:
+	//   http://www.opensource.org/licenses/mit-license.php
+	//
+	// The word "QR Code" is registered trademark of
+	// DENSO WAVE INCORPORATED
+	//   http://www.denso-wave.com/qrcode/faqpatent-e.html
+	//
+	//---------------------------------------------------------------------
+	*/
+	/**
+	* Add finder patterns bits to matrix
+	*
+	* @param  {BitMatrix} matrix  Modules matrix
+	* @param  {Number}    version QR Code version
+	*/
+	function setupFinderPattern(matrix, version) {
+		const size = matrix.size;
+		const pos = FinderPattern.getPositions(version);
+		for (let i = 0; i < pos.length; i++) {
+			const row = pos[i][0];
+			const col = pos[i][1];
+			for (let r = -1; r <= 7; r++) {
+				if (row + r <= -1 || size <= row + r) continue;
+				for (let c = -1; c <= 7; c++) {
+					if (col + c <= -1 || size <= col + c) continue;
+					if (r >= 0 && r <= 6 && (c === 0 || c === 6) || c >= 0 && c <= 6 && (r === 0 || r === 6) || r >= 2 && r <= 4 && c >= 2 && c <= 4) matrix.set(row + r, col + c, true, true);
+					else matrix.set(row + r, col + c, false, true);
+				}
+			}
+		}
+	}
+	/**
+	* Add timing pattern bits to matrix
+	*
+	* Note: this function must be called before {@link setupAlignmentPattern}
+	*
+	* @param  {BitMatrix} matrix Modules matrix
+	*/
+	function setupTimingPattern(matrix) {
+		const size = matrix.size;
+		for (let r = 8; r < size - 8; r++) {
+			const value = r % 2 === 0;
+			matrix.set(r, 6, value, true);
+			matrix.set(6, r, value, true);
+		}
+	}
+	/**
+	* Add alignment patterns bits to matrix
+	*
+	* Note: this function must be called after {@link setupTimingPattern}
+	*
+	* @param  {BitMatrix} matrix  Modules matrix
+	* @param  {Number}    version QR Code version
+	*/
+	function setupAlignmentPattern(matrix, version) {
+		const pos = AlignmentPattern.getPositions(version);
+		for (let i = 0; i < pos.length; i++) {
+			const row = pos[i][0];
+			const col = pos[i][1];
+			for (let r = -2; r <= 2; r++) for (let c = -2; c <= 2; c++) if (r === -2 || r === 2 || c === -2 || c === 2 || r === 0 && c === 0) matrix.set(row + r, col + c, true, true);
+			else matrix.set(row + r, col + c, false, true);
+		}
+	}
+	/**
+	* Add version info bits to matrix
+	*
+	* @param  {BitMatrix} matrix  Modules matrix
+	* @param  {Number}    version QR Code version
+	*/
+	function setupVersionInfo(matrix, version) {
+		const size = matrix.size;
+		const bits = Version.getEncodedBits(version);
+		let row, col, mod;
+		for (let i = 0; i < 18; i++) {
+			row = Math.floor(i / 3);
+			col = i % 3 + size - 8 - 3;
+			mod = (bits >> i & 1) === 1;
+			matrix.set(row, col, mod, true);
+			matrix.set(col, row, mod, true);
+		}
+	}
+	/**
+	* Add format info bits to matrix
+	*
+	* @param  {BitMatrix} matrix               Modules matrix
+	* @param  {ErrorCorrectionLevel}    errorCorrectionLevel Error correction level
+	* @param  {Number}    maskPattern          Mask pattern reference value
+	*/
+	function setupFormatInfo(matrix, errorCorrectionLevel, maskPattern) {
+		const size = matrix.size;
+		const bits = FormatInfo.getEncodedBits(errorCorrectionLevel, maskPattern);
+		let i, mod;
+		for (i = 0; i < 15; i++) {
+			mod = (bits >> i & 1) === 1;
+			if (i < 6) matrix.set(i, 8, mod, true);
+			else if (i < 8) matrix.set(i + 1, 8, mod, true);
+			else matrix.set(size - 15 + i, 8, mod, true);
+			if (i < 8) matrix.set(8, size - i - 1, mod, true);
+			else if (i < 9) matrix.set(8, 15 - i - 1 + 1, mod, true);
+			else matrix.set(8, 15 - i - 1, mod, true);
+		}
+		matrix.set(size - 8, 8, 1, true);
+	}
+	/**
+	* Add encoded data bits to matrix
+	*
+	* @param  {BitMatrix}  matrix Modules matrix
+	* @param  {Uint8Array} data   Data codewords
+	*/
+	function setupData(matrix, data) {
+		const size = matrix.size;
+		let inc = -1;
+		let row = size - 1;
+		let bitIndex = 7;
+		let byteIndex = 0;
+		for (let col = size - 1; col > 0; col -= 2) {
+			if (col === 6) col--;
+			while (true) {
+				for (let c = 0; c < 2; c++) if (!matrix.isReserved(row, col - c)) {
+					let dark = false;
+					if (byteIndex < data.length) dark = (data[byteIndex] >>> bitIndex & 1) === 1;
+					matrix.set(row, col - c, dark);
+					bitIndex--;
+					if (bitIndex === -1) {
+						byteIndex++;
+						bitIndex = 7;
+					}
+				}
+				row += inc;
+				if (row < 0 || size <= row) {
+					row -= inc;
+					inc = -inc;
+					break;
+				}
+			}
+		}
+	}
+	/**
+	* Create encoded codewords from data input
+	*
+	* @param  {Number}   version              QR Code version
+	* @param  {ErrorCorrectionLevel}   errorCorrectionLevel Error correction level
+	* @param  {ByteData} data                 Data input
+	* @return {Uint8Array}                    Buffer containing encoded codewords
+	*/
+	function createData(version, errorCorrectionLevel, segments) {
+		const buffer = new BitBuffer();
+		segments.forEach(function(data) {
+			buffer.put(data.mode.bit, 4);
+			buffer.put(data.getLength(), Mode.getCharCountIndicator(data.mode, version));
+			data.write(buffer);
+		});
+		const dataTotalCodewordsBits = (Utils.getSymbolTotalCodewords(version) - ECCode.getTotalCodewordsCount(version, errorCorrectionLevel)) * 8;
+		if (buffer.getLengthInBits() + 4 <= dataTotalCodewordsBits) buffer.put(0, 4);
+		while (buffer.getLengthInBits() % 8 !== 0) buffer.putBit(0);
+		const remainingByte = (dataTotalCodewordsBits - buffer.getLengthInBits()) / 8;
+		for (let i = 0; i < remainingByte; i++) buffer.put(i % 2 ? 17 : 236, 8);
+		return createCodewords(buffer, version, errorCorrectionLevel);
+	}
+	/**
+	* Encode input data with Reed-Solomon and return codewords with
+	* relative error correction bits
+	*
+	* @param  {BitBuffer} bitBuffer            Data to encode
+	* @param  {Number}    version              QR Code version
+	* @param  {ErrorCorrectionLevel} errorCorrectionLevel Error correction level
+	* @return {Uint8Array}                     Buffer containing encoded codewords
+	*/
+	function createCodewords(bitBuffer, version, errorCorrectionLevel) {
+		const totalCodewords = Utils.getSymbolTotalCodewords(version);
+		const dataTotalCodewords = totalCodewords - ECCode.getTotalCodewordsCount(version, errorCorrectionLevel);
+		const ecTotalBlocks = ECCode.getBlocksCount(version, errorCorrectionLevel);
+		const blocksInGroup1 = ecTotalBlocks - totalCodewords % ecTotalBlocks;
+		const totalCodewordsInGroup1 = Math.floor(totalCodewords / ecTotalBlocks);
+		const dataCodewordsInGroup1 = Math.floor(dataTotalCodewords / ecTotalBlocks);
+		const dataCodewordsInGroup2 = dataCodewordsInGroup1 + 1;
+		const ecCount = totalCodewordsInGroup1 - dataCodewordsInGroup1;
+		const rs = new ReedSolomonEncoder(ecCount);
+		let offset = 0;
+		const dcData = new Array(ecTotalBlocks);
+		const ecData = new Array(ecTotalBlocks);
+		let maxDataSize = 0;
+		const buffer = new Uint8Array(bitBuffer.buffer);
+		for (let b = 0; b < ecTotalBlocks; b++) {
+			const dataSize = b < blocksInGroup1 ? dataCodewordsInGroup1 : dataCodewordsInGroup2;
+			dcData[b] = buffer.slice(offset, offset + dataSize);
+			ecData[b] = rs.encode(dcData[b]);
+			offset += dataSize;
+			maxDataSize = Math.max(maxDataSize, dataSize);
+		}
+		const data = new Uint8Array(totalCodewords);
+		let index = 0;
+		let i, r;
+		for (i = 0; i < maxDataSize; i++) for (r = 0; r < ecTotalBlocks; r++) if (i < dcData[r].length) data[index++] = dcData[r][i];
+		for (i = 0; i < ecCount; i++) for (r = 0; r < ecTotalBlocks; r++) data[index++] = ecData[r][i];
+		return data;
+	}
+	/**
+	* Build QR Code symbol
+	*
+	* @param  {String} data                 Input string
+	* @param  {Number} version              QR Code version
+	* @param  {ErrorCorretionLevel} errorCorrectionLevel Error level
+	* @param  {MaskPattern} maskPattern     Mask pattern
+	* @return {Object}                      Object containing symbol data
+	*/
+	function createSymbol(data, version, errorCorrectionLevel, maskPattern) {
+		let segments;
+		if (Array.isArray(data)) segments = Segments.fromArray(data);
+		else if (typeof data === "string") {
+			let estimatedVersion = version;
+			if (!estimatedVersion) {
+				const rawSegments = Segments.rawSplit(data);
+				estimatedVersion = Version.getBestVersionForData(rawSegments, errorCorrectionLevel);
+			}
+			segments = Segments.fromString(data, estimatedVersion || 40);
+		} else throw new Error("Invalid data");
+		const bestVersion = Version.getBestVersionForData(segments, errorCorrectionLevel);
+		if (!bestVersion) throw new Error("The amount of data is too big to be stored in a QR Code");
+		if (!version) version = bestVersion;
+		else if (version < bestVersion) throw new Error("\nThe chosen QR Code version cannot contain this amount of data.\nMinimum version required to store current data is: " + bestVersion + ".\n");
+		const dataBits = createData(version, errorCorrectionLevel, segments);
+		const modules = new BitMatrix(Utils.getSymbolSize(version));
+		setupFinderPattern(modules, version);
+		setupTimingPattern(modules);
+		setupAlignmentPattern(modules, version);
+		setupFormatInfo(modules, errorCorrectionLevel, 0);
+		if (version >= 7) setupVersionInfo(modules, version);
+		setupData(modules, dataBits);
+		if (isNaN(maskPattern)) maskPattern = MaskPattern.getBestMask(modules, setupFormatInfo.bind(null, modules, errorCorrectionLevel));
+		MaskPattern.applyMask(maskPattern, modules);
+		setupFormatInfo(modules, errorCorrectionLevel, maskPattern);
+		return {
+			modules,
+			version,
+			errorCorrectionLevel,
+			maskPattern,
+			segments
+		};
+	}
+	/**
+	* QR Code
+	*
+	* @param {String | Array} data                 Input data
+	* @param {Object} options                      Optional configurations
+	* @param {Number} options.version              QR Code version
+	* @param {String} options.errorCorrectionLevel Error correction level
+	* @param {Function} options.toSJISFunc         Helper func to convert utf8 to sjis
+	*/
+	exports.create = function create(data, options) {
+		if (typeof data === "undefined" || data === "") throw new Error("No input text");
+		let errorCorrectionLevel = ECLevel.M;
+		let version;
+		let mask;
+		if (typeof options !== "undefined") {
+			errorCorrectionLevel = ECLevel.from(options.errorCorrectionLevel, ECLevel.M);
+			version = Version.from(options.version);
+			mask = MaskPattern.from(options.maskPattern);
+			if (options.toSJISFunc) Utils.setToSJISFunction(options.toSJISFunc);
+		}
+		return createSymbol(data, version, errorCorrectionLevel, mask);
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/chunkstream.js
+var require_chunkstream = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var util$5 = __require("util");
+	var Stream$2 = __require("stream");
+	var ChunkStream = module.exports = function() {
+		Stream$2.call(this);
+		this._buffers = [];
+		this._buffered = 0;
+		this._reads = [];
+		this._paused = false;
+		this._encoding = "utf8";
+		this.writable = true;
+	};
+	util$5.inherits(ChunkStream, Stream$2);
+	ChunkStream.prototype.read = function(length, callback) {
+		this._reads.push({
+			length: Math.abs(length),
+			allowLess: length < 0,
+			func: callback
+		});
+		process.nextTick(function() {
+			this._process();
+			if (this._paused && this._reads && this._reads.length > 0) {
+				this._paused = false;
+				this.emit("drain");
+			}
+		}.bind(this));
+	};
+	ChunkStream.prototype.write = function(data, encoding) {
+		if (!this.writable) {
+			this.emit("error", /* @__PURE__ */ new Error("Stream not writable"));
+			return false;
+		}
+		let dataBuffer;
+		if (Buffer.isBuffer(data)) dataBuffer = data;
+		else dataBuffer = Buffer.from(data, encoding || this._encoding);
+		this._buffers.push(dataBuffer);
+		this._buffered += dataBuffer.length;
+		this._process();
+		if (this._reads && this._reads.length === 0) this._paused = true;
+		return this.writable && !this._paused;
+	};
+	ChunkStream.prototype.end = function(data, encoding) {
+		if (data) this.write(data, encoding);
+		this.writable = false;
+		if (!this._buffers) return;
+		if (this._buffers.length === 0) this._end();
+		else {
+			this._buffers.push(null);
+			this._process();
+		}
+	};
+	ChunkStream.prototype.destroySoon = ChunkStream.prototype.end;
+	ChunkStream.prototype._end = function() {
+		if (this._reads.length > 0) this.emit("error", /* @__PURE__ */ new Error("Unexpected end of input"));
+		this.destroy();
+	};
+	ChunkStream.prototype.destroy = function() {
+		if (!this._buffers) return;
+		this.writable = false;
+		this._reads = null;
+		this._buffers = null;
+		this.emit("close");
+	};
+	ChunkStream.prototype._processReadAllowingLess = function(read) {
+		this._reads.shift();
+		let smallerBuf = this._buffers[0];
+		if (smallerBuf.length > read.length) {
+			this._buffered -= read.length;
+			this._buffers[0] = smallerBuf.slice(read.length);
+			read.func.call(this, smallerBuf.slice(0, read.length));
+		} else {
+			this._buffered -= smallerBuf.length;
+			this._buffers.shift();
+			read.func.call(this, smallerBuf);
+		}
+	};
+	ChunkStream.prototype._processRead = function(read) {
+		this._reads.shift();
+		let pos = 0;
+		let count = 0;
+		let data = Buffer.alloc(read.length);
+		while (pos < read.length) {
+			let buf = this._buffers[count++];
+			let len = Math.min(buf.length, read.length - pos);
+			buf.copy(data, pos, 0, len);
+			pos += len;
+			if (len !== buf.length) this._buffers[--count] = buf.slice(len);
+		}
+		if (count > 0) this._buffers.splice(0, count);
+		this._buffered -= read.length;
+		read.func.call(this, data);
+	};
+	ChunkStream.prototype._process = function() {
+		try {
+			while (this._buffered > 0 && this._reads && this._reads.length > 0) {
+				let read = this._reads[0];
+				if (read.allowLess) this._processReadAllowingLess(read);
+				else if (this._buffered >= read.length) this._processRead(read);
+				else break;
+			}
+			if (this._buffers && !this.writable) this._end();
+		} catch (ex) {
+			this.emit("error", ex);
+		}
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/interlace.js
+var require_interlace = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var imagePasses = [
+		{
+			x: [0],
+			y: [0]
+		},
+		{
+			x: [4],
+			y: [0]
+		},
+		{
+			x: [0, 4],
+			y: [4]
+		},
+		{
+			x: [2, 6],
+			y: [0, 4]
+		},
+		{
+			x: [
+				0,
+				2,
+				4,
+				6
+			],
+			y: [2, 6]
+		},
+		{
+			x: [
+				1,
+				3,
+				5,
+				7
+			],
+			y: [
+				0,
+				2,
+				4,
+				6
+			]
+		},
+		{
+			x: [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7
+			],
+			y: [
+				1,
+				3,
+				5,
+				7
+			]
+		}
+	];
+	exports.getImagePasses = function(width, height) {
+		let images = [];
+		let xLeftOver = width % 8;
+		let yLeftOver = height % 8;
+		let xRepeats = (width - xLeftOver) / 8;
+		let yRepeats = (height - yLeftOver) / 8;
+		for (let i = 0; i < imagePasses.length; i++) {
+			let pass = imagePasses[i];
+			let passWidth = xRepeats * pass.x.length;
+			let passHeight = yRepeats * pass.y.length;
+			for (let j = 0; j < pass.x.length; j++) if (pass.x[j] < xLeftOver) passWidth++;
+			else break;
+			for (let j = 0; j < pass.y.length; j++) if (pass.y[j] < yLeftOver) passHeight++;
+			else break;
+			if (passWidth > 0 && passHeight > 0) images.push({
+				width: passWidth,
+				height: passHeight,
+				index: i
+			});
+		}
+		return images;
+	};
+	exports.getInterlaceIterator = function(width) {
+		return function(x, y, pass) {
+			let outerXLeftOver = x % imagePasses[pass].x.length;
+			let outerX = (x - outerXLeftOver) / imagePasses[pass].x.length * 8 + imagePasses[pass].x[outerXLeftOver];
+			let outerYLeftOver = y % imagePasses[pass].y.length;
+			let outerY = (y - outerYLeftOver) / imagePasses[pass].y.length * 8 + imagePasses[pass].y[outerYLeftOver];
+			return outerX * 4 + outerY * width * 4;
+		};
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/paeth-predictor.js
+var require_paeth_predictor = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	module.exports = function paethPredictor(left, above, upLeft) {
+		let paeth = left + above - upLeft;
+		let pLeft = Math.abs(paeth - left);
+		let pAbove = Math.abs(paeth - above);
+		let pUpLeft = Math.abs(paeth - upLeft);
+		if (pLeft <= pAbove && pLeft <= pUpLeft) return left;
+		if (pAbove <= pUpLeft) return above;
+		return upLeft;
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/filter-parse.js
+var require_filter_parse = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var interlaceUtils = require_interlace();
+	var paethPredictor = require_paeth_predictor();
+	function getByteWidth(width, bpp, depth) {
+		let byteWidth = width * bpp;
+		if (depth !== 8) byteWidth = Math.ceil(byteWidth / (8 / depth));
+		return byteWidth;
+	}
+	var Filter = module.exports = function(bitmapInfo, dependencies) {
+		let width = bitmapInfo.width;
+		let height = bitmapInfo.height;
+		let interlace = bitmapInfo.interlace;
+		let bpp = bitmapInfo.bpp;
+		let depth = bitmapInfo.depth;
+		this.read = dependencies.read;
+		this.write = dependencies.write;
+		this.complete = dependencies.complete;
+		this._imageIndex = 0;
+		this._images = [];
+		if (interlace) {
+			let passes = interlaceUtils.getImagePasses(width, height);
+			for (let i = 0; i < passes.length; i++) this._images.push({
+				byteWidth: getByteWidth(passes[i].width, bpp, depth),
+				height: passes[i].height,
+				lineIndex: 0
+			});
+		} else this._images.push({
+			byteWidth: getByteWidth(width, bpp, depth),
+			height,
+			lineIndex: 0
+		});
+		if (depth === 8) this._xComparison = bpp;
+		else if (depth === 16) this._xComparison = bpp * 2;
+		else this._xComparison = 1;
+	};
+	Filter.prototype.start = function() {
+		this.read(this._images[this._imageIndex].byteWidth + 1, this._reverseFilterLine.bind(this));
+	};
+	Filter.prototype._unFilterType1 = function(rawData, unfilteredLine, byteWidth) {
+		let xComparison = this._xComparison;
+		let xBiggerThan = xComparison - 1;
+		for (let x = 0; x < byteWidth; x++) unfilteredLine[x] = rawData[1 + x] + (x > xBiggerThan ? unfilteredLine[x - xComparison] : 0);
+	};
+	Filter.prototype._unFilterType2 = function(rawData, unfilteredLine, byteWidth) {
+		let lastLine = this._lastLine;
+		for (let x = 0; x < byteWidth; x++) unfilteredLine[x] = rawData[1 + x] + (lastLine ? lastLine[x] : 0);
+	};
+	Filter.prototype._unFilterType3 = function(rawData, unfilteredLine, byteWidth) {
+		let xComparison = this._xComparison;
+		let xBiggerThan = xComparison - 1;
+		let lastLine = this._lastLine;
+		for (let x = 0; x < byteWidth; x++) {
+			let rawByte = rawData[1 + x];
+			let f3Up = lastLine ? lastLine[x] : 0;
+			let f3Left = x > xBiggerThan ? unfilteredLine[x - xComparison] : 0;
+			unfilteredLine[x] = rawByte + Math.floor((f3Left + f3Up) / 2);
+		}
+	};
+	Filter.prototype._unFilterType4 = function(rawData, unfilteredLine, byteWidth) {
+		let xComparison = this._xComparison;
+		let xBiggerThan = xComparison - 1;
+		let lastLine = this._lastLine;
+		for (let x = 0; x < byteWidth; x++) {
+			let rawByte = rawData[1 + x];
+			let f4Up = lastLine ? lastLine[x] : 0;
+			unfilteredLine[x] = rawByte + paethPredictor(x > xBiggerThan ? unfilteredLine[x - xComparison] : 0, f4Up, x > xBiggerThan && lastLine ? lastLine[x - xComparison] : 0);
+		}
+	};
+	Filter.prototype._reverseFilterLine = function(rawData) {
+		let filter = rawData[0];
+		let unfilteredLine;
+		let currentImage = this._images[this._imageIndex];
+		let byteWidth = currentImage.byteWidth;
+		if (filter === 0) unfilteredLine = rawData.slice(1, byteWidth + 1);
+		else {
+			unfilteredLine = Buffer.alloc(byteWidth);
+			switch (filter) {
+				case 1:
+					this._unFilterType1(rawData, unfilteredLine, byteWidth);
+					break;
+				case 2:
+					this._unFilterType2(rawData, unfilteredLine, byteWidth);
+					break;
+				case 3:
+					this._unFilterType3(rawData, unfilteredLine, byteWidth);
+					break;
+				case 4:
+					this._unFilterType4(rawData, unfilteredLine, byteWidth);
+					break;
+				default: throw new Error("Unrecognised filter type - " + filter);
+			}
+		}
+		this.write(unfilteredLine);
+		currentImage.lineIndex++;
+		if (currentImage.lineIndex >= currentImage.height) {
+			this._lastLine = null;
+			this._imageIndex++;
+			currentImage = this._images[this._imageIndex];
+		} else this._lastLine = unfilteredLine;
+		if (currentImage) this.read(currentImage.byteWidth + 1, this._reverseFilterLine.bind(this));
+		else {
+			this._lastLine = null;
+			this.complete();
+		}
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/filter-parse-async.js
+var require_filter_parse_async = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var util$4 = __require("util");
+	var ChunkStream = require_chunkstream();
+	var Filter = require_filter_parse();
+	var FilterAsync = module.exports = function(bitmapInfo) {
+		ChunkStream.call(this);
+		let buffers = [];
+		let that = this;
+		this._filter = new Filter(bitmapInfo, {
+			read: this.read.bind(this),
+			write: function(buffer) {
+				buffers.push(buffer);
+			},
+			complete: function() {
+				that.emit("complete", Buffer.concat(buffers));
 			}
 		});
+		this._filter.start();
+	};
+	util$4.inherits(FilterAsync, ChunkStream);
+}));
+//#endregion
+//#region node_modules/pngjs/lib/constants.js
+var require_constants = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	module.exports = {
+		PNG_SIGNATURE: [
+			137,
+			80,
+			78,
+			71,
+			13,
+			10,
+			26,
+			10
+		],
+		TYPE_IHDR: 1229472850,
+		TYPE_IEND: 1229278788,
+		TYPE_IDAT: 1229209940,
+		TYPE_PLTE: 1347179589,
+		TYPE_tRNS: 1951551059,
+		TYPE_gAMA: 1732332865,
+		COLORTYPE_GRAYSCALE: 0,
+		COLORTYPE_PALETTE: 1,
+		COLORTYPE_COLOR: 2,
+		COLORTYPE_ALPHA: 4,
+		COLORTYPE_PALETTE_COLOR: 3,
+		COLORTYPE_COLOR_ALPHA: 6,
+		COLORTYPE_TO_BPP_MAP: {
+			0: 1,
+			2: 3,
+			3: 1,
+			4: 2,
+			6: 4
+		},
+		GAMMA_DIVISION: 1e5
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/crc.js
+var require_crc = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var crcTable = [];
+	(function() {
+		for (let i = 0; i < 256; i++) {
+			let currentCrc = i;
+			for (let j = 0; j < 8; j++) if (currentCrc & 1) currentCrc = 3988292384 ^ currentCrc >>> 1;
+			else currentCrc = currentCrc >>> 1;
+			crcTable[i] = currentCrc;
+		}
+	})();
+	var CrcCalculator = module.exports = function() {
+		this._crc = -1;
+	};
+	CrcCalculator.prototype.write = function(data) {
+		for (let i = 0; i < data.length; i++) this._crc = crcTable[(this._crc ^ data[i]) & 255] ^ this._crc >>> 8;
+		return true;
+	};
+	CrcCalculator.prototype.crc32 = function() {
+		return this._crc ^ -1;
+	};
+	CrcCalculator.crc32 = function(buf) {
+		let crc = -1;
+		for (let i = 0; i < buf.length; i++) crc = crcTable[(crc ^ buf[i]) & 255] ^ crc >>> 8;
+		return crc ^ -1;
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/parser.js
+var require_parser = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var constants = require_constants();
+	var CrcCalculator = require_crc();
+	var Parser = module.exports = function(options, dependencies) {
+		this._options = options;
+		options.checkCRC = options.checkCRC !== false;
+		this._hasIHDR = false;
+		this._hasIEND = false;
+		this._emittedHeadersFinished = false;
+		this._palette = [];
+		this._colorType = 0;
+		this._chunks = {};
+		this._chunks[constants.TYPE_IHDR] = this._handleIHDR.bind(this);
+		this._chunks[constants.TYPE_IEND] = this._handleIEND.bind(this);
+		this._chunks[constants.TYPE_IDAT] = this._handleIDAT.bind(this);
+		this._chunks[constants.TYPE_PLTE] = this._handlePLTE.bind(this);
+		this._chunks[constants.TYPE_tRNS] = this._handleTRNS.bind(this);
+		this._chunks[constants.TYPE_gAMA] = this._handleGAMA.bind(this);
+		this.read = dependencies.read;
+		this.error = dependencies.error;
+		this.metadata = dependencies.metadata;
+		this.gamma = dependencies.gamma;
+		this.transColor = dependencies.transColor;
+		this.palette = dependencies.palette;
+		this.parsed = dependencies.parsed;
+		this.inflateData = dependencies.inflateData;
+		this.finished = dependencies.finished;
+		this.simpleTransparency = dependencies.simpleTransparency;
+		this.headersFinished = dependencies.headersFinished || function() {};
+	};
+	Parser.prototype.start = function() {
+		this.read(constants.PNG_SIGNATURE.length, this._parseSignature.bind(this));
+	};
+	Parser.prototype._parseSignature = function(data) {
+		let signature = constants.PNG_SIGNATURE;
+		for (let i = 0; i < signature.length; i++) if (data[i] !== signature[i]) {
+			this.error(/* @__PURE__ */ new Error("Invalid file signature"));
+			return;
+		}
+		this.read(8, this._parseChunkBegin.bind(this));
+	};
+	Parser.prototype._parseChunkBegin = function(data) {
+		let length = data.readUInt32BE(0);
+		let type = data.readUInt32BE(4);
+		let name = "";
+		for (let i = 4; i < 8; i++) name += String.fromCharCode(data[i]);
+		let ancillary = Boolean(data[4] & 32);
+		if (!this._hasIHDR && type !== constants.TYPE_IHDR) {
+			this.error(/* @__PURE__ */ new Error("Expected IHDR on beggining"));
+			return;
+		}
+		this._crc = new CrcCalculator();
+		this._crc.write(Buffer.from(name));
+		if (this._chunks[type]) return this._chunks[type](length);
+		if (!ancillary) {
+			this.error(/* @__PURE__ */ new Error("Unsupported critical chunk type " + name));
+			return;
+		}
+		this.read(length + 4, this._skipChunk.bind(this));
+	};
+	Parser.prototype._skipChunk = function() {
+		this.read(8, this._parseChunkBegin.bind(this));
+	};
+	Parser.prototype._handleChunkEnd = function() {
+		this.read(4, this._parseChunkEnd.bind(this));
+	};
+	Parser.prototype._parseChunkEnd = function(data) {
+		let fileCrc = data.readInt32BE(0);
+		let calcCrc = this._crc.crc32();
+		if (this._options.checkCRC && calcCrc !== fileCrc) {
+			this.error(/* @__PURE__ */ new Error("Crc error - " + fileCrc + " - " + calcCrc));
+			return;
+		}
+		if (!this._hasIEND) this.read(8, this._parseChunkBegin.bind(this));
+	};
+	Parser.prototype._handleIHDR = function(length) {
+		this.read(length, this._parseIHDR.bind(this));
+	};
+	Parser.prototype._parseIHDR = function(data) {
+		this._crc.write(data);
+		let width = data.readUInt32BE(0);
+		let height = data.readUInt32BE(4);
+		let depth = data[8];
+		let colorType = data[9];
+		let compr = data[10];
+		let filter = data[11];
+		let interlace = data[12];
+		if (depth !== 8 && depth !== 4 && depth !== 2 && depth !== 1 && depth !== 16) {
+			this.error(/* @__PURE__ */ new Error("Unsupported bit depth " + depth));
+			return;
+		}
+		if (!(colorType in constants.COLORTYPE_TO_BPP_MAP)) {
+			this.error(/* @__PURE__ */ new Error("Unsupported color type"));
+			return;
+		}
+		if (compr !== 0) {
+			this.error(/* @__PURE__ */ new Error("Unsupported compression method"));
+			return;
+		}
+		if (filter !== 0) {
+			this.error(/* @__PURE__ */ new Error("Unsupported filter method"));
+			return;
+		}
+		if (interlace !== 0 && interlace !== 1) {
+			this.error(/* @__PURE__ */ new Error("Unsupported interlace method"));
+			return;
+		}
+		this._colorType = colorType;
+		let bpp = constants.COLORTYPE_TO_BPP_MAP[this._colorType];
+		this._hasIHDR = true;
+		this.metadata({
+			width,
+			height,
+			depth,
+			interlace: Boolean(interlace),
+			palette: Boolean(colorType & constants.COLORTYPE_PALETTE),
+			color: Boolean(colorType & constants.COLORTYPE_COLOR),
+			alpha: Boolean(colorType & constants.COLORTYPE_ALPHA),
+			bpp,
+			colorType
+		});
+		this._handleChunkEnd();
+	};
+	Parser.prototype._handlePLTE = function(length) {
+		this.read(length, this._parsePLTE.bind(this));
+	};
+	Parser.prototype._parsePLTE = function(data) {
+		this._crc.write(data);
+		let entries = Math.floor(data.length / 3);
+		for (let i = 0; i < entries; i++) this._palette.push([
+			data[i * 3],
+			data[i * 3 + 1],
+			data[i * 3 + 2],
+			255
+		]);
+		this.palette(this._palette);
+		this._handleChunkEnd();
+	};
+	Parser.prototype._handleTRNS = function(length) {
+		this.simpleTransparency();
+		this.read(length, this._parseTRNS.bind(this));
+	};
+	Parser.prototype._parseTRNS = function(data) {
+		this._crc.write(data);
+		if (this._colorType === constants.COLORTYPE_PALETTE_COLOR) {
+			if (this._palette.length === 0) {
+				this.error(/* @__PURE__ */ new Error("Transparency chunk must be after palette"));
+				return;
+			}
+			if (data.length > this._palette.length) {
+				this.error(/* @__PURE__ */ new Error("More transparent colors than palette size"));
+				return;
+			}
+			for (let i = 0; i < data.length; i++) this._palette[i][3] = data[i];
+			this.palette(this._palette);
+		}
+		if (this._colorType === constants.COLORTYPE_GRAYSCALE) this.transColor([data.readUInt16BE(0)]);
+		if (this._colorType === constants.COLORTYPE_COLOR) this.transColor([
+			data.readUInt16BE(0),
+			data.readUInt16BE(2),
+			data.readUInt16BE(4)
+		]);
+		this._handleChunkEnd();
+	};
+	Parser.prototype._handleGAMA = function(length) {
+		this.read(length, this._parseGAMA.bind(this));
+	};
+	Parser.prototype._parseGAMA = function(data) {
+		this._crc.write(data);
+		this.gamma(data.readUInt32BE(0) / constants.GAMMA_DIVISION);
+		this._handleChunkEnd();
+	};
+	Parser.prototype._handleIDAT = function(length) {
+		if (!this._emittedHeadersFinished) {
+			this._emittedHeadersFinished = true;
+			this.headersFinished();
+		}
+		this.read(-length, this._parseIDAT.bind(this, length));
+	};
+	Parser.prototype._parseIDAT = function(length, data) {
+		this._crc.write(data);
+		if (this._colorType === constants.COLORTYPE_PALETTE_COLOR && this._palette.length === 0) throw new Error("Expected palette not found");
+		this.inflateData(data);
+		let leftOverLength = length - data.length;
+		if (leftOverLength > 0) this._handleIDAT(leftOverLength);
+		else this._handleChunkEnd();
+	};
+	Parser.prototype._handleIEND = function(length) {
+		this.read(length, this._parseIEND.bind(this));
+	};
+	Parser.prototype._parseIEND = function(data) {
+		this._crc.write(data);
+		this._hasIEND = true;
+		this._handleChunkEnd();
+		if (this.finished) this.finished();
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/bitmapper.js
+var require_bitmapper = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var interlaceUtils = require_interlace();
+	var pixelBppMapper = [
+		function() {},
+		function(pxData, data, pxPos, rawPos) {
+			if (rawPos === data.length) throw new Error("Ran out of data");
+			let pixel = data[rawPos];
+			pxData[pxPos] = pixel;
+			pxData[pxPos + 1] = pixel;
+			pxData[pxPos + 2] = pixel;
+			pxData[pxPos + 3] = 255;
+		},
+		function(pxData, data, pxPos, rawPos) {
+			if (rawPos + 1 >= data.length) throw new Error("Ran out of data");
+			let pixel = data[rawPos];
+			pxData[pxPos] = pixel;
+			pxData[pxPos + 1] = pixel;
+			pxData[pxPos + 2] = pixel;
+			pxData[pxPos + 3] = data[rawPos + 1];
+		},
+		function(pxData, data, pxPos, rawPos) {
+			if (rawPos + 2 >= data.length) throw new Error("Ran out of data");
+			pxData[pxPos] = data[rawPos];
+			pxData[pxPos + 1] = data[rawPos + 1];
+			pxData[pxPos + 2] = data[rawPos + 2];
+			pxData[pxPos + 3] = 255;
+		},
+		function(pxData, data, pxPos, rawPos) {
+			if (rawPos + 3 >= data.length) throw new Error("Ran out of data");
+			pxData[pxPos] = data[rawPos];
+			pxData[pxPos + 1] = data[rawPos + 1];
+			pxData[pxPos + 2] = data[rawPos + 2];
+			pxData[pxPos + 3] = data[rawPos + 3];
+		}
+	];
+	var pixelBppCustomMapper = [
+		function() {},
+		function(pxData, pixelData, pxPos, maxBit) {
+			let pixel = pixelData[0];
+			pxData[pxPos] = pixel;
+			pxData[pxPos + 1] = pixel;
+			pxData[pxPos + 2] = pixel;
+			pxData[pxPos + 3] = maxBit;
+		},
+		function(pxData, pixelData, pxPos) {
+			let pixel = pixelData[0];
+			pxData[pxPos] = pixel;
+			pxData[pxPos + 1] = pixel;
+			pxData[pxPos + 2] = pixel;
+			pxData[pxPos + 3] = pixelData[1];
+		},
+		function(pxData, pixelData, pxPos, maxBit) {
+			pxData[pxPos] = pixelData[0];
+			pxData[pxPos + 1] = pixelData[1];
+			pxData[pxPos + 2] = pixelData[2];
+			pxData[pxPos + 3] = maxBit;
+		},
+		function(pxData, pixelData, pxPos) {
+			pxData[pxPos] = pixelData[0];
+			pxData[pxPos + 1] = pixelData[1];
+			pxData[pxPos + 2] = pixelData[2];
+			pxData[pxPos + 3] = pixelData[3];
+		}
+	];
+	function bitRetriever(data, depth) {
+		let leftOver = [];
+		let i = 0;
+		function split() {
+			if (i === data.length) throw new Error("Ran out of data");
+			let byte = data[i];
+			i++;
+			let byte8, byte7, byte6, byte5, byte4, byte3, byte2, byte1;
+			switch (depth) {
+				default: throw new Error("unrecognised depth");
+				case 16:
+					byte2 = data[i];
+					i++;
+					leftOver.push((byte << 8) + byte2);
+					break;
+				case 4:
+					byte2 = byte & 15;
+					byte1 = byte >> 4;
+					leftOver.push(byte1, byte2);
+					break;
+				case 2:
+					byte4 = byte & 3;
+					byte3 = byte >> 2 & 3;
+					byte2 = byte >> 4 & 3;
+					byte1 = byte >> 6 & 3;
+					leftOver.push(byte1, byte2, byte3, byte4);
+					break;
+				case 1:
+					byte8 = byte & 1;
+					byte7 = byte >> 1 & 1;
+					byte6 = byte >> 2 & 1;
+					byte5 = byte >> 3 & 1;
+					byte4 = byte >> 4 & 1;
+					byte3 = byte >> 5 & 1;
+					byte2 = byte >> 6 & 1;
+					byte1 = byte >> 7 & 1;
+					leftOver.push(byte1, byte2, byte3, byte4, byte5, byte6, byte7, byte8);
+					break;
+			}
+		}
+		return {
+			get: function(count) {
+				while (leftOver.length < count) split();
+				let returner = leftOver.slice(0, count);
+				leftOver = leftOver.slice(count);
+				return returner;
+			},
+			resetAfterLine: function() {
+				leftOver.length = 0;
+			},
+			end: function() {
+				if (i !== data.length) throw new Error("extra data found");
+			}
+		};
+	}
+	function mapImage8Bit(image, pxData, getPxPos, bpp, data, rawPos) {
+		let imageWidth = image.width;
+		let imageHeight = image.height;
+		let imagePass = image.index;
+		for (let y = 0; y < imageHeight; y++) for (let x = 0; x < imageWidth; x++) {
+			let pxPos = getPxPos(x, y, imagePass);
+			pixelBppMapper[bpp](pxData, data, pxPos, rawPos);
+			rawPos += bpp;
+		}
+		return rawPos;
+	}
+	function mapImageCustomBit(image, pxData, getPxPos, bpp, bits, maxBit) {
+		let imageWidth = image.width;
+		let imageHeight = image.height;
+		let imagePass = image.index;
+		for (let y = 0; y < imageHeight; y++) {
+			for (let x = 0; x < imageWidth; x++) {
+				let pixelData = bits.get(bpp);
+				let pxPos = getPxPos(x, y, imagePass);
+				pixelBppCustomMapper[bpp](pxData, pixelData, pxPos, maxBit);
+			}
+			bits.resetAfterLine();
+		}
+	}
+	exports.dataToBitMap = function(data, bitmapInfo) {
+		let width = bitmapInfo.width;
+		let height = bitmapInfo.height;
+		let depth = bitmapInfo.depth;
+		let bpp = bitmapInfo.bpp;
+		let interlace = bitmapInfo.interlace;
+		let bits;
+		if (depth !== 8) bits = bitRetriever(data, depth);
+		let pxData;
+		if (depth <= 8) pxData = Buffer.alloc(width * height * 4);
+		else pxData = new Uint16Array(width * height * 4);
+		let maxBit = Math.pow(2, depth) - 1;
+		let rawPos = 0;
+		let images;
+		let getPxPos;
+		if (interlace) {
+			images = interlaceUtils.getImagePasses(width, height);
+			getPxPos = interlaceUtils.getInterlaceIterator(width, height);
+		} else {
+			let nonInterlacedPxPos = 0;
+			getPxPos = function() {
+				let returner = nonInterlacedPxPos;
+				nonInterlacedPxPos += 4;
+				return returner;
+			};
+			images = [{
+				width,
+				height
+			}];
+		}
+		for (let imageIndex = 0; imageIndex < images.length; imageIndex++) if (depth === 8) rawPos = mapImage8Bit(images[imageIndex], pxData, getPxPos, bpp, data, rawPos);
+		else mapImageCustomBit(images[imageIndex], pxData, getPxPos, bpp, bits, maxBit);
+		if (depth === 8) {
+			if (rawPos !== data.length) throw new Error("extra data found");
+		} else bits.end();
+		return pxData;
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/format-normaliser.js
+var require_format_normaliser = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	function dePalette(indata, outdata, width, height, palette) {
+		let pxPos = 0;
+		for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+			let color = palette[indata[pxPos]];
+			if (!color) throw new Error("index " + indata[pxPos] + " not in palette");
+			for (let i = 0; i < 4; i++) outdata[pxPos + i] = color[i];
+			pxPos += 4;
+		}
+	}
+	function replaceTransparentColor(indata, outdata, width, height, transColor) {
+		let pxPos = 0;
+		for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+			let makeTrans = false;
+			if (transColor.length === 1) {
+				if (transColor[0] === indata[pxPos]) makeTrans = true;
+			} else if (transColor[0] === indata[pxPos] && transColor[1] === indata[pxPos + 1] && transColor[2] === indata[pxPos + 2]) makeTrans = true;
+			if (makeTrans) for (let i = 0; i < 4; i++) outdata[pxPos + i] = 0;
+			pxPos += 4;
+		}
+	}
+	function scaleDepth(indata, outdata, width, height, depth) {
+		let maxOutSample = 255;
+		let maxInSample = Math.pow(2, depth) - 1;
+		let pxPos = 0;
+		for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+			for (let i = 0; i < 4; i++) outdata[pxPos + i] = Math.floor(indata[pxPos + i] * maxOutSample / maxInSample + .5);
+			pxPos += 4;
+		}
+	}
+	module.exports = function(indata, imageData) {
+		let depth = imageData.depth;
+		let width = imageData.width;
+		let height = imageData.height;
+		let colorType = imageData.colorType;
+		let transColor = imageData.transColor;
+		let palette = imageData.palette;
+		let outdata = indata;
+		if (colorType === 3) dePalette(indata, outdata, width, height, palette);
+		else {
+			if (transColor) replaceTransparentColor(indata, outdata, width, height, transColor);
+			if (depth !== 8) {
+				if (depth === 16) outdata = Buffer.alloc(width * height * 4);
+				scaleDepth(indata, outdata, width, height, depth);
+			}
+		}
+		return outdata;
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/parser-async.js
+var require_parser_async = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var util$3 = __require("util");
+	var zlib$4 = __require("zlib");
+	var ChunkStream = require_chunkstream();
+	var FilterAsync = require_filter_parse_async();
+	var Parser = require_parser();
+	var bitmapper = require_bitmapper();
+	var formatNormaliser = require_format_normaliser();
+	var ParserAsync = module.exports = function(options) {
+		ChunkStream.call(this);
+		this._parser = new Parser(options, {
+			read: this.read.bind(this),
+			error: this._handleError.bind(this),
+			metadata: this._handleMetaData.bind(this),
+			gamma: this.emit.bind(this, "gamma"),
+			palette: this._handlePalette.bind(this),
+			transColor: this._handleTransColor.bind(this),
+			finished: this._finished.bind(this),
+			inflateData: this._inflateData.bind(this),
+			simpleTransparency: this._simpleTransparency.bind(this),
+			headersFinished: this._headersFinished.bind(this)
+		});
+		this._options = options;
+		this.writable = true;
+		this._parser.start();
+	};
+	util$3.inherits(ParserAsync, ChunkStream);
+	ParserAsync.prototype._handleError = function(err) {
+		this.emit("error", err);
+		this.writable = false;
+		this.destroy();
+		if (this._inflate && this._inflate.destroy) this._inflate.destroy();
+		if (this._filter) {
+			this._filter.destroy();
+			this._filter.on("error", function() {});
+		}
+		this.errord = true;
+	};
+	ParserAsync.prototype._inflateData = function(data) {
+		if (!this._inflate) if (this._bitmapInfo.interlace) {
+			this._inflate = zlib$4.createInflate();
+			this._inflate.on("error", this.emit.bind(this, "error"));
+			this._filter.on("complete", this._complete.bind(this));
+			this._inflate.pipe(this._filter);
+		} else {
+			let imageSize = ((this._bitmapInfo.width * this._bitmapInfo.bpp * this._bitmapInfo.depth + 7 >> 3) + 1) * this._bitmapInfo.height;
+			let chunkSize = Math.max(imageSize, zlib$4.Z_MIN_CHUNK);
+			this._inflate = zlib$4.createInflate({ chunkSize });
+			let leftToInflate = imageSize;
+			let emitError = this.emit.bind(this, "error");
+			this._inflate.on("error", function(err) {
+				if (!leftToInflate) return;
+				emitError(err);
+			});
+			this._filter.on("complete", this._complete.bind(this));
+			let filterWrite = this._filter.write.bind(this._filter);
+			this._inflate.on("data", function(chunk) {
+				if (!leftToInflate) return;
+				if (chunk.length > leftToInflate) chunk = chunk.slice(0, leftToInflate);
+				leftToInflate -= chunk.length;
+				filterWrite(chunk);
+			});
+			this._inflate.on("end", this._filter.end.bind(this._filter));
+		}
+		this._inflate.write(data);
+	};
+	ParserAsync.prototype._handleMetaData = function(metaData) {
+		this._metaData = metaData;
+		this._bitmapInfo = Object.create(metaData);
+		this._filter = new FilterAsync(this._bitmapInfo);
+	};
+	ParserAsync.prototype._handleTransColor = function(transColor) {
+		this._bitmapInfo.transColor = transColor;
+	};
+	ParserAsync.prototype._handlePalette = function(palette) {
+		this._bitmapInfo.palette = palette;
+	};
+	ParserAsync.prototype._simpleTransparency = function() {
+		this._metaData.alpha = true;
+	};
+	ParserAsync.prototype._headersFinished = function() {
+		this.emit("metadata", this._metaData);
+	};
+	ParserAsync.prototype._finished = function() {
+		if (this.errord) return;
+		if (!this._inflate) this.emit("error", "No Inflate block");
+		else this._inflate.end();
+	};
+	ParserAsync.prototype._complete = function(filteredData) {
+		if (this.errord) return;
+		let normalisedBitmapData;
+		try {
+			let bitmapData = bitmapper.dataToBitMap(filteredData, this._bitmapInfo);
+			normalisedBitmapData = formatNormaliser(bitmapData, this._bitmapInfo);
+			bitmapData = null;
+		} catch (ex) {
+			this._handleError(ex);
+			return;
+		}
+		this.emit("parsed", normalisedBitmapData);
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/bitpacker.js
+var require_bitpacker = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var constants = require_constants();
+	module.exports = function(dataIn, width, height, options) {
+		let outHasAlpha = [constants.COLORTYPE_COLOR_ALPHA, constants.COLORTYPE_ALPHA].indexOf(options.colorType) !== -1;
+		if (options.colorType === options.inputColorType) {
+			let bigEndian = (function() {
+				let buffer = /* @__PURE__ */ new ArrayBuffer(2);
+				new DataView(buffer).setInt16(0, 256, true);
+				return new Int16Array(buffer)[0] !== 256;
+			})();
+			if (options.bitDepth === 8 || options.bitDepth === 16 && bigEndian) return dataIn;
+		}
+		let data = options.bitDepth !== 16 ? dataIn : new Uint16Array(dataIn.buffer);
+		let maxValue = 255;
+		let inBpp = constants.COLORTYPE_TO_BPP_MAP[options.inputColorType];
+		if (inBpp === 4 && !options.inputHasAlpha) inBpp = 3;
+		let outBpp = constants.COLORTYPE_TO_BPP_MAP[options.colorType];
+		if (options.bitDepth === 16) {
+			maxValue = 65535;
+			outBpp *= 2;
+		}
+		let outData = Buffer.alloc(width * height * outBpp);
+		let inIndex = 0;
+		let outIndex = 0;
+		let bgColor = options.bgColor || {};
+		if (bgColor.red === void 0) bgColor.red = maxValue;
+		if (bgColor.green === void 0) bgColor.green = maxValue;
+		if (bgColor.blue === void 0) bgColor.blue = maxValue;
+		function getRGBA() {
+			let red;
+			let green;
+			let blue;
+			let alpha = maxValue;
+			switch (options.inputColorType) {
+				case constants.COLORTYPE_COLOR_ALPHA:
+					alpha = data[inIndex + 3];
+					red = data[inIndex];
+					green = data[inIndex + 1];
+					blue = data[inIndex + 2];
+					break;
+				case constants.COLORTYPE_COLOR:
+					red = data[inIndex];
+					green = data[inIndex + 1];
+					blue = data[inIndex + 2];
+					break;
+				case constants.COLORTYPE_ALPHA:
+					alpha = data[inIndex + 1];
+					red = data[inIndex];
+					green = red;
+					blue = red;
+					break;
+				case constants.COLORTYPE_GRAYSCALE:
+					red = data[inIndex];
+					green = red;
+					blue = red;
+					break;
+				default: throw new Error("input color type:" + options.inputColorType + " is not supported at present");
+			}
+			if (options.inputHasAlpha) {
+				if (!outHasAlpha) {
+					alpha /= maxValue;
+					red = Math.min(Math.max(Math.round((1 - alpha) * bgColor.red + alpha * red), 0), maxValue);
+					green = Math.min(Math.max(Math.round((1 - alpha) * bgColor.green + alpha * green), 0), maxValue);
+					blue = Math.min(Math.max(Math.round((1 - alpha) * bgColor.blue + alpha * blue), 0), maxValue);
+				}
+			}
+			return {
+				red,
+				green,
+				blue,
+				alpha
+			};
+		}
+		for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+			let rgba = getRGBA(data, inIndex);
+			switch (options.colorType) {
+				case constants.COLORTYPE_COLOR_ALPHA:
+				case constants.COLORTYPE_COLOR:
+					if (options.bitDepth === 8) {
+						outData[outIndex] = rgba.red;
+						outData[outIndex + 1] = rgba.green;
+						outData[outIndex + 2] = rgba.blue;
+						if (outHasAlpha) outData[outIndex + 3] = rgba.alpha;
+					} else {
+						outData.writeUInt16BE(rgba.red, outIndex);
+						outData.writeUInt16BE(rgba.green, outIndex + 2);
+						outData.writeUInt16BE(rgba.blue, outIndex + 4);
+						if (outHasAlpha) outData.writeUInt16BE(rgba.alpha, outIndex + 6);
+					}
+					break;
+				case constants.COLORTYPE_ALPHA:
+				case constants.COLORTYPE_GRAYSCALE: {
+					let grayscale = (rgba.red + rgba.green + rgba.blue) / 3;
+					if (options.bitDepth === 8) {
+						outData[outIndex] = grayscale;
+						if (outHasAlpha) outData[outIndex + 1] = rgba.alpha;
+					} else {
+						outData.writeUInt16BE(grayscale, outIndex);
+						if (outHasAlpha) outData.writeUInt16BE(rgba.alpha, outIndex + 2);
+					}
+					break;
+				}
+				default: throw new Error("unrecognised color Type " + options.colorType);
+			}
+			inIndex += inBpp;
+			outIndex += outBpp;
+		}
+		return outData;
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/filter-pack.js
+var require_filter_pack = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var paethPredictor = require_paeth_predictor();
+	function filterNone(pxData, pxPos, byteWidth, rawData, rawPos) {
+		for (let x = 0; x < byteWidth; x++) rawData[rawPos + x] = pxData[pxPos + x];
+	}
+	function filterSumNone(pxData, pxPos, byteWidth) {
+		let sum = 0;
+		let length = pxPos + byteWidth;
+		for (let i = pxPos; i < length; i++) sum += Math.abs(pxData[i]);
+		return sum;
+	}
+	function filterSub(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
+		for (let x = 0; x < byteWidth; x++) {
+			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+			let val = pxData[pxPos + x] - left;
+			rawData[rawPos + x] = val;
+		}
+	}
+	function filterSumSub(pxData, pxPos, byteWidth, bpp) {
+		let sum = 0;
+		for (let x = 0; x < byteWidth; x++) {
+			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+			let val = pxData[pxPos + x] - left;
+			sum += Math.abs(val);
+		}
+		return sum;
+	}
+	function filterUp(pxData, pxPos, byteWidth, rawData, rawPos) {
+		for (let x = 0; x < byteWidth; x++) {
+			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+			let val = pxData[pxPos + x] - up;
+			rawData[rawPos + x] = val;
+		}
+	}
+	function filterSumUp(pxData, pxPos, byteWidth) {
+		let sum = 0;
+		let length = pxPos + byteWidth;
+		for (let x = pxPos; x < length; x++) {
+			let up = pxPos > 0 ? pxData[x - byteWidth] : 0;
+			let val = pxData[x] - up;
+			sum += Math.abs(val);
+		}
+		return sum;
+	}
+	function filterAvg(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
+		for (let x = 0; x < byteWidth; x++) {
+			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+			let val = pxData[pxPos + x] - (left + up >> 1);
+			rawData[rawPos + x] = val;
+		}
+	}
+	function filterSumAvg(pxData, pxPos, byteWidth, bpp) {
+		let sum = 0;
+		for (let x = 0; x < byteWidth; x++) {
+			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+			let val = pxData[pxPos + x] - (left + up >> 1);
+			sum += Math.abs(val);
+		}
+		return sum;
+	}
+	function filterPaeth(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
+		for (let x = 0; x < byteWidth; x++) {
+			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+			let upleft = pxPos > 0 && x >= bpp ? pxData[pxPos + x - (byteWidth + bpp)] : 0;
+			let val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
+			rawData[rawPos + x] = val;
+		}
+	}
+	function filterSumPaeth(pxData, pxPos, byteWidth, bpp) {
+		let sum = 0;
+		for (let x = 0; x < byteWidth; x++) {
+			let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+			let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+			let upleft = pxPos > 0 && x >= bpp ? pxData[pxPos + x - (byteWidth + bpp)] : 0;
+			let val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
+			sum += Math.abs(val);
+		}
+		return sum;
+	}
+	var filters = {
+		0: filterNone,
+		1: filterSub,
+		2: filterUp,
+		3: filterAvg,
+		4: filterPaeth
+	};
+	var filterSums = {
+		0: filterSumNone,
+		1: filterSumSub,
+		2: filterSumUp,
+		3: filterSumAvg,
+		4: filterSumPaeth
+	};
+	module.exports = function(pxData, width, height, options, bpp) {
+		let filterTypes;
+		if (!("filterType" in options) || options.filterType === -1) filterTypes = [
+			0,
+			1,
+			2,
+			3,
+			4
+		];
+		else if (typeof options.filterType === "number") filterTypes = [options.filterType];
+		else throw new Error("unrecognised filter types");
+		if (options.bitDepth === 16) bpp *= 2;
+		let byteWidth = width * bpp;
+		let rawPos = 0;
+		let pxPos = 0;
+		let rawData = Buffer.alloc((byteWidth + 1) * height);
+		let sel = filterTypes[0];
+		for (let y = 0; y < height; y++) {
+			if (filterTypes.length > 1) {
+				let min = Infinity;
+				for (let i = 0; i < filterTypes.length; i++) {
+					let sum = filterSums[filterTypes[i]](pxData, pxPos, byteWidth, bpp);
+					if (sum < min) {
+						sel = filterTypes[i];
+						min = sum;
+					}
+				}
+			}
+			rawData[rawPos] = sel;
+			rawPos++;
+			filters[sel](pxData, pxPos, byteWidth, rawData, rawPos, bpp);
+			rawPos += byteWidth;
+			pxPos += byteWidth;
+		}
+		return rawData;
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/packer.js
+var require_packer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var constants = require_constants();
+	var CrcStream = require_crc();
+	var bitPacker = require_bitpacker();
+	var filter = require_filter_pack();
+	var zlib$3 = __require("zlib");
+	var Packer = module.exports = function(options) {
+		this._options = options;
+		options.deflateChunkSize = options.deflateChunkSize || 32 * 1024;
+		options.deflateLevel = options.deflateLevel != null ? options.deflateLevel : 9;
+		options.deflateStrategy = options.deflateStrategy != null ? options.deflateStrategy : 3;
+		options.inputHasAlpha = options.inputHasAlpha != null ? options.inputHasAlpha : true;
+		options.deflateFactory = options.deflateFactory || zlib$3.createDeflate;
+		options.bitDepth = options.bitDepth || 8;
+		options.colorType = typeof options.colorType === "number" ? options.colorType : constants.COLORTYPE_COLOR_ALPHA;
+		options.inputColorType = typeof options.inputColorType === "number" ? options.inputColorType : constants.COLORTYPE_COLOR_ALPHA;
+		if ([
+			constants.COLORTYPE_GRAYSCALE,
+			constants.COLORTYPE_COLOR,
+			constants.COLORTYPE_COLOR_ALPHA,
+			constants.COLORTYPE_ALPHA
+		].indexOf(options.colorType) === -1) throw new Error("option color type:" + options.colorType + " is not supported at present");
+		if ([
+			constants.COLORTYPE_GRAYSCALE,
+			constants.COLORTYPE_COLOR,
+			constants.COLORTYPE_COLOR_ALPHA,
+			constants.COLORTYPE_ALPHA
+		].indexOf(options.inputColorType) === -1) throw new Error("option input color type:" + options.inputColorType + " is not supported at present");
+		if (options.bitDepth !== 8 && options.bitDepth !== 16) throw new Error("option bit depth:" + options.bitDepth + " is not supported at present");
+	};
+	Packer.prototype.getDeflateOptions = function() {
+		return {
+			chunkSize: this._options.deflateChunkSize,
+			level: this._options.deflateLevel,
+			strategy: this._options.deflateStrategy
+		};
+	};
+	Packer.prototype.createDeflate = function() {
+		return this._options.deflateFactory(this.getDeflateOptions());
+	};
+	Packer.prototype.filterData = function(data, width, height) {
+		let packedData = bitPacker(data, width, height, this._options);
+		let bpp = constants.COLORTYPE_TO_BPP_MAP[this._options.colorType];
+		return filter(packedData, width, height, this._options, bpp);
+	};
+	Packer.prototype._packChunk = function(type, data) {
+		let len = data ? data.length : 0;
+		let buf = Buffer.alloc(len + 12);
+		buf.writeUInt32BE(len, 0);
+		buf.writeUInt32BE(type, 4);
+		if (data) data.copy(buf, 8);
+		buf.writeInt32BE(CrcStream.crc32(buf.slice(4, buf.length - 4)), buf.length - 4);
+		return buf;
+	};
+	Packer.prototype.packGAMA = function(gamma) {
+		let buf = Buffer.alloc(4);
+		buf.writeUInt32BE(Math.floor(gamma * constants.GAMMA_DIVISION), 0);
+		return this._packChunk(constants.TYPE_gAMA, buf);
+	};
+	Packer.prototype.packIHDR = function(width, height) {
+		let buf = Buffer.alloc(13);
+		buf.writeUInt32BE(width, 0);
+		buf.writeUInt32BE(height, 4);
+		buf[8] = this._options.bitDepth;
+		buf[9] = this._options.colorType;
+		buf[10] = 0;
+		buf[11] = 0;
+		buf[12] = 0;
+		return this._packChunk(constants.TYPE_IHDR, buf);
+	};
+	Packer.prototype.packIDAT = function(data) {
+		return this._packChunk(constants.TYPE_IDAT, data);
+	};
+	Packer.prototype.packIEND = function() {
+		return this._packChunk(constants.TYPE_IEND, null);
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/packer-async.js
+var require_packer_async = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var util$2 = __require("util");
+	var Stream$1 = __require("stream");
+	var constants = require_constants();
+	var Packer = require_packer();
+	var PackerAsync = module.exports = function(opt) {
+		Stream$1.call(this);
+		let options = opt || {};
+		this._packer = new Packer(options);
+		this._deflate = this._packer.createDeflate();
+		this.readable = true;
+	};
+	util$2.inherits(PackerAsync, Stream$1);
+	PackerAsync.prototype.pack = function(data, width, height, gamma) {
+		this.emit("data", Buffer.from(constants.PNG_SIGNATURE));
+		this.emit("data", this._packer.packIHDR(width, height));
+		if (gamma) this.emit("data", this._packer.packGAMA(gamma));
+		let filteredData = this._packer.filterData(data, width, height);
+		this._deflate.on("error", this.emit.bind(this, "error"));
+		this._deflate.on("data", function(compressedData) {
+			this.emit("data", this._packer.packIDAT(compressedData));
+		}.bind(this));
+		this._deflate.on("end", function() {
+			this.emit("data", this._packer.packIEND());
+			this.emit("end");
+		}.bind(this));
+		this._deflate.end(filteredData);
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/sync-inflate.js
+var require_sync_inflate = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var assert = __require("assert").ok;
+	var zlib$2 = __require("zlib");
+	var util$1 = __require("util");
+	var kMaxLength = __require("buffer").kMaxLength;
+	function Inflate(opts) {
+		if (!(this instanceof Inflate)) return new Inflate(opts);
+		if (opts && opts.chunkSize < zlib$2.Z_MIN_CHUNK) opts.chunkSize = zlib$2.Z_MIN_CHUNK;
+		zlib$2.Inflate.call(this, opts);
+		this._offset = this._offset === void 0 ? this._outOffset : this._offset;
+		this._buffer = this._buffer || this._outBuffer;
+		if (opts && opts.maxLength != null) this._maxLength = opts.maxLength;
+	}
+	function createInflate(opts) {
+		return new Inflate(opts);
+	}
+	function _close(engine, callback) {
+		if (callback) process.nextTick(callback);
+		if (!engine._handle) return;
+		engine._handle.close();
+		engine._handle = null;
+	}
+	Inflate.prototype._processChunk = function(chunk, flushFlag, asyncCb) {
+		if (typeof asyncCb === "function") return zlib$2.Inflate._processChunk.call(this, chunk, flushFlag, asyncCb);
+		let self = this;
+		let availInBefore = chunk && chunk.length;
+		let availOutBefore = this._chunkSize - this._offset;
+		let leftToInflate = this._maxLength;
+		let inOff = 0;
+		let buffers = [];
+		let nread = 0;
+		let error;
+		this.on("error", function(err) {
+			error = err;
+		});
+		function handleChunk(availInAfter, availOutAfter) {
+			if (self._hadError) return;
+			let have = availOutBefore - availOutAfter;
+			assert(have >= 0, "have should not go down");
+			if (have > 0) {
+				let out = self._buffer.slice(self._offset, self._offset + have);
+				self._offset += have;
+				if (out.length > leftToInflate) out = out.slice(0, leftToInflate);
+				buffers.push(out);
+				nread += out.length;
+				leftToInflate -= out.length;
+				if (leftToInflate === 0) return false;
+			}
+			if (availOutAfter === 0 || self._offset >= self._chunkSize) {
+				availOutBefore = self._chunkSize;
+				self._offset = 0;
+				self._buffer = Buffer.allocUnsafe(self._chunkSize);
+			}
+			if (availOutAfter === 0) {
+				inOff += availInBefore - availInAfter;
+				availInBefore = availInAfter;
+				return true;
+			}
+			return false;
+		}
+		assert(this._handle, "zlib binding closed");
+		let res;
+		do {
+			res = this._handle.writeSync(flushFlag, chunk, inOff, availInBefore, this._buffer, this._offset, availOutBefore);
+			res = res || this._writeState;
+		} while (!this._hadError && handleChunk(res[0], res[1]));
+		if (this._hadError) throw error;
+		if (nread >= kMaxLength) {
+			_close(this);
+			throw new RangeError("Cannot create final Buffer. It would be larger than 0x" + kMaxLength.toString(16) + " bytes");
+		}
+		let buf = Buffer.concat(buffers, nread);
+		_close(this);
+		return buf;
+	};
+	util$1.inherits(Inflate, zlib$2.Inflate);
+	function zlibBufferSync(engine, buffer) {
+		if (typeof buffer === "string") buffer = Buffer.from(buffer);
+		if (!(buffer instanceof Buffer)) throw new TypeError("Not a string or buffer");
+		let flushFlag = engine._finishFlushFlag;
+		if (flushFlag == null) flushFlag = zlib$2.Z_FINISH;
+		return engine._processChunk(buffer, flushFlag);
+	}
+	function inflateSync(buffer, opts) {
+		return zlibBufferSync(new Inflate(opts), buffer);
+	}
+	module.exports = exports = inflateSync;
+	exports.Inflate = Inflate;
+	exports.createInflate = createInflate;
+	exports.inflateSync = inflateSync;
+}));
+//#endregion
+//#region node_modules/pngjs/lib/sync-reader.js
+var require_sync_reader = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var SyncReader = module.exports = function(buffer) {
+		this._buffer = buffer;
+		this._reads = [];
+	};
+	SyncReader.prototype.read = function(length, callback) {
+		this._reads.push({
+			length: Math.abs(length),
+			allowLess: length < 0,
+			func: callback
+		});
+	};
+	SyncReader.prototype.process = function() {
+		while (this._reads.length > 0 && this._buffer.length) {
+			let read = this._reads[0];
+			if (this._buffer.length && (this._buffer.length >= read.length || read.allowLess)) {
+				this._reads.shift();
+				let buf = this._buffer;
+				this._buffer = buf.slice(read.length);
+				read.func.call(this, buf.slice(0, read.length));
+			} else break;
+		}
+		if (this._reads.length > 0) return /* @__PURE__ */ new Error("There are some read requests waitng on finished stream");
+		if (this._buffer.length > 0) return /* @__PURE__ */ new Error("unrecognised content at end of stream");
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/filter-parse-sync.js
+var require_filter_parse_sync = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var SyncReader = require_sync_reader();
+	var Filter = require_filter_parse();
+	exports.process = function(inBuffer, bitmapInfo) {
+		let outBuffers = [];
+		let reader = new SyncReader(inBuffer);
+		new Filter(bitmapInfo, {
+			read: reader.read.bind(reader),
+			write: function(bufferPart) {
+				outBuffers.push(bufferPart);
+			},
+			complete: function() {}
+		}).start();
+		reader.process();
+		return Buffer.concat(outBuffers);
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/parser-sync.js
+var require_parser_sync = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var hasSyncZlib = true;
+	var zlib$1 = __require("zlib");
+	var inflateSync = require_sync_inflate();
+	if (!zlib$1.deflateSync) hasSyncZlib = false;
+	var SyncReader = require_sync_reader();
+	var FilterSync = require_filter_parse_sync();
+	var Parser = require_parser();
+	var bitmapper = require_bitmapper();
+	var formatNormaliser = require_format_normaliser();
+	module.exports = function(buffer, options) {
+		if (!hasSyncZlib) throw new Error("To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0");
+		let err;
+		function handleError(_err_) {
+			err = _err_;
+		}
+		let metaData;
+		function handleMetaData(_metaData_) {
+			metaData = _metaData_;
+		}
+		function handleTransColor(transColor) {
+			metaData.transColor = transColor;
+		}
+		function handlePalette(palette) {
+			metaData.palette = palette;
+		}
+		function handleSimpleTransparency() {
+			metaData.alpha = true;
+		}
+		let gamma;
+		function handleGamma(_gamma_) {
+			gamma = _gamma_;
+		}
+		let inflateDataList = [];
+		function handleInflateData(inflatedData) {
+			inflateDataList.push(inflatedData);
+		}
+		let reader = new SyncReader(buffer);
+		new Parser(options, {
+			read: reader.read.bind(reader),
+			error: handleError,
+			metadata: handleMetaData,
+			gamma: handleGamma,
+			palette: handlePalette,
+			transColor: handleTransColor,
+			inflateData: handleInflateData,
+			simpleTransparency: handleSimpleTransparency
+		}).start();
+		reader.process();
+		if (err) throw err;
+		let inflateData = Buffer.concat(inflateDataList);
+		inflateDataList.length = 0;
+		let inflatedData;
+		if (metaData.interlace) inflatedData = zlib$1.inflateSync(inflateData);
+		else {
+			let imageSize = ((metaData.width * metaData.bpp * metaData.depth + 7 >> 3) + 1) * metaData.height;
+			inflatedData = inflateSync(inflateData, {
+				chunkSize: imageSize,
+				maxLength: imageSize
+			});
+		}
+		inflateData = null;
+		if (!inflatedData || !inflatedData.length) throw new Error("bad png - invalid inflate data response");
+		let unfilteredData = FilterSync.process(inflatedData, metaData);
+		inflateData = null;
+		let bitmapData = bitmapper.dataToBitMap(unfilteredData, metaData);
+		unfilteredData = null;
+		let normalisedBitmapData = formatNormaliser(bitmapData, metaData);
+		metaData.data = normalisedBitmapData;
+		metaData.gamma = gamma || 0;
+		return metaData;
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/packer-sync.js
+var require_packer_sync = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+	var hasSyncZlib = true;
+	var zlib = __require("zlib");
+	if (!zlib.deflateSync) hasSyncZlib = false;
+	var constants = require_constants();
+	var Packer = require_packer();
+	module.exports = function(metaData, opt) {
+		if (!hasSyncZlib) throw new Error("To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0");
+		let packer = new Packer(opt || {});
+		let chunks = [];
+		chunks.push(Buffer.from(constants.PNG_SIGNATURE));
+		chunks.push(packer.packIHDR(metaData.width, metaData.height));
+		if (metaData.gamma) chunks.push(packer.packGAMA(metaData.gamma));
+		let filteredData = packer.filterData(metaData.data, metaData.width, metaData.height);
+		let compressedData = zlib.deflateSync(filteredData, packer.getDeflateOptions());
+		filteredData = null;
+		if (!compressedData || !compressedData.length) throw new Error("bad png - invalid compressed data response");
+		chunks.push(packer.packIDAT(compressedData));
+		chunks.push(packer.packIEND());
+		return Buffer.concat(chunks);
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/png-sync.js
+var require_png_sync = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var parse = require_parser_sync();
+	var pack = require_packer_sync();
+	exports.read = function(buffer, options) {
+		return parse(buffer, options || {});
+	};
+	exports.write = function(png, options) {
+		return pack(png, options);
+	};
+}));
+//#endregion
+//#region node_modules/pngjs/lib/png.js
+var require_png$1 = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var util = __require("util");
+	var Stream = __require("stream");
+	var Parser = require_parser_async();
+	var Packer = require_packer_async();
+	var PNGSync = require_png_sync();
+	var PNG = exports.PNG = function(options) {
+		Stream.call(this);
+		options = options || {};
+		this.width = options.width | 0;
+		this.height = options.height | 0;
+		this.data = this.width > 0 && this.height > 0 ? Buffer.alloc(4 * this.width * this.height) : null;
+		if (options.fill && this.data) this.data.fill(0);
+		this.gamma = 0;
+		this.readable = this.writable = true;
+		this._parser = new Parser(options);
+		this._parser.on("error", this.emit.bind(this, "error"));
+		this._parser.on("close", this._handleClose.bind(this));
+		this._parser.on("metadata", this._metadata.bind(this));
+		this._parser.on("gamma", this._gamma.bind(this));
+		this._parser.on("parsed", function(data) {
+			this.data = data;
+			this.emit("parsed", data);
+		}.bind(this));
+		this._packer = new Packer(options);
+		this._packer.on("data", this.emit.bind(this, "data"));
+		this._packer.on("end", this.emit.bind(this, "end"));
+		this._parser.on("close", this._handleClose.bind(this));
+		this._packer.on("error", this.emit.bind(this, "error"));
+	};
+	util.inherits(PNG, Stream);
+	PNG.sync = PNGSync;
+	PNG.prototype.pack = function() {
+		if (!this.data || !this.data.length) {
+			this.emit("error", "No data provided");
+			return this;
+		}
+		process.nextTick(function() {
+			this._packer.pack(this.data, this.width, this.height, this.gamma);
+		}.bind(this));
+		return this;
+	};
+	PNG.prototype.parse = function(data, callback) {
+		if (callback) {
+			let onParsed, onError;
+			onParsed = function(parsedData) {
+				this.removeListener("error", onError);
+				this.data = parsedData;
+				callback(null, this);
+			}.bind(this);
+			onError = function(err) {
+				this.removeListener("parsed", onParsed);
+				callback(err, null);
+			}.bind(this);
+			this.once("parsed", onParsed);
+			this.once("error", onError);
+		}
+		this.end(data);
+		return this;
+	};
+	PNG.prototype.write = function(data) {
+		this._parser.write(data);
+		return true;
+	};
+	PNG.prototype.end = function(data) {
+		this._parser.end(data);
+	};
+	PNG.prototype._metadata = function(metadata) {
+		this.width = metadata.width;
+		this.height = metadata.height;
+		this.emit("metadata", metadata);
+	};
+	PNG.prototype._gamma = function(gamma) {
+		this.gamma = gamma;
+	};
+	PNG.prototype._handleClose = function() {
+		if (!this._parser.writable && !this._packer.readable) this.emit("close");
+	};
+	PNG.bitblt = function(src, dst, srcX, srcY, width, height, deltaX, deltaY) {
+		srcX |= 0;
+		srcY |= 0;
+		width |= 0;
+		height |= 0;
+		deltaX |= 0;
+		deltaY |= 0;
+		if (srcX > src.width || srcY > src.height || srcX + width > src.width || srcY + height > src.height) throw new Error("bitblt reading outside image");
+		if (deltaX > dst.width || deltaY > dst.height || deltaX + width > dst.width || deltaY + height > dst.height) throw new Error("bitblt writing outside image");
+		for (let y = 0; y < height; y++) src.data.copy(dst.data, (deltaY + y) * dst.width + deltaX << 2, (srcY + y) * src.width + srcX << 2, (srcY + y) * src.width + srcX + width << 2);
+	};
+	PNG.prototype.bitblt = function(dst, srcX, srcY, width, height, deltaX, deltaY) {
+		PNG.bitblt(this, dst, srcX, srcY, width, height, deltaX, deltaY);
+		return this;
+	};
+	PNG.adjustGamma = function(src) {
+		if (src.gamma) {
+			for (let y = 0; y < src.height; y++) for (let x = 0; x < src.width; x++) {
+				let idx = src.width * y + x << 2;
+				for (let i = 0; i < 3; i++) {
+					let sample = src.data[idx + i] / 255;
+					sample = Math.pow(sample, 1 / 2.2 / src.gamma);
+					src.data[idx + i] = Math.round(sample * 255);
+				}
+			}
+			src.gamma = 0;
+		}
+	};
+	PNG.prototype.adjustGamma = function() {
+		PNG.adjustGamma(this);
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/utils.js
+var require_utils = /* @__PURE__ */ __commonJSMin(((exports) => {
+	function hex2rgba(hex) {
+		if (typeof hex === "number") hex = hex.toString();
+		if (typeof hex !== "string") throw new Error("Color should be defined as hex string");
+		let hexCode = hex.slice().replace("#", "").split("");
+		if (hexCode.length < 3 || hexCode.length === 5 || hexCode.length > 8) throw new Error("Invalid hex color: " + hex);
+		if (hexCode.length === 3 || hexCode.length === 4) hexCode = Array.prototype.concat.apply([], hexCode.map(function(c) {
+			return [c, c];
+		}));
+		if (hexCode.length === 6) hexCode.push("F", "F");
+		const hexValue = parseInt(hexCode.join(""), 16);
+		return {
+			r: hexValue >> 24 & 255,
+			g: hexValue >> 16 & 255,
+			b: hexValue >> 8 & 255,
+			a: hexValue & 255,
+			hex: "#" + hexCode.slice(0, 6).join("")
+		};
+	}
+	exports.getOptions = function getOptions(options) {
+		if (!options) options = {};
+		if (!options.color) options.color = {};
+		const margin = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
+		const width = options.width && options.width >= 21 ? options.width : void 0;
+		const scale = options.scale || 4;
+		return {
+			width,
+			scale: width ? 4 : scale,
+			margin,
+			color: {
+				dark: hex2rgba(options.color.dark || "#000000ff"),
+				light: hex2rgba(options.color.light || "#ffffffff")
+			},
+			type: options.type,
+			rendererOpts: options.rendererOpts || {}
+		};
+	};
+	exports.getScale = function getScale(qrSize, opts) {
+		return opts.width && opts.width >= qrSize + opts.margin * 2 ? opts.width / (qrSize + opts.margin * 2) : opts.scale;
+	};
+	exports.getImageWidth = function getImageWidth(qrSize, opts) {
+		const scale = exports.getScale(qrSize, opts);
+		return Math.floor((qrSize + opts.margin * 2) * scale);
+	};
+	exports.qrToImageData = function qrToImageData(imgData, qr, opts) {
+		const size = qr.modules.size;
+		const data = qr.modules.data;
+		const scale = exports.getScale(size, opts);
+		const symbolSize = Math.floor((size + opts.margin * 2) * scale);
+		const scaledMargin = opts.margin * scale;
+		const palette = [opts.color.light, opts.color.dark];
+		for (let i = 0; i < symbolSize; i++) for (let j = 0; j < symbolSize; j++) {
+			let posDst = (i * symbolSize + j) * 4;
+			let pxColor = opts.color.light;
+			if (i >= scaledMargin && j >= scaledMargin && i < symbolSize - scaledMargin && j < symbolSize - scaledMargin) {
+				const iSrc = Math.floor((i - scaledMargin) / scale);
+				const jSrc = Math.floor((j - scaledMargin) / scale);
+				pxColor = palette[data[iSrc * size + jSrc] ? 1 : 0];
+			}
+			imgData[posDst++] = pxColor.r;
+			imgData[posDst++] = pxColor.g;
+			imgData[posDst++] = pxColor.b;
+			imgData[posDst] = pxColor.a;
+		}
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/png.js
+var require_png = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var fs$2 = __require("fs");
+	var PNG = require_png$1().PNG;
+	var Utils = require_utils();
+	exports.render = function render(qrData, options) {
+		const opts = Utils.getOptions(options);
+		const pngOpts = opts.rendererOpts;
+		const size = Utils.getImageWidth(qrData.modules.size, opts);
+		pngOpts.width = size;
+		pngOpts.height = size;
+		const pngImage = new PNG(pngOpts);
+		Utils.qrToImageData(pngImage.data, qrData, opts);
+		return pngImage;
+	};
+	exports.renderToDataURL = function renderToDataURL(qrData, options, cb) {
+		if (typeof cb === "undefined") {
+			cb = options;
+			options = void 0;
+		}
+		exports.renderToBuffer(qrData, options, function(err, output) {
+			if (err) cb(err);
+			let url = "data:image/png;base64,";
+			url += output.toString("base64");
+			cb(null, url);
+		});
+	};
+	exports.renderToBuffer = function renderToBuffer(qrData, options, cb) {
+		if (typeof cb === "undefined") {
+			cb = options;
+			options = void 0;
+		}
+		const png = exports.render(qrData, options);
+		const buffer = [];
+		png.on("error", cb);
+		png.on("data", function(data) {
+			buffer.push(data);
+		});
+		png.on("end", function() {
+			cb(null, Buffer.concat(buffer));
+		});
+		png.pack();
+	};
+	exports.renderToFile = function renderToFile(path, qrData, options, cb) {
+		if (typeof cb === "undefined") {
+			cb = options;
+			options = void 0;
+		}
+		let called = false;
+		const done = (...args) => {
+			if (called) return;
+			called = true;
+			cb.apply(null, args);
+		};
+		const stream = fs$2.createWriteStream(path);
+		stream.on("error", done);
+		stream.on("close", done);
+		exports.renderToFileStream(stream, qrData, options);
+	};
+	exports.renderToFileStream = function renderToFileStream(stream, qrData, options) {
+		exports.render(qrData, options).pack().pipe(stream);
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/utf8.js
+var require_utf8 = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var Utils = require_utils();
+	var BLOCK_CHAR = {
+		WW: " ",
+		WB: "▄",
+		BB: "█",
+		BW: "▀"
+	};
+	var INVERTED_BLOCK_CHAR = {
+		BB: " ",
+		BW: "▄",
+		WW: "█",
+		WB: "▀"
+	};
+	function getBlockChar(top, bottom, blocks) {
+		if (top && bottom) return blocks.BB;
+		if (top && !bottom) return blocks.BW;
+		if (!top && bottom) return blocks.WB;
+		return blocks.WW;
+	}
+	exports.render = function(qrData, options, cb) {
+		const opts = Utils.getOptions(options);
+		let blocks = BLOCK_CHAR;
+		if (opts.color.dark.hex === "#ffffff" || opts.color.light.hex === "#000000") blocks = INVERTED_BLOCK_CHAR;
+		const size = qrData.modules.size;
+		const data = qrData.modules.data;
+		let output = "";
+		let hMargin = Array(size + opts.margin * 2 + 1).join(blocks.WW);
+		hMargin = Array(opts.margin / 2 + 1).join(hMargin + "\n");
+		const vMargin = Array(opts.margin + 1).join(blocks.WW);
+		output += hMargin;
+		for (let i = 0; i < size; i += 2) {
+			output += vMargin;
+			for (let j = 0; j < size; j++) {
+				const topModule = data[i * size + j];
+				const bottomModule = data[(i + 1) * size + j];
+				output += getBlockChar(topModule, bottomModule, blocks);
+			}
+			output += vMargin + "\n";
+		}
+		output += hMargin.slice(0, -1);
+		if (typeof cb === "function") cb(null, output);
+		return output;
+	};
+	exports.renderToFile = function renderToFile(path, qrData, options, cb) {
+		if (typeof cb === "undefined") {
+			cb = options;
+			options = void 0;
+		}
+		const fs = __require("fs");
+		const utf8 = exports.render(qrData, options);
+		fs.writeFile(path, utf8, cb);
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/terminal/terminal.js
+var require_terminal$1 = /* @__PURE__ */ __commonJSMin(((exports) => {
+	exports.render = function(qrData, options, cb) {
+		const size = qrData.modules.size;
+		const data = qrData.modules.data;
+		const black = "\x1B[40m  \x1B[0m";
+		const white = "\x1B[47m  \x1B[0m";
+		let output = "";
+		const hMargin = Array(size + 3).join(white);
+		const vMargin = Array(2).join(white);
+		output += hMargin + "\n";
+		for (let i = 0; i < size; ++i) {
+			output += white;
+			for (let j = 0; j < size; j++) output += data[i * size + j] ? black : white;
+			output += vMargin + "\n";
+		}
+		output += hMargin + "\n";
+		if (typeof cb === "function") cb(null, output);
+		return output;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/terminal/terminal-small.js
+var require_terminal_small = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var foregroundWhite = "\x1B[37m";
+	var foregroundBlack = "\x1B[30m";
+	var reset = "\x1B[0m";
+	var lineSetupNormal = "\x1B[47m\x1B[30m";
+	var lineSetupInverse = "\x1B[40m\x1B[37m";
+	var createPalette = function(lineSetup, foregroundWhite, foregroundBlack) {
+		return {
+			"00": "\x1B[0m " + lineSetup,
+			"01": reset + foregroundWhite + "▄" + lineSetup,
+			"02": reset + foregroundBlack + "▄" + lineSetup,
+			10: reset + foregroundWhite + "▀" + lineSetup,
+			11: " ",
+			12: "▄",
+			20: reset + foregroundBlack + "▀" + lineSetup,
+			21: "▀",
+			22: "█"
+		};
+	};
+	/**
+	* Returns code for QR pixel
+	* @param {boolean[][]} modules
+	* @param {number} size
+	* @param {number} x
+	* @param {number} y
+	* @return {'0' | '1' | '2'}
+	*/
+	var mkCodePixel = function(modules, size, x, y) {
+		const sizePlus = size + 1;
+		if (x >= sizePlus || y >= sizePlus || y < -1 || x < -1) return "0";
+		if (x >= size || y >= size || y < 0 || x < 0) return "1";
+		return modules[y * size + x] ? "2" : "1";
+	};
+	/**
+	* Returns code for four QR pixels. Suitable as key in palette.
+	* @param {boolean[][]} modules
+	* @param {number} size
+	* @param {number} x
+	* @param {number} y
+	* @return {keyof palette}
+	*/
+	var mkCode = function(modules, size, x, y) {
+		return mkCodePixel(modules, size, x, y) + mkCodePixel(modules, size, x, y + 1);
+	};
+	exports.render = function(qrData, options, cb) {
+		const size = qrData.modules.size;
+		const data = qrData.modules.data;
+		const inverse = !!(options && options.inverse);
+		const lineSetup = options && options.inverse ? lineSetupInverse : lineSetupNormal;
+		const palette = createPalette(lineSetup, inverse ? foregroundBlack : foregroundWhite, inverse ? foregroundWhite : foregroundBlack);
+		const newLine = "\x1B[0m\n" + lineSetup;
+		let output = lineSetup;
+		for (let y = -1; y < size + 1; y += 2) {
+			for (let x = -1; x < size; x++) output += palette[mkCode(data, size, x, y)];
+			output += palette[mkCode(data, size, size, y)] + newLine;
+		}
+		output += reset;
+		if (typeof cb === "function") cb(null, output);
+		return output;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/terminal.js
+var require_terminal = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var big = require_terminal$1();
+	var small = require_terminal_small();
+	exports.render = function(qrData, options, cb) {
+		if (options && options.small) return small.render(qrData, options, cb);
+		return big.render(qrData, options, cb);
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/svg-tag.js
+var require_svg_tag = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var Utils = require_utils();
+	function getColorAttrib(color, attrib) {
+		const alpha = color.a / 255;
+		const str = attrib + "=\"" + color.hex + "\"";
+		return alpha < 1 ? str + " " + attrib + "-opacity=\"" + alpha.toFixed(2).slice(1) + "\"" : str;
+	}
+	function svgCmd(cmd, x, y) {
+		let str = cmd + x;
+		if (typeof y !== "undefined") str += " " + y;
+		return str;
+	}
+	function qrToPath(data, size, margin) {
+		let path = "";
+		let moveBy = 0;
+		let newRow = false;
+		let lineLength = 0;
+		for (let i = 0; i < data.length; i++) {
+			const col = Math.floor(i % size);
+			const row = Math.floor(i / size);
+			if (!col && !newRow) newRow = true;
+			if (data[i]) {
+				lineLength++;
+				if (!(i > 0 && col > 0 && data[i - 1])) {
+					path += newRow ? svgCmd("M", col + margin, .5 + row + margin) : svgCmd("m", moveBy, 0);
+					moveBy = 0;
+					newRow = false;
+				}
+				if (!(col + 1 < size && data[i + 1])) {
+					path += svgCmd("h", lineLength);
+					lineLength = 0;
+				}
+			} else moveBy++;
+		}
+		return path;
+	}
+	exports.render = function render(qrData, options, cb) {
+		const opts = Utils.getOptions(options);
+		const size = qrData.modules.size;
+		const data = qrData.modules.data;
+		const qrcodesize = size + opts.margin * 2;
+		const bg = !opts.color.light.a ? "" : "<path " + getColorAttrib(opts.color.light, "fill") + " d=\"M0 0h" + qrcodesize + "v" + qrcodesize + "H0z\"/>";
+		const path = "<path " + getColorAttrib(opts.color.dark, "stroke") + " d=\"" + qrToPath(data, size, opts.margin) + "\"/>";
+		const viewBox = "viewBox=\"0 0 " + qrcodesize + " " + qrcodesize + "\"";
+		const svgTag = "<svg xmlns=\"http://www.w3.org/2000/svg\" " + (!opts.width ? "" : "width=\"" + opts.width + "\" height=\"" + opts.width + "\" ") + viewBox + " shape-rendering=\"crispEdges\">" + bg + path + "</svg>\n";
+		if (typeof cb === "function") cb(null, svgTag);
+		return svgTag;
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/svg.js
+var require_svg = /* @__PURE__ */ __commonJSMin(((exports) => {
+	exports.render = require_svg_tag().render;
+	exports.renderToFile = function renderToFile(path, qrData, options, cb) {
+		if (typeof cb === "undefined") {
+			cb = options;
+			options = void 0;
+		}
+		const fs = __require("fs");
+		const xmlStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" + exports.render(qrData, options);
+		fs.writeFile(path, xmlStr, cb);
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/renderer/canvas.js
+var require_canvas = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var Utils = require_utils();
+	function clearCanvas(ctx, canvas, size) {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		if (!canvas.style) canvas.style = {};
+		canvas.height = size;
+		canvas.width = size;
+		canvas.style.height = size + "px";
+		canvas.style.width = size + "px";
+	}
+	function getCanvasElement() {
+		try {
+			return document.createElement("canvas");
+		} catch (e) {
+			throw new Error("You need to specify a canvas element");
+		}
+	}
+	exports.render = function render(qrData, canvas, options) {
+		let opts = options;
+		let canvasEl = canvas;
+		if (typeof opts === "undefined" && (!canvas || !canvas.getContext)) {
+			opts = canvas;
+			canvas = void 0;
+		}
+		if (!canvas) canvasEl = getCanvasElement();
+		opts = Utils.getOptions(opts);
+		const size = Utils.getImageWidth(qrData.modules.size, opts);
+		const ctx = canvasEl.getContext("2d");
+		const image = ctx.createImageData(size, size);
+		Utils.qrToImageData(image.data, qrData, opts);
+		clearCanvas(ctx, canvasEl, size);
+		ctx.putImageData(image, 0, 0);
+		return canvasEl;
+	};
+	exports.renderToDataURL = function renderToDataURL(qrData, canvas, options) {
+		let opts = options;
+		if (typeof opts === "undefined" && (!canvas || !canvas.getContext)) {
+			opts = canvas;
+			canvas = void 0;
+		}
+		if (!opts) opts = {};
+		const canvasEl = exports.render(qrData, canvas, opts);
+		const type = opts.type || "image/png";
+		const rendererOpts = opts.rendererOpts || {};
+		return canvasEl.toDataURL(type, rendererOpts.quality);
+	};
+}));
+//#endregion
+//#region node_modules/qrcode/lib/browser.js
+var require_browser = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var canPromise = require_can_promise();
+	var QRCode = require_qrcode();
+	var CanvasRenderer = require_canvas();
+	var SvgRenderer = require_svg_tag();
+	function renderCanvas(renderFunc, canvas, text, opts, cb) {
+		const args = [].slice.call(arguments, 1);
+		const argsNum = args.length;
+		const isLastArgCb = typeof args[argsNum - 1] === "function";
+		if (!isLastArgCb && !canPromise()) throw new Error("Callback required as last argument");
+		if (isLastArgCb) {
+			if (argsNum < 2) throw new Error("Too few arguments provided");
+			if (argsNum === 2) {
+				cb = text;
+				text = canvas;
+				canvas = opts = void 0;
+			} else if (argsNum === 3) if (canvas.getContext && typeof cb === "undefined") {
+				cb = opts;
+				opts = void 0;
+			} else {
+				cb = opts;
+				opts = text;
+				text = canvas;
+				canvas = void 0;
+			}
+		} else {
+			if (argsNum < 1) throw new Error("Too few arguments provided");
+			if (argsNum === 1) {
+				text = canvas;
+				canvas = opts = void 0;
+			} else if (argsNum === 2 && !canvas.getContext) {
+				opts = text;
+				text = canvas;
+				canvas = void 0;
+			}
+			return new Promise(function(resolve, reject) {
+				try {
+					resolve(renderFunc(QRCode.create(text, opts), canvas, opts));
+				} catch (e) {
+					reject(e);
+				}
+			});
+		}
+		try {
+			const data = QRCode.create(text, opts);
+			cb(null, renderFunc(data, canvas, opts));
+		} catch (e) {
+			cb(e);
+		}
+	}
+	exports.create = QRCode.create;
+	exports.toCanvas = renderCanvas.bind(null, CanvasRenderer.render);
+	exports.toDataURL = renderCanvas.bind(null, CanvasRenderer.renderToDataURL);
+	exports.toString = renderCanvas.bind(null, function(data, _, opts) {
+		return SvgRenderer.render(data, opts);
+	});
+}));
+//#endregion
+//#region src/main/llbot-ipc.ts
+var import_server = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((exports) => {
+	var canPromise = require_can_promise();
+	var QRCode = require_qrcode();
+	require_png();
+	var Utf8Renderer = require_utf8();
+	var TerminalRenderer = require_terminal();
+	var SvgRenderer = require_svg();
+	function checkParams(text, opts, cb) {
+		if (typeof text === "undefined") throw new Error("String required as first argument");
+		if (typeof cb === "undefined") {
+			cb = opts;
+			opts = {};
+		}
+		if (typeof cb !== "function") if (!canPromise()) throw new Error("Callback required as last argument");
+		else {
+			opts = cb || {};
+			cb = null;
+		}
+		return {
+			opts,
+			cb
+		};
+	}
+	function getStringRendererFromType(type) {
+		switch (type) {
+			case "svg": return SvgRenderer;
+			case "terminal": return TerminalRenderer;
+			default: return Utf8Renderer;
+		}
+	}
+	function render(renderFunc, text, params) {
+		if (!params.cb) return new Promise(function(resolve, reject) {
+			try {
+				return renderFunc(QRCode.create(text, params.opts), params.opts, function(err, data) {
+					return err ? reject(err) : resolve(data);
+				});
+			} catch (e) {
+				reject(e);
+			}
+		});
+		try {
+			return renderFunc(QRCode.create(text, params.opts), params.opts, params.cb);
+		} catch (e) {
+			params.cb(e);
+		}
+	}
+	exports.create = QRCode.create;
+	exports.toCanvas = require_browser().toCanvas;
+	exports.toString = function toString(text, opts, cb) {
+		const params = checkParams(text, opts, cb);
+		return render(getStringRendererFromType(params.opts ? params.opts.type : void 0).render, text, params);
+	};
+})))(), 1);
+var logger = getLogger("llbot-ipc");
+var loginState = { state: "initializing" };
+var server = null;
+function setLoginState(patch) {
+	loginState = {
+		...loginState,
+		...patch
+	};
+}
+function startIpcServer() {
+	const pipeName = process.env.LL_IPC_PIPE;
+	if (!pipeName) return;
+	if (server) return;
+	server = net.createServer((socket) => {
+		socket.setEncoding("utf8");
+		let buffer = "";
+		socket.on("data", (chunk) => {
+			buffer += chunk;
+			let idx;
+			while ((idx = buffer.indexOf("\n")) >= 0) {
+				const line = buffer.slice(0, idx);
+				buffer = buffer.slice(idx + 1);
+				if (line.trim()) handleLine(socket, line);
+			}
+		});
+		socket.on("error", () => {});
+	});
+	let listenPath;
+	if (process.platform === "win32") listenPath = `\\\\.\\pipe\\${pipeName}`;
+	else {
+		listenPath = pipeName;
+		try {
+			fs.unlinkSync(listenPath);
+		} catch {}
+	}
+	server.listen(listenPath, () => {
+		logger.info(`[LL_IPC] listening on ${listenPath}`);
+	});
+	server.on("error", (e) => {
+		logger.warn(`[LL_IPC] server error: ${e.message}`);
+	});
+	if (process.platform !== "win32") {
+		const cleanup = () => {
+			try {
+				fs.unlinkSync(listenPath);
+			} catch {}
+		};
+		process.once("exit", cleanup);
+		process.once("SIGINT", () => {
+			cleanup();
+			process.exit(0);
+		});
+		process.once("SIGTERM", () => {
+			cleanup();
+			process.exit(0);
+		});
+	}
+}
+function handleLine(socket, line) {
+	let msg;
+	try {
+		msg = JSON.parse(line);
+	} catch {
+		return;
+	}
+	if (msg.type !== "request" || !msg.id || !msg.method) return;
+	let response;
+	if (msg.method === "get_login_state") response = {
+		type: "response",
+		id: msg.id,
+		data: loginState
+	};
+	else response = {
+		type: "response",
+		id: msg.id,
+		error: `unknown method: ${msg.method}`
+	};
+	if (!socket.destroyed) socket.write(JSON.stringify(response) + "\n");
+}
+//#endregion
+//#region src/main/qqProtocol/direct-mode.ts
+/**
+* Direct 模式实现: 走 native sign + TCP 直连. QQ 未登录 -> WebUI 扫码.
+* 内部持有一个低层 native `DirectProtocolClient` (direct/client.ts, 不要跟本类混淆).
+*/
+var DirectQQProtocol = class DirectQQProtocol extends QQProtocolBase {
+	directClient = null;
+	directInitInFlight = false;
+	directPendingToken = "";
+	directQrResult = null;
+	directPollResult = null;
+	directStopHeartbeat = null;
+	qrPollToken = 0;
+	qrFetchedAt = 0;
+	static QR_TTL_MS = 18e4;
+	lastPrintedQrSig = "";
+	loopRunning = false;
+	runtimeUinOverride = null;
+	constructor(ctx) {
+		super(ctx);
+	}
+	async start() {
+		startAuthTokenWatcher(this.onAuthTokenValid.bind(this), this.logger);
+	}
+	get_is_connected() {
+		return !!this.directClient?.isLoggedIn;
+	}
+	async sendPB(cmd, pb, timeout = 15e3) {
+		if (!this.directClient?.isLoggedIn) throw new Error("Direct client not logged in");
+		const buf = Buffer.isBuffer(pb) ? pb : Buffer.from(pb, "hex");
+		return {
+			cmd,
+			pb: (await this.directClient.sendCommand(cmd, buf, void 0, timeout)).payload.toString("hex")
+		};
+	}
+	/**
+	* 列出本地可快速登录的账号 (对应 data/qq-session-<uin>.json). 用于 WebUI 快速登录列表.
+	* 直连模式无 QQ NT 进程可问, 只能从本地 session 文件推断; 换机场景对应 session 已解不开,
+	* 但此处只列明文元数据, 换机时 quickLogin 阶段 registerOnline 会失败并 fallback 扫码.
+	*/
+	listQuickLoginAccounts() {
+		return listAvailableSessions();
+	}
+	/**
+	* WebUI 请求以某个已保存 session 快速登录. 设置 runtime override 后重新 initDirectClient,
+	* 走 loadSession(uin) 恢复通道 (等价于用户带 -q <uin> 启动).
+	* 已在线时 no-op. session 解不开 (换机) 会抛错让 FE 弹提示, 用户可切扫码登录.
+	*/
+	async quickLogin(uin) {
+		if (selfInfo.online) return;
+		if (!/^\d+$/.test(uin)) throw new Error("invalid uin");
+		if (!loadSession(uin)) throw new Error("session 已失效(可能换了机器或加密 key 变了), 请扫码重新登录");
+		this.runtimeUinOverride = uin;
+		await this.initDirectClient();
+		this.ensureDirectLoginLoop();
+	}
+	/**
+	* WebUI / 外部拉登录二维码 -- 只返回后端当前缓存的那张, **不会**向 QQ 服务器发新请求.
+	* 缓存为空/过期时先由后端 refreshQrCodeIfStale() 拉一次. 保证终端 QR / WebUI QR 是同一张.
+	*/
+	async getLoginQrCode() {
+		if (!this.directClient) throw new Error("Direct client not initialized");
+		await this.refreshQrCodeIfStale();
+		const qr = this.directQrResult;
+		if (!qr) throw new Error("QR code unavailable");
+		const remainingMs = Math.max(0, DirectQQProtocol.QR_TTL_MS - (Date.now() - this.qrFetchedAt));
+		return {
+			qrcodeUrl: qr.url,
+			pngBase64QrcodeData: qr.image.length > 0 ? "data:image/png;base64," + qr.image.toString("base64") : "",
+			expireTime: Math.max(1, Math.floor(remainingMs / 1e3)),
+			pollTimeInterval: 3
+		};
+	}
+	/** 缓存无 / TTL 过期时向 QQ 服务器拉一张新码; 否则复用. WebUI 与后端 loop 都走这条. */
+	async refreshQrCodeIfStale() {
+		if (!this.directClient) return;
+		if (this.directQrResult && Date.now() - this.qrFetchedAt < DirectQQProtocol.QR_TTL_MS) return;
+		const qr = await fetchQrCode(this.directClient);
+		this.directQrResult = qr;
+		this.qrFetchedAt = Date.now();
+		this.startDirectQrPolling();
+	}
+	/** 让缓存立即过期. pollQrCode 检测到 Expired/Cancelled 时调, 下次 getLoginQrCode 就会拉新码. */
+	invalidateQrCache() {
+		this.directQrResult = null;
+		this.qrFetchedAt = 0;
+	}
+	/**
+	* authTokenWatcher 校验通过 token 后回调本方法. 登录/sign 阶段的错误写回
+	* authTokenStatus.loginError 供 WebUI 展示; init 抛错的话交给 watcher 定时重试自愈.
+	*/
+	async onAuthTokenValid(token) {
+		if (selfInfo.online) return;
+		try {
+			await this.initDirectClient(token);
+			this.ensureDirectLoginLoop();
+		} catch (e) {
+			authTokenStatus.loginError = e?.message || String(e);
+			this.logger.error("[Sign] auth_token 校验通过但登录初始化失败:", e);
+			throw e;
+		}
+	}
+	/** 幂等启动扫码 loop: 已在运行则不再起新链, 避免多条 setTimeout 链并行拉码 */
+	ensureDirectLoginLoop() {
+		if (this.loopRunning) return;
+		this.directLoginLoop();
+	}
+	directLoginLoop = async () => {
+		if (selfInfo.online) {
+			this.loopRunning = false;
+			return;
+		}
+		this.loopRunning = true;
+		if (!this.directClient?.isLoggedIn) {
+			this.printLoginQrCode();
+			setTimeout(this.directLoginLoop, 1e3);
+		} else setTimeout(this.directLoginLoop, 1e3);
+	};
+	/**
+	* 拉二维码 + 打印到终端 (ASCII) + 落盘 png + 推给 Desktop. 已按 sig 去重: 同一张码只打印一次,
+	* 到期或被 poll invalidate 才会拿到新 sig 从而再次输出.
+	*/
+	async printLoginQrCode() {
+		try {
+			const data = await this.getLoginQrCode();
+			const sig = this.directQrResult?.sig.toString("hex") || "";
+			if (!sig || sig === this.lastPrintedQrSig) return;
+			this.lastPrintedQrSig = sig;
+			setLoginState({
+				state: "need_qrcode",
+				qrcode_png_base64: data.pngBase64QrcodeData
+			});
+			const qrText = await import_server.toString(data.qrcodeUrl, {
+				type: "terminal",
+				small: true
+			});
+			console.log("\n========== 请使用手机QQ扫描二维码登录 ==========");
+			console.log(qrText);
+			console.log("================================================\n");
+			if (data.pngBase64QrcodeData) {
+				const base64Data = data.pngBase64QrcodeData.replace(/^data:image\/png;base64,/, "");
+				const qrFilePath = path.join(TEMP_DIR, "login-qrcode.png");
+				if (!existsSync(TEMP_DIR)) mkdirSync(TEMP_DIR, { recursive: true });
+				await writeFile(qrFilePath, Buffer.from(base64Data, "base64"));
+				this.logger.info(`二维码文件已保存: ${qrFilePath}`);
+			}
+			const qrWebUrl = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(data.qrcodeUrl)}`;
+			this.logger.info(`或浏览器打开二维码网址: ${qrWebUrl}`);
+		} catch (e) {
+			this.logger.warn("获取登录二维码失败", e);
+		}
 	}
 	/**
 	* Initialize direct protocol client and attempt session restore.
-	* Call this in place of (or alongside) connectWebSocket when using direct protocol.
 	*
-	* 启动前 client.preflightSign() 一次: token / 鉴权 / 远端 sign-service 任一不通,
-	* 直接 throw, 不让后续 connect / register / restore 跑下去.
+	* auth_token 未配置时不再 throw: 直接 return, 让进程/WebUI 正常起来. token 校验通过后
+	* 由 authTokenWatcher 调 onAuthTokenValid -> 本方法(带已校验的 token)开始登录.
+	* token 有效性校验在 watcher 里 (validateAuthToken), 这里不再做 preflight.
+	* 可重入: 二次调用先拆掉上一个 client, 并把最新 token 热切换进 native sign。
 	*/
-	async initDirectClient() {
-		const authToken = authTokenUtil.getToken() || process.env.AUTH_TOKEN || void 0;
+	async initDirectClient(tokenArg) {
+		let authToken = (tokenArg || authTokenUtil.reload() || process.env.AUTH_TOKEN || "").trim();
 		if (!authToken) {
 			const tokenPath = authTokenUtil.getPath();
-			const tokenFile = path.basename(tokenPath);
-			this.logger.error(`[Sign Preflight] auth_token 未设置 (文件 ${tokenPath} 为空 / 不存在). 请到 https://auth.luckylillia.com 获取 token, 粘贴到 ${tokenFile}, 然后重启.`);
-			throw new Error("auth token not configured");
+			this.logger.warn(`[Sign] auth_token 未配置 (${tokenPath} 为空 / 不存在). 请在 WebUI 中录入, 或到 https://auth.luckylillia.com 获取后填入; 录入验证通过后会自动开始登录.`);
+			return;
 		}
-		const specifiedUin = getSpecifiedUin();
-		if (specifiedUin) this.logger.info("Specified login uin via -q/--qq: %s, will try qq-session-%s.json", specifiedUin, specifiedUin);
-		else this.logger.info("No -q/--qq specified, will perform fresh QR login (session will be saved as qq-session-<uin>.json)");
-		const persisted = loadSession();
+		if (this.directInitInFlight) {
+			this.directPendingToken = authToken;
+			return;
+		}
+		this.directInitInFlight = true;
+		let lastErr = null;
+		try {
+			do {
+				this.directPendingToken = "";
+				try {
+					lastErr = null;
+					await this.doInitDirectClient(authToken);
+				} catch (e) {
+					lastErr = e;
+				}
+				authToken = this.directPendingToken;
+			} while (authToken);
+		} finally {
+			this.directInitInFlight = false;
+			this.directPendingToken = "";
+		}
+		if (lastErr) throw lastErr;
+	}
+	async doInitDirectClient(authToken) {
+		this.qrPollToken++;
+		await updateAuthToken(authToken).catch((e) => this.logger.warn("[Sign] updateAuthToken failed:", e.message));
+		const specifiedUin = this.runtimeUinOverride || getSpecifiedUin();
+		if (specifiedUin) this.logger.info("Specified login uin: %s, will try qq-session-%s.json", specifiedUin, specifiedUin);
+		else this.logger.info("No uin specified, will perform fresh QR login (session will be saved as qq-session-<uin>.json)");
+		const persisted = loadSession(this.runtimeUinOverride ?? void 0);
 		if (persisted) overwriteMachineGuid(Buffer.from(persisted.guid, "hex"));
-		const uinForInit = persisted ? Number(persisted.uin) : void 0;
-		this.directClient = new DirectProtocolClient({
-			authToken,
-			botVersion: `LLBot_${version$3}`,
-			uin: Number.isFinite(uinForInit) && uinForInit > 0 ? uinForInit : void 0
-		});
-		this.directClient.on("error", (err) => {
+		const uinCandidate = persisted?.uin || specifiedUin || "";
+		const uinForInit = uinCandidate ? Number(uinCandidate) : void 0;
+		const uinArg = Number.isFinite(uinForInit) && uinForInit > 0 ? uinForInit : void 0;
+		if (!this.directClient) {
+			this.directClient = new DirectProtocolClient({
+				authToken,
+				botVersion: `LLBot_${version$3}`,
+				uin: uinArg
+			});
+			this.bindDirectClientEvents(this.directClient);
+		} else {
+			this.directClient.setAuthToken(authToken);
+			this.directClient.setUin(uinArg);
+			this.directClient.clearSession();
+			if (persisted) {
+				const g = Buffer.from(persisted.guid, "hex");
+				if (!g.equals(this.directClient.getGuid())) this.directClient.setGuid(g);
+			}
+		}
+		if (persisted) {
+			this.logger.info("Found saved session for UIN %s (file: %s), attempting restore...", persisted.uin, getSessionFilePathForUin(persisted.uin));
+			if (!this.directClient.isConnected) await this.directClient.connect();
+			const session = persistedToSessionInfo(persisted);
+			this.directClient.setSession(session);
+			try {
+				await registerOnline(this.directClient);
+				this.logger.info("[QQ Server] Online registered!");
+				selfInfo.uin = persisted.uin;
+				selfInfo.uid = persisted.uid;
+				if (persisted.nick) selfInfo.nick = persisted.nick;
+				selfInfo.online = true;
+				this.directStopHeartbeat = startHeartbeat(this.directClient);
+				this.maybeEmitOnline();
+				if (!selfInfo.nick) this.scheduleFetchSelfNick();
+				return;
+			} catch (e) {
+				this.logger.info("Saved session expired, will need QR login: %s", e.message);
+				this.directClient.clearSession();
+			}
+		}
+		if (!this.directClient.isConnected) await this.directClient.connect();
+	}
+	/** 给 client 挂事件 (error/connected/close/push). 只在首次建立 client 时调一次 -- 复用 client 不重挂. */
+	bindDirectClientEvents(client) {
+		client.on("error", (err) => {
 			this.logger.warn("Direct client error:", err.message);
 		});
-		this.directClient.on("close", () => {
+		client.on("connected", () => {
+			this.lastConnectedTime = Date.now();
+		});
+		client.on("close", () => {
 			const wasOnline = this.onlineEmitted;
 			selfInfo.online = false;
 			if (this.directStopHeartbeat) {
@@ -75642,80 +77637,24 @@ var QQProtocolBase = class extends Service {
 			this.onlineEmitted = false;
 			if (wasOnline) this.ctx.parallel("protocol/disconnect");
 		});
-		this.directClient.on("push", (packet) => {
+		client.on("push", (packet) => {
+			this.lastConnectedTime = Date.now();
 			this.ctx.parallel("qq/raw", {
 				cmd: packet.cmd,
 				payload: packet.payload
 			});
 		});
-		if (persisted) {
-			this.logger.info("Found saved session for UIN %s (file: %s), attempting restore...", persisted.uin, getSessionFilePathForUin(persisted.uin));
-			await this.directClient.connect();
-			const session = persistedToSessionInfo(persisted);
-			this.directClient.setSession(session);
-			try {
-				await registerOnline(this.directClient);
-				console.log("[QQ Server] Online registered!");
-				selfInfo.uin = persisted.uin;
-				selfInfo.uid = persisted.uid;
-				if (persisted.nick) selfInfo.nick = persisted.nick;
-				selfInfo.online = true;
-				this.directStopHeartbeat = startHeartbeat(this.directClient);
-				this.maybeEmitOnline();
-				return;
-			} catch (e) {
-				this.logger.info("Saved session expired, will need QR login: %s", e.message);
-				this.directClient.clearSession();
-				this.directClient.disconnect();
-			}
-		}
-		await this.directClient.connect();
-	}
-	/**
-	* Check if logged in via direct protocol
-	*/
-	isDirectLoggedIn() {
-		return this.directClient?.isLoggedIn ?? false;
-	}
-	/**
-	* Get self info for direct protocol (matches the shape used by main.ts checkLogin)
-	*/
-	getDirectSelfInfo() {
-		if (!this.directClient?.isLoggedIn) return {
-			uin: "",
-			uid: "",
-			nick: "",
-			online: false
-		};
-		const session = this.directClient.getSession();
-		return {
-			uin: session?.uin || "",
-			uid: session?.uid || "",
-			nick: "",
-			online: true
-		};
-	}
-	/**
-	* Fetch QR code via direct protocol.
-	* Returns same shape as ntLoginApi.getLoginQrCode() for compatibility.
-	*/
-	async getDirectLoginQrCode() {
-		if (!this.directClient) throw new Error("Direct client not initialized");
-		const qr = await fetchQrCode(this.directClient);
-		this.directQrResult = qr;
-		this.startDirectQrPolling();
-		return {
-			qrcodeUrl: qr.url,
-			pngBase64QrcodeData: qr.image.length > 0 ? "data:image/png;base64," + qr.image.toString("base64") : ""
-		};
 	}
 	startDirectQrPolling() {
 		if (!this.directClient || !this.directQrResult) return;
+		const myToken = ++this.qrPollToken;
 		const poll = async () => {
+			if (this.qrPollToken !== myToken) return;
 			if (!this.directClient || !this.directQrResult) return;
 			if (this.directClient.isLoggedIn) return;
 			try {
 				const result = await pollQrCode(this.directClient, this.directQrResult.sig);
+				if (this.qrPollToken !== myToken) return;
 				this.directPollResult = result;
 				if (result.state === QrCodeState.Confirmed) {
 					await this.completeDirectLogin();
@@ -75724,12 +77663,13 @@ var QQProtocolBase = class extends Service {
 				if (result.state === QrCodeState.WaitingForConfirm) setLoginState({ state: "waiting_confirm" });
 				if (result.state === QrCodeState.Expired || result.state === QrCodeState.Cancelled) {
 					setLoginState({ state: result.state === QrCodeState.Expired ? "expired" : "cancelled" });
-					this.directQrResult = null;
+					this.invalidateQrCache();
 					return;
 				}
 			} catch (e) {
 				this.logger.warn("QR poll error:", e.message);
 			}
+			if (this.qrPollToken !== myToken) return;
 			setTimeout(poll, 2e3);
 		};
 		setTimeout(poll, 2e3);
@@ -75742,6 +77682,7 @@ var QQProtocolBase = class extends Service {
 		const loginResult = await loginWithQrResult(this.directClient, this.directPollResult);
 		if (!loginResult.success) {
 			this.logger.error(`Login failed: state=${loginResult.state} ${loginResult.tag} ${loginResult.message}`);
+			authTokenStatus.loginError = `登录失败: ${[loginResult.tag, loginResult.message].filter(Boolean).join(" ")}`.trim();
 			return;
 		}
 		this.logger.info(`Login successful! UID: ${loginResult.uid}, nick: "${loginResult.nick}"`);
@@ -75749,7 +77690,11 @@ var QQProtocolBase = class extends Service {
 		try {
 			await registerOnline(this.directClient);
 		} catch (e) {
-			this.logger.warn("Register:", e.message);
+			const msg = e.message;
+			this.logger.error("Register online failed:", msg);
+			authTokenStatus.loginError = `上线注册失败: ${msg}`;
+			this.directClient.clearSession();
+			return;
 		}
 		this.directStopHeartbeat = startHeartbeat(this.directClient);
 		selfInfo.uin = String(uin);
@@ -75757,12 +77702,13 @@ var QQProtocolBase = class extends Service {
 		selfInfo.nick = loginResult.nick;
 		selfInfo.online = true;
 		this.maybeEmitOnline();
+		if (!selfInfo.nick) this.scheduleFetchSelfNick();
 	}
 };
 //#endregion
 //#region src/main/qqProtocol/mixins/friend.ts
 function FriendMixin(Base) {
-	return class extends Base {
+	class Mixed extends Base {
 		async sendFriendPoke(friendUin, toUin) {
 			const body = Oidb.SendPokeReq.encode({
 				toUin,
@@ -75978,12 +77924,13 @@ function FriendMixin(Base) {
 			const oidbResp = Oidb.Base.decode(Buffer.from(res.pb, "hex"));
 			return Oidb.GetFriendsStatusResp.decode(oidbResp.body);
 		}
-	};
+	}
+	return Mixed;
 }
 //#endregion
 //#region src/main/qqProtocol/mixins/group.ts
 function GroupMixin(Base) {
-	return class extends Base {
+	class Mixed extends Base {
 		async sendGroupPoke(groupCode, memberUin) {
 			const body = Oidb.SendPokeReq.encode({
 				toUin: memberUin,
@@ -76042,6 +77989,7 @@ function GroupMixin(Base) {
 					announcement: true
 				},
 				config2: {
+					memberRole: true,
 					remark: true,
 					personShutupExpireTime: true
 				}
@@ -76591,7 +78539,8 @@ function GroupMixin(Base) {
 			const oidbRespBody = Oidb.Base.decode(Buffer.from(res.pb, "hex")).body;
 			return Oidb.FetchGroupExtraResp.decode(oidbRespBody);
 		}
-	};
+	}
+	return Mixed;
 }
 //#endregion
 //#region src/ntqqapi/helper/ntv2RichMedia.ts
@@ -76651,7 +78600,7 @@ var NTV2RichMedia;
 	async function buildFileInfo(entity) {
 		const md5HexStr = await getMd5HexFromFile(entity.filePath);
 		const sha1HexStr = await getSha1HexFromFile(entity.filePath);
-		const { size: fileSize } = await stat(entity.filePath);
+		const { size: fileSize } = await stat$1(entity.filePath);
 		let fileName, fileType, width, height, time, original;
 		if (entity.type === "video") {
 			fileName = `${md5HexStr}.mp4`;
@@ -76731,7 +78680,7 @@ var NTV2RichMedia;
 //#endregion
 //#region src/main/qqProtocol/mixins/media.ts
 function MediaMixin(Base) {
-	return class extends Base {
+	class Mixed extends Base {
 		async getRKey() {
 			const data = Buffer.from("08e7a00210ca01221c0a130a05080110ca011206a80602b006011a02080122050a030a1400", "hex");
 			const resp = await this.sendPB("OidbSvcTrpcTcp.0x9067_202", data);
@@ -76902,10 +78851,7 @@ function MediaMixin(Base) {
 				for (const addr of srvAddr.addrs) {
 					const ip = uint32ToIPV4Addr(addr.ip);
 					const port = addr.port;
-					addresses.push({
-						host: ip,
-						port
-					});
+					addresses.push(`${ip}:${port}`);
 				}
 				highwayHostAndPorts[srvAddr.serviceType] = addresses;
 			}
@@ -77696,12 +79642,13 @@ function MediaMixin(Base) {
 				fullUrl
 			};
 		}
-	};
+	}
+	return Mixed;
 }
 //#endregion
 //#region src/main/qqProtocol/mixins/message.ts
 function MessageMixin(Base) {
-	return class extends Base {
+	class Mixed extends Base {
 		async uploadForward(peerUid, isGroup, items) {
 			const transmit = Msg.PbMultiMsgTransmit.encode({ pbItemList: items });
 			const data = Action.SendLongMsgReq.encode({
@@ -78093,12 +80040,13 @@ function MessageMixin(Base) {
 			const oidbRespBody = Oidb.Base.decode(Buffer.from(res.pb, "hex")).body;
 			return Oidb.SetInputStatusResp.decode(oidbRespBody);
 		}
-	};
+	}
+	return Mixed;
 }
 //#endregion
 //#region src/main/qqProtocol/mixins/user.ts
 function UserMixin(Base) {
-	return class extends Base {
+	class Mixed extends Base {
 		async fetchUserInfoByUin(uin) {
 			const body = Oidb.FetchUserInfoByUinReq.encode({
 				uin,
@@ -78283,12 +80231,13 @@ function UserMixin(Base) {
 			});
 			return await this.sendOidb(4394, 2, body);
 		}
-	};
+	}
+	return Mixed;
 }
 //#endregion
 //#region src/main/qqProtocol/mixins/system.ts
 function SystemMixin(Base) {
-	return class extends Base {
+	class Mixed extends Base {
 		async fetchPins() {
 			const data = Oidb.Base.encode({
 				command: 4787,
@@ -78299,21 +80248,28 @@ function SystemMixin(Base) {
 			const oidbRespBody = Oidb.Base.decode(Buffer.from(res.pb, "hex")).body;
 			return Oidb.FetchPinsResp.decode(oidbRespBody);
 		}
-	};
+	}
+	return Mixed;
 }
 //#endregion
 //#region src/main/qqProtocol/index.ts
 function applyMixins(Base, mixins) {
 	return mixins.reduce((acc, mixin) => mixin(acc), Base);
 }
-var QQProtocolClient = applyMixins(QQProtocolBase, [
+var mixins = [
 	GroupMixin,
 	FriendMixin,
 	MediaMixin,
 	MessageMixin,
 	UserMixin,
 	SystemMixin
-]);
+];
+/**
+* 两个模式的 Service 类分别 apply 所有 OIDB mixins.
+* main.ts 根据 isPmhqMode() 二选一 ctx.plugin(...) 一次.
+*/
+var DirectQQProtocolClient = applyMixins(DirectQQProtocol, mixins);
+var PmhqQQProtocolClient = applyMixins(PmhqQQProtocol, mixins);
 //#endregion
 //#region node_modules/@cordisjs/plugin-logger-console/lib/browser.js
 var ConsoleExporter = class {
@@ -78546,15 +80502,25 @@ var index_default = TimerService;
 //#endregion
 //#region src/main/main.ts
 globalThis.__dirname = import.meta.dirname;
+function applyDebugLevel(ctx) {
+	const level = isDebugEnabled() ? 3 : 2;
+	ctx.logger.exporters?.forEach((exp) => {
+		exp.levels = {
+			...exp.levels ?? {},
+			default: level
+		};
+	});
+}
 async function onLoad() {
-	if (!existsSync$1(LOG_DIR)) mkdirSync(LOG_DIR);
-	if (!existsSync$1(TEMP_DIR)) mkdirSync(TEMP_DIR);
+	if (!existsSync(LOG_DIR)) mkdirSync(LOG_DIR);
+	if (!existsSync(TEMP_DIR)) mkdirSync(TEMP_DIR);
 	const ctx = new Context$1();
 	ctx.plugin(Log);
-	ctx.plugin(browser_default, { levels: { default: 2 } });
+	ctx.plugin(browser_default, { levels: { default: isDebugEnabled() ? 3 : 2 } });
+	bindLoggerFactory((name) => ctx.logger(name));
 	ctx.plugin(index_default);
 	ctx.plugin(Config);
-	ctx.plugin(QQProtocolClient);
+	ctx.plugin(isPmhqMode() ? PmhqQQProtocolClient : DirectQQProtocolClient);
 	ctx.plugin(NTFileApi);
 	ctx.plugin(NTFriendApi);
 	ctx.plugin(NTGroupApi);
@@ -78585,52 +80551,16 @@ async function onLoad() {
 		ctx.plugin(Store, { msgCacheExpire: config.msgCacheExpire });
 		ctx.plugin(EmailNotificationService);
 	};
-	let lastQrCodeTime = 0;
-	isDockerEnvironment();
-	const useDirectProtocol = !isPmhqMode();
-	const printLoginQrCode = async () => {
-		try {
-			const data = await ctx.qqProtocol.getDirectLoginQrCode();
-			setLoginState({
-				state: "need_qrcode",
-				qrcode_png_base64: data.pngBase64QrcodeData
-			});
-			const qrText = await import_server.toString(data.qrcodeUrl, {
-				type: "terminal",
-				small: true
-			});
-			console.log("\n========== 请使用手机QQ扫描二维码登录 ==========");
-			console.log(qrText);
-			console.log("================================================\n");
-			if (data.pngBase64QrcodeData) {
-				const base64Data = data.pngBase64QrcodeData.replace(/^data:image\/png;base64,/, "");
-				const qrFilePath = path.join(TEMP_DIR, "login-qrcode.png");
-				if (!existsSync$1(TEMP_DIR)) mkdirSync(TEMP_DIR, { recursive: true });
-				await writeFile(qrFilePath, Buffer.from(base64Data, "base64"));
-				ctx.logger.info(`二维码文件已保存: ${qrFilePath}`);
-			}
-			const qrWebUrl = `https://api.2dcode.biz/v1/create-qr-code?data=${encodeURIComponent(data.qrcodeUrl)}`;
-			ctx.logger.info(`或浏览器打开二维码网址: ${qrWebUrl}`);
-		} catch (e) {
-			ctx.logger.warn("获取登录二维码失败", e);
-		}
-	};
-	const directLoginLoop = async () => {
-		if (selfInfo.online) return;
-		if (!ctx.qqProtocol.getDirectSelfInfo().online) {
-			const now = Date.now();
-			const st = getCurrentLoginState().state;
-			if (st === "expired" || st === "cancelled" || now - lastQrCodeTime > 12e4) {
-				lastQrCodeTime = now;
-				printLoginQrCode();
-			}
-			setTimeout(directLoginLoop, 1e3);
-		}
-	};
 	ctx.inject(["qqProtocol", "config"], (ctx) => {
 		ctx.logger.info(`LLBot ${version$3}`);
 		ctx.logger.info(process.argv);
 		config = ctx.config.get();
+		setConfigLogLevel(config.logLevel);
+		applyDebugLevel(ctx);
+		ctx.on("llob/config-updated", (c) => {
+			setConfigLogLevel(c.logLevel);
+			applyDebugLevel(ctx);
+		});
 		ctx.plugin(WebuiServer, config.webui);
 		const handleOnline = async () => {
 			console.log(`
@@ -78646,17 +80576,6 @@ async function onLoad() {
 				state: "logged_in",
 				uin: selfInfo.uin,
 				nickname: selfInfo.nick
-			});
-			if (useDirectProtocol && !selfInfo.nick) ctx.inject(["ntUserApi"], async (userCtx) => {
-				try {
-					const nick = await userCtx.ntUserApi.getSelfNick(true);
-					if (nick) {
-						selfInfo.nick = nick;
-						setLoginState({ nickname: nick });
-					}
-				} catch (e) {
-					ctx.logger.warn("补查登录号昵称失败", e);
-				}
 			});
 			if (!sessionLoaded) {
 				config = ctx.config.get(false);
@@ -78677,12 +80596,6 @@ async function onLoad() {
 		});
 		startIpcServer();
 		setLoginState({ state: "initializing" });
-		if (useDirectProtocol) ctx.qqProtocol.initDirectClient().then(() => {
-			directLoginLoop();
-		}).catch((e) => {
-			ctx.logger.error("直连协议初始化失败 (initDirectClient):", e);
-		});
-		else ctx.qqProtocol.startHook();
 	});
 	process.on("unhandledRejection", (reason) => {
 		ctx.logger.error("[unhandledRejection]", reason);
@@ -78691,7 +80604,7 @@ async function onLoad() {
 		ctx.logger.error("[uncaughtException]", err);
 	});
 }
-onLoad().catch((e) => console.error(e));
+onLoad().catch((e) => getLogger("main").error(e));
 //#endregion
 export {};
 

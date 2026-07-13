@@ -7,7 +7,7 @@
   "auto_start_bot": true,
   "headless": true,
   "debug": true,
-  "minimize_to_tray_on_start": false,
+  "minimize_to_tray_on_start": true,
   "startup_command_enabled": false,
   "startup_command": "",
   "auto_start_frameworks": [],
@@ -16,9 +16,9 @@
   "log_retention_seconds": 604800,
   "close_to_tray": true,
   "theme_mode": "system",
-  "window_width": 1062,
-  "window_height": 752,
-  "window_left": 206,
-  "window_top": 93,
+  "window_width": 1006,
+  "window_height": 638,
+  "window_left": 216,
+  "window_top": 136,
   "auto_login": true
 }
